@@ -65,6 +65,24 @@ behind the report without reading code. It is not a public accusation leaderboar
 
 ## Implementation decision
 
-Build only after the curated schema and analytical queries stabilize. A small Streamlit or static
-Plotly/Dash-style application is sufficient; product quality comes from reliable filters, evidence
-links, state handling, and documentation rather than framework complexity.
+The pilot uses a generated, dependency-free static HTML application. This keeps the review artifact
+portable for a recruiter while preserving DuckDB and Python as the tested source of truth. Product
+quality comes from reliable filters, evidence links, state handling, and documentation rather than
+framework complexity.
+
+## Pilot implementation status
+
+| Requirement | Pilot status | Evidence |
+|---|---|---|
+| Visible release state | Implemented | Header status and provisional overview warning |
+| Evidence-linked decision search | Implemented | Expandable Fact, Decision, Reason, notes, and official URLs |
+| Comparable-case findings | Intentionally gated | Unavailable until reviewed full corpus and model validation |
+| Competitive impact | Implemented provisionally | Mechanical and non-estimable rows remain visibly separated |
+| Data quality and lineage | Implemented | Retrieval, recall, rule-gap, review, timestamp, and commit fields |
+| Filtered export | Implemented | Client-side CSV with stable IDs and FIA source URLs |
+| Nationality ranking exclusion | Enforced | Payload validator and filter allowlist |
+| 2025 guideline lineage | Enforced | Build fails when an applicable label lacks clause or rule URL |
+| Accessibility baseline | Implemented and test-covered | Semantic tabs/table, keyboard tab navigation, focus styles, live count |
+
+The pilot is not a model-results release. Its primary purpose is to prove traceability and make the
+manual review packet inspectable before collection expands to 2018-2025.

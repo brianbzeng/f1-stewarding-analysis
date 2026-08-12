@@ -54,6 +54,7 @@ The canonical local workflow uses Python, Jupyter, DuckDB, Parquet, and Git. A f
 config/       machine-readable source and pilot configuration
 data/         raw, interim, processed, and external data (large files ignored)
 docs/         protocol, source register, codebook, lineage, and recruiter mapping
+explorer/     generated, evidence-linked static review application
 notebooks/    numbered analysis notebooks
 reports/      executive and technical deliverables
 sql/          portable schema and analytical queries
@@ -93,6 +94,7 @@ f1stewards validate-coding
 f1stewards validate-impact
 f1stewards review-status
 f1stewards scale-readiness
+f1stewards build-explorer
 f1stewards quality-check
 pytest
 ```
@@ -127,6 +129,12 @@ four impact assessments have an
 AI-assisted first coding pass, but every row remains explicitly pending independent human review.
 The separate 13-row review packet preserves corrections and measured review effort without
 overwriting the first pass.
+
+A dependency-free pilot evidence explorer is also generated from the same DuckDB and curated manual
+inputs. It exposes nine candidate adjudications and four impact assessments with exact filters,
+official evidence links, data-quality state, build lineage, and a downloadable filtered extract.
+The explorer remains visibly provisional, and comparable-case/model views remain unavailable until
+independent review, reconciliation, full-corpus collection, and model validation pass their gates.
 
 The project is published at
 [brianbzeng/f1-stewarding-analysis](https://github.com/brianbzeng/f1-stewarding-analysis).

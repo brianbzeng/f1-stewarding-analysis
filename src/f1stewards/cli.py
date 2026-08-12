@@ -27,6 +27,7 @@ from f1stewards.config import (
     load_sporting_regulation_issues,
 )
 from f1stewards.enrichment.fastf1 import fetch_pilot_race, replace_event_enrichment
+from f1stewards.explorer import build_explorer_payload, write_explorer
 from f1stewards.impact import remove_post_race_time_penalty
 from f1stewards.manual import CodedAdjudication, ImpactAssessment, IndependentReviewRecord
 from f1stewards.models import DocumentClass
@@ -1020,6 +1021,40 @@ def scale_readiness(
         output_path.parent.mkdir(parents=True, exist_ok=True)
         gates.to_csv(output_path, index=False)
         typer.echo(f"Wrote {output_path}")
+
+
+@app.command("build-explorer")
+def build_explorer(
+    coding_path: Annotated[Path, typer.Option(help="Reviewable adjudication CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_coded_adjudications.csv"
+    ),
+    impact_path: Annotated[Path, typer.Option(help="Competitive-impact assessment CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_impact_assessments.csv"
+    ),
+    review_path: Annotated[Path, typer.Option(help="Independent-review CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_independent_review.csv"
+    ),
+    output_path: Annotated[Path, typer.Option(help="Standalone HTML output path.")] = (
+        PROJECT_ROOT / "explorer" / "index.html"
+    ),
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Build the standalone evidence explorer from validated pilot evidence."""
+
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        payload = build_explorer_payload(
+            connection,
+            PROJECT_ROOT,
+            coding_path,
+            impact_path,
+            review_path,
+        )
+    write_explorer(payload, output_path)
+    typer.echo(
+        f"Wrote {output_path} with {len(payload['adjudications'])} adjudications, "
+        f"{len(payload['impacts'])} impact assessments, and "
+        f"status={payload['metadata']['release_status']}"
+    )
 
 
 if __name__ == "__main__":
