@@ -1,4 +1,11 @@
 analysis_thresholds:
+  pilot_scale:
+    minimum_core_text_fraction: 0.95
+    require_all_review_targets: true
+    maximum_unresolved_review_targets: 0
+    require_verified_sporting_binary_per_pilot_event: true
+    review_burden_requires_human_decision: true
+
   release:
     allowed_claim_statuses:
       - supported_for_inference

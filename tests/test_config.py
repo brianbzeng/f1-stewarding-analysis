@@ -44,6 +44,7 @@ regulatory_sources:
 def test_analysis_thresholds_cover_all_planned_components() -> None:
     thresholds = load_analysis_thresholds()
 
+    assert thresholds["pilot_scale"]["minimum_core_text_fraction"] == 0.95
     assert thresholds["consistency"]["validation_group"] == "event_id"
     assert thresholds["guideline_conformance"]["minimum_mappable_fraction"] == 0.8
     assert thresholds["competitive_impact"]["mechanical_same_lap_only"] is True

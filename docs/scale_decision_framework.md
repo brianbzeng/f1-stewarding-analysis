@@ -51,6 +51,10 @@ oversight report is preferable to an underpowered causal-sounding analysis.
 - estimated adjudications per event and by incident family;
 - minimum detectable effect or simulation-based power for each inferential question.
 
+Run `f1stewards scale-readiness` for the measured gate table. It deliberately returns
+`blocked_pending_review` while any review target is pending and `human_go_no_go_required` after all
+objective gates pass; it never turns review time or analytical yield into an automatic scope choice.
+
 ## Claim-level decision
 
 Each research question receives its own designation after full inventory and EDA:

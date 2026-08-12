@@ -25,10 +25,12 @@ The project is an F1 domain analysis, but its delivery is tailored to the HHS OI
 - The command-line workflow is restartable and distinguishes acquisition, parsing, enrichment,
   validation, and audit operations.
 - Pydantic contracts reject invalid adjudication and impact combinations at the analytical boundary.
-- Nine zero-row SQL controls compensate for DuckDB's cross-schema foreign-key limitation and catch
+- Twelve zero-row SQL controls compensate for DuckDB's cross-schema foreign-key limitation and catch
   missing lineage, impossible values, incomplete mechanical arithmetic, and invalid rule windows.
 - Event-date rule versions are data, not prose-only citations; an archive-link drift is represented as
   a controlled source exception.
+- A 65-issue regulation catalog, event-date SQL selector, and measured scale-readiness command turn
+  research governance into reproducible application behavior.
 - The executed notebooks lead with scope, evidence status, and interpretation instead of presenting
   charts without decision context.
 - Competitive impact separates exact arithmetic from strategy-dependent speculation.

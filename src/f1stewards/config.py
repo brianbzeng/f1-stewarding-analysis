@@ -65,6 +65,7 @@ def load_analysis_thresholds(path: Path | None = None) -> dict[str, Any]:
     if not isinstance(thresholds, dict):
         raise ValueError(f"Missing analysis_thresholds mapping in {config_path}")
     required = {
+        "pilot_scale",
         "release",
         "consistency",
         "guideline_conformance",

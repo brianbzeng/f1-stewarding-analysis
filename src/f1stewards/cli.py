@@ -19,6 +19,7 @@ from f1stewards.acquisition.fia import (
 )
 from f1stewards.config import (
     PROJECT_ROOT,
+    load_analysis_thresholds,
     load_document_classes,
     load_pilot_events,
     load_regulatory_sources,
@@ -29,6 +30,11 @@ from f1stewards.impact import remove_post_race_time_penalty
 from f1stewards.manual import CodedAdjudication, ImpactAssessment, IndependentReviewRecord
 from f1stewards.models import DocumentClass
 from f1stewards.parsing.decision import parse_decision_pdf
+from f1stewards.readiness import (
+    evaluate_pilot_readiness,
+    load_pilot_manual_records,
+    readiness_decision,
+)
 from f1stewards.warehouse import (
     DEFAULT_DB_PATH,
     connect,
@@ -930,6 +936,45 @@ def review_status(
     )
     if not decisions.empty:
         typer.echo(decisions.to_string())
+
+
+@app.command("scale-readiness")
+def scale_readiness(
+    review_path: Annotated[Path, typer.Option(help="Independent-review CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_independent_review.csv"
+    ),
+    coding_path: Annotated[Path, typer.Option(help="Reviewable adjudication CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_coded_adjudications.csv"
+    ),
+    impact_path: Annotated[Path, typer.Option(help="Competitive-impact assessment CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_impact_assessments.csv"
+    ),
+    output_path: Annotated[Path | None, typer.Option(help="Optional CSV snapshot path.")] = None,
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Evaluate measured pilot gates without automating the final scope decision."""
+
+    try:
+        coded, impacts, reviews = load_pilot_manual_records(
+            coding_path, impact_path, review_path
+        )
+    except ValueError as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=1) from exc
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        gates = evaluate_pilot_readiness(
+            connection,
+            coded,
+            impacts,
+            reviews,
+            load_analysis_thresholds(),
+        )
+    typer.echo(gates.to_string(index=False))
+    typer.echo(f"\nOverall: {readiness_decision(gates)}")
+    if output_path is not None:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        gates.to_csv(output_path, index=False)
+        typer.echo(f"Wrote {output_path}")
 
 
 if __name__ == "__main__":

@@ -91,6 +91,7 @@ f1stewards claim-audit
 f1stewards validate-coding
 f1stewards validate-impact
 f1stewards review-status
+f1stewards scale-readiness
 f1stewards quality-check
 pytest
 ```
