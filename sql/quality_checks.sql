@@ -6,6 +6,13 @@ FROM raw.source_documents AS d
 LEFT JOIN metadata.events AS e USING (event_id)
 WHERE e.event_id IS NULL;
 
+-- Every event in the frozen 2018-2025 population must have discovered FIA evidence.
+SELECT e.event_id, e.season
+FROM metadata.events AS e
+LEFT JOIN raw.source_documents AS d USING (event_id)
+GROUP BY e.event_id, e.season
+HAVING count(d.document_id) = 0;
+
 SELECT i.incident_id, i.source_document_id
 FROM curated.incidents AS i
 LEFT JOIN raw.source_documents AS d ON i.source_document_id = d.document_id

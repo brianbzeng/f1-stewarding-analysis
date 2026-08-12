@@ -5,6 +5,7 @@ import pytest
 
 from f1stewards.config import (
     load_analysis_thresholds,
+    load_full_collection_settings,
     load_international_sporting_code_issues,
     load_regulatory_sources,
     load_sporting_regulation_issues,
@@ -61,6 +62,15 @@ def test_analysis_thresholds_cover_all_planned_components() -> None:
         == "not_estimable"
     )
     assert thresholds["incident_context"]["fault_attribution_is_edge_specific"] is True
+
+
+def test_full_collection_settings_cover_completed_study_seasons() -> None:
+    settings = load_full_collection_settings()
+
+    assert settings["completed_seasons"] == list(range(2018, 2026))
+    assert sum(settings["expected_event_counts"].values()) == 173
+    assert settings["season_slugs"][2025] == "season-2025-2071"
+    assert settings["pilot_event_ids"] == ["2019-aut", "2023-abu", "2025-aut"]
 
 
 def test_sporting_regulation_catalog_covers_2018_through_2025() -> None:

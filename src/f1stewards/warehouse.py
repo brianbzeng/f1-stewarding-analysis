@@ -47,11 +47,20 @@ def upsert_pilot_events(
         {
             "event_id": event.pilot_id,
             "season": event.season,
+            "round_number": event.round_number,
             "event_date": event.race_date,
             "event_name": event.event_name,
+            "country": event.country,
             "archive_url": str(event.archive_url),
             "guideline_regime": event.regime,
-            "is_pilot": True,
+            "is_pilot": event.is_pilot,
+            "event_timezone": event.event_timezone,
+            "archive_system": event.archive_system,
+            "event_format": event.event_format,
+            "has_sprint": event.has_sprint,
+            "catalog_source_url": (
+                str(event.catalog_source_url) if event.catalog_source_url else None
+            ),
         }
         for event in events
     ]
@@ -60,20 +69,33 @@ def upsert_pilot_events(
     connection.execute(
         """
         INSERT INTO metadata.events (
-            event_id, season, event_name, event_date, archive_url,
-            guideline_regime, is_pilot
+            event_id, season, round_number, event_name, country, event_date, archive_url,
+            guideline_regime, is_pilot, event_timezone, archive_system, event_format,
+            has_sprint, catalog_source_url
         )
-        SELECT event_id, season, event_name, event_date, archive_url,
-               guideline_regime, is_pilot
+        SELECT event_id, season, round_number, event_name, country, event_date, archive_url,
+               guideline_regime, is_pilot, event_timezone, archive_system, event_format,
+               has_sprint, catalog_source_url
         FROM event_batch
         ON CONFLICT (event_id) DO UPDATE SET
+            round_number = EXCLUDED.round_number,
+            event_name = EXCLUDED.event_name,
+            country = EXCLUDED.country,
             archive_url = EXCLUDED.archive_url,
             event_date = EXCLUDED.event_date,
             guideline_regime = EXCLUDED.guideline_regime,
-            is_pilot = EXCLUDED.is_pilot
+            is_pilot = EXCLUDED.is_pilot,
+            event_timezone = EXCLUDED.event_timezone,
+            archive_system = EXCLUDED.archive_system,
+            event_format = EXCLUDED.event_format,
+            has_sprint = EXCLUDED.has_sprint,
+            catalog_source_url = EXCLUDED.catalog_source_url
         """
     )
     connection.unregister("event_batch")
+
+
+upsert_study_events = upsert_pilot_events
 
 
 def upsert_regulatory_sources(

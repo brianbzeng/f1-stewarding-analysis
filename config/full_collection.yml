@@ -1,0 +1,95 @@
+full_collection:
+  completed_seasons: [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+  expected_event_counts:
+    2018: 21
+    2019: 21
+    2020: 17
+    2021: 22
+    2022: 22
+    2023: 22
+    2024: 24
+    2025: 24
+
+  schedule_source_url: https://github.com/theOehrly/Fast-F1
+  modern_archive_url_template: >-
+    https://www.fia.com/documents/championships/fia-formula-one-world-championship-14/event/{event_slug}/season/{season_slug}
+  legacy_event_url_template: >-
+    https://www.fia.com/championship/events/fia-formula-one-world-championship/season-2018/{event_slug}
+
+  season_slugs:
+    2019: season-2019-971
+    2020: season-2020-1059
+    2021: season-2021-1108
+    2022: season-2022-2005
+    2023: season-2023-2042
+    2024: season-2024-2043
+    2025: season-2025-2071
+
+  regimes:
+    2018: pre_driving_guidelines
+    2019: pre_driving_guidelines
+    2020: pre_driving_guidelines
+    2021: pre_driving_guidelines
+    2022: internal_driving_guidelines
+    2023: internal_driving_guidelines
+    2024: internal_driving_guidelines
+    2025: public_driving_and_penalty_guidelines
+
+  pilot_event_ids: [2019-aut, 2023-abu, 2025-aut]
+
+  event_codes:
+    Australian Grand Prix: aus
+    Bahrain Grand Prix: bhr
+    Chinese Grand Prix: chn
+    Azerbaijan Grand Prix: aze
+    Spanish Grand Prix: esp
+    Monaco Grand Prix: mco
+    Canadian Grand Prix: can
+    French Grand Prix: fra
+    Austrian Grand Prix: aut
+    British Grand Prix: gbr
+    German Grand Prix: deu
+    Hungarian Grand Prix: hun
+    Belgian Grand Prix: bel
+    Italian Grand Prix: ita
+    Singapore Grand Prix: sgp
+    Russian Grand Prix: rus
+    Japanese Grand Prix: jpn
+    United States Grand Prix: usa
+    Mexican Grand Prix: mex
+    Brazilian Grand Prix: bra
+    Abu Dhabi Grand Prix: abu
+    Styrian Grand Prix: sty
+    70th Anniversary Grand Prix: 70a
+    Tuscan Grand Prix: tus
+    Eifel Grand Prix: eif
+    Portuguese Grand Prix: por
+    Emilia Romagna Grand Prix: emi
+    Turkish Grand Prix: tur
+    Sakhir Grand Prix: skh
+    Dutch Grand Prix: ned
+    Mexico City Grand Prix: mex
+    São Paulo Grand Prix: sao
+    Qatar Grand Prix: qat
+    Saudi Arabian Grand Prix: sau
+    Miami Grand Prix: mia
+    Las Vegas Grand Prix: lvs
+
+  archive_event_overrides:
+    2020|70th Anniversary Grand Prix: Formula 1 70th Anniversary Grand Prix
+    2021|Saudi Arabian Grand Prix: Saudi Arabia Grand Prix
+    2021|Mexico City Grand Prix: Mexican Grand Prix
+    2021|São Paulo Grand Prix: Brazilian Grand Prix
+    2022|Mexico City Grand Prix: Mexican Grand Prix
+    2022|São Paulo Grand Prix: Brazilian Grand Prix
+    2023|São Paulo Grand Prix: SÃO PAULO GRAND PRIX
+
+  # Several early-2018 event landing pages lost their timing-page handoff during
+  # an FIA site migration. These official pages were verified individually.
+  archive_url_overrides:
+    2018-bhr: https://www.fia.com/events/fia-formula-one-world-championship/season-2018/eventtiming-information-0
+    2018-chn: https://www.fia.com/events/fia-formula-one-world-championship/season-2018/eventtiming-information-1
+    2018-aze: https://www.fia.com/events/fia-formula-one-world-championship/season-2018/eventtiming-information-23
+    2018-esp: https://www.fia.com/events/fia-formula-one-world-championship/season-2018/eventtiming-information-3
+    2018-mco: https://www.fia.com/events/fia-formula-one-world-championship/season-2018/eventtiming-information-4
+    2018-can: https://www.fia.com/events/fia-formula-one-world-championship/season-2018/eventtiming-information-5

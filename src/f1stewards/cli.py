@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import hashlib
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
 
 import duckdb
+import httpx
 import pandas as pd
 import typer
 
@@ -17,18 +19,25 @@ from f1stewards.acquisition.fia import (
     download_documents,
     write_manifest,
 )
+from f1stewards.catalog import build_study_event_catalog, write_study_event_catalog
 from f1stewards.config import (
     PROJECT_ROOT,
     load_analysis_thresholds,
     load_document_classes,
+    load_full_collection_settings,
     load_international_sporting_code_issues,
     load_pilot_events,
     load_regulatory_sources,
     load_sporting_regulation_issues,
+    load_study_events,
 )
 from f1stewards.enrichment.fastf1 import fetch_pilot_race, replace_event_enrichment
 from f1stewards.explorer import build_explorer_payload, write_explorer
 from f1stewards.impact import remove_post_race_time_penalty
+from f1stewards.inventory import (
+    inventory_reconciliation_is_clean,
+    reconcile_document_inventory,
+)
 from f1stewards.manual import (
     CodedAdjudication,
     HarmAssessment,
@@ -58,6 +67,7 @@ from f1stewards.warehouse import (
     upsert_pilot_events,
     upsert_regulatory_sources,
     upsert_source_documents,
+    upsert_study_events,
 )
 
 app = typer.Typer(no_args_is_help=True, help="Auditable F1 stewarding analytics pipeline.")
@@ -134,6 +144,23 @@ def _sql_statements(sql_text: str) -> list[str]:
     return [statement.strip() for statement in sql_text.split(";") if statement.strip()]
 
 
+def _write_discovery_failures(
+    failures: list[dict[str, object]], attempted_event_ids: set[str], path: Path
+) -> None:
+    """Merge event-level failures while removing successful reruns from the active queue."""
+
+    columns = ["event_id", "season", "archive_url", "failed_at_utc", "error"]
+    existing = pd.read_csv(path) if path.exists() else pd.DataFrame(columns=columns)
+    if not existing.empty:
+        existing = existing[~existing["event_id"].isin(attempted_event_ids)]
+    incoming = pd.DataFrame(failures, columns=columns)
+    merged = pd.concat([existing, incoming], ignore_index=True).sort_values(
+        ["season", "event_id"]
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    merged.to_csv(path, index=False, lineterminator="\n")
+
+
 @app.command("init-db")
 def init_db(
     db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
@@ -160,6 +187,80 @@ def init_db(
         f"{len(regulatory_sources)} event-linked regulatory sources; loaded "
         f"{issue_count} Sporting Regulation issues, {code_issue_count} International "
         f"Sporting Code issues, and {claim_count} report claims"
+    )
+
+
+@app.command("build-study-catalog")
+def build_study_catalog(
+    output_path: Annotated[Path, typer.Option(help="Frozen study-event CSV.")] = (
+        PROJECT_ROOT / "config" / "study_events.csv"
+    ),
+) -> None:
+    """Freeze completed 2018-2025 FastF1 schedules into official FIA archive targets."""
+
+    import fastf1
+
+    settings = load_full_collection_settings()
+    schedules = {
+        season: fastf1.get_event_schedule(season, include_testing=False)
+        for season in settings["completed_seasons"]
+    }
+    events = build_study_event_catalog(schedules, settings)
+    digest = write_study_event_catalog(events, output_path)
+    counts = pd.Series([event.season for event in events]).value_counts().sort_index()
+    typer.echo(
+        f"Wrote {len(events)} completed events to {output_path}; sha256={digest}\n"
+        + counts.rename("events").to_string()
+    )
+
+
+@app.command("study-catalog")
+def study_catalog(
+    catalog_path: Annotated[Path, typer.Option(help="Frozen study-event CSV.")] = (
+        PROJECT_ROOT / "config" / "study_events.csv"
+    ),
+) -> None:
+    """Audit frozen full-study event counts, archive systems, and Sprint coverage."""
+
+    events = load_study_events(catalog_path)
+    frame = pd.DataFrame([event.model_dump(mode="json") for event in events])
+    summary = (
+        frame.groupby(["season", "archive_system"], dropna=False)
+        .agg(events=("pilot_id", "size"), sprint_events=("has_sprint", "sum"))
+        .reset_index()
+    )
+    typer.echo(summary.to_string(index=False))
+    typer.echo(
+        f"\nTotal: {len(events)} events; pilots: {sum(event.is_pilot for event in events)}"
+    )
+
+
+@app.command("init-study-db")
+def init_study_db(
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+    catalog_path: Annotated[Path, typer.Option(help="Frozen study-event CSV.")] = (
+        PROJECT_ROOT / "config" / "study_events.csv"
+    ),
+) -> None:
+    """Initialize DuckDB and register the complete 2018-2025 event population."""
+
+    initialize_database(db_path)
+    events = load_study_events(catalog_path)
+    regulatory_sources = load_regulatory_sources()
+    with connect(db_path) as connection:
+        upsert_study_events(connection, events)
+        upsert_regulatory_sources(connection, regulatory_sources)
+        issue_count = replace_sporting_regulation_issues(
+            connection, load_sporting_regulation_issues()
+        )
+        code_issue_count = replace_international_sporting_code_issues(
+            connection, load_international_sporting_code_issues()
+        )
+        claim_count = replace_claim_ledger(connection)
+    typer.echo(
+        f"Initialized {db_path} with {len(events)} study events; loaded {issue_count} "
+        f"Sporting Regulation issues, {code_issue_count} Code issues, and "
+        f"{claim_count} report claims"
     )
 
 
@@ -325,10 +426,12 @@ def pilot_discover(
                 documents = [
                     downloaded_by_id.get(document.document_id, document) for document in documents
                 ]
-                failures = sum(document.retrieval_error is not None for document in downloaded)
+                download_failure_count = sum(
+                    document.retrieval_error is not None for document in downloaded
+                )
                 typer.echo(
-                    f"{event.pilot_id}: downloaded {len(downloaded) - failures}; "
-                    f"failures {failures}"
+                    f"{event.pilot_id}: downloaded {len(downloaded) - download_failure_count}; "
+                    f"failures {download_failure_count}"
                 )
             all_documents.extend(documents)
 
@@ -338,6 +441,179 @@ def pilot_discover(
         upsert_pilot_events(connection, events)
         upsert_source_documents(connection, all_documents)
     typer.echo(f"Wrote {len(all_documents)} lineage rows to {manifest_path} and {db_path}")
+
+
+@app.command("study-discover")
+def study_discover(
+    event_id: Annotated[str | None, typer.Option(help="One study event id.")] = None,
+    season: Annotated[int | None, typer.Option(help="One completed season.")] = None,
+    download: Annotated[bool, typer.Option(help="Retrieve selected evidence PDFs.")] = False,
+    delay_seconds: Annotated[
+        float, typer.Option(help="Delay between document downloads.")
+    ] = 1.0,
+    event_delay_seconds: Annotated[
+        float, typer.Option(help="Delay between FIA event-page requests.")
+    ] = 0.5,
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+    catalog_path: Annotated[Path, typer.Option(help="Frozen study-event CSV.")] = (
+        PROJECT_ROOT / "config" / "study_events.csv"
+    ),
+    manifest_path: Annotated[Path, typer.Option(help="Full-corpus Parquet manifest.")] = (
+        PROJECT_ROOT / "data" / "interim" / "study_source_manifest.parquet"
+    ),
+    failure_path: Annotated[Path, typer.Option(help="Active event-discovery failures.")] = (
+        PROJECT_ROOT / "data" / "interim" / "study_discovery_failures.csv"
+    ),
+) -> None:
+    """Discover official evidence for frozen 2018-2025 study events."""
+
+    events = load_study_events(catalog_path)
+    if event_id:
+        events = [event for event in events if event.pilot_id == event_id]
+        if not events:
+            raise typer.BadParameter(f"Unknown study event id: {event_id}")
+    if season is not None:
+        if season not in range(2018, 2026):
+            raise typer.BadParameter("Season must be between 2018 and 2025")
+        events = [event for event in events if event.season == season]
+    classes = load_document_classes()
+    all_documents = []
+    failures: list[dict[str, object]] = []
+    attempted_event_ids = {event.pilot_id for event in events}
+    with build_client() as client:
+        for index, event in enumerate(events):
+            if index and event_delay_seconds > 0:
+                time.sleep(event_delay_seconds)
+            try:
+                documents = discover_event(client, event, classes)
+            except (httpx.HTTPError, ValueError) as exc:
+                failures.append(
+                    {
+                        "event_id": event.pilot_id,
+                        "season": event.season,
+                        "archive_url": str(event.archive_url),
+                        "failed_at_utc": datetime.now(UTC).isoformat(),
+                        "error": str(exc),
+                    }
+                )
+                typer.echo(f"{event.pilot_id}: discovery failed: {exc}", err=True)
+                continue
+            documents = _reuse_verified_downloads(documents, db_path)
+            typer.echo(f"{event.pilot_id}: discovered {len(documents)} documents")
+            if download:
+                selected = [
+                    document
+                    for document in documents
+                    if document.document_class in PILOT_EVIDENCE_CLASSES
+                    and document.content_sha256 is None
+                    and not document.is_recalled
+                ]
+                downloaded = download_documents(
+                    client,
+                    selected,
+                    PROJECT_ROOT / "data" / "raw",
+                    delay_seconds=delay_seconds,
+                )
+                downloaded_by_id = {document.document_id: document for document in downloaded}
+                documents = [
+                    downloaded_by_id.get(document.document_id, document) for document in documents
+                ]
+                failures = sum(document.retrieval_error is not None for document in downloaded)
+                typer.echo(
+                    f"{event.pilot_id}: downloaded {len(downloaded) - failures}; "
+                    f"failures {failures}"
+                )
+            all_documents.extend(documents)
+
+    if all_documents:
+        write_manifest(all_documents, manifest_path)
+    _write_discovery_failures(failures, attempted_event_ids, failure_path)
+    initialize_database(db_path)
+    with connect(db_path) as connection:
+        upsert_study_events(connection, events)
+        if all_documents:
+            upsert_source_documents(connection, all_documents)
+    typer.echo(
+        f"Wrote {len(all_documents)} lineage rows across {len(events)} events to "
+        f"{manifest_path} and {db_path}; active discovery failures: {len(failures)}"
+    )
+    if failures:
+        raise typer.Exit(code=1)
+
+
+@app.command("study-inventory")
+def study_inventory(
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+    manifest_path: Annotated[Path, typer.Option(help="Full-corpus Parquet manifest.")] = (
+        PROJECT_ROOT / "data" / "interim" / "study_source_manifest.parquet"
+    ),
+    failure_path: Annotated[Path, typer.Option(help="Active event-discovery failures.")] = (
+        PROJECT_ROOT / "data" / "interim" / "study_discovery_failures.csv"
+    ),
+    strict: Annotated[
+        bool, typer.Option(help="Exit nonzero when catalog, Parquet, and DuckDB disagree.")
+    ] = True,
+) -> None:
+    """Audit full-study event and evidence coverage by season and archive system."""
+
+    if not manifest_path.exists():
+        raise typer.BadParameter(f"Manifest does not exist: {manifest_path}")
+    manifest = pd.read_parquet(manifest_path)
+    active_failure_count = 0
+    if failure_path.exists():
+        active_failure_count = len(pd.read_csv(failure_path))
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        event_counts = connection.sql(
+            """
+            SELECT
+                season,
+                count(*) AS catalog_events,
+                count(*) FILTER (WHERE is_pilot) AS pilot_events,
+                count(*) FILTER (WHERE has_sprint) AS sprint_events,
+                count(DISTINCT archive_system) AS archive_systems
+            FROM metadata.events
+            GROUP BY season
+            ORDER BY season
+            """
+        ).df()
+        evidence_counts = connection.sql(
+            """
+            SELECT
+                e.season,
+                count(DISTINCT d.event_id) AS discovered_events,
+                count(d.document_id) AS source_records,
+                count(*) FILTER (WHERE d.document_class = 'steward_decision') AS decisions,
+                count(d.content_sha256) AS retrieved_files,
+                count(*) FILTER (
+                    WHERE d.retrieval_error IS NOT NULL AND NOT d.is_recalled
+                ) AS active_failures,
+                count(*) FILTER (WHERE d.is_recalled) AS recalled_records
+            FROM metadata.events AS e
+            LEFT JOIN raw.source_documents AS d USING (event_id)
+            GROUP BY e.season
+            ORDER BY e.season
+            """
+        ).df()
+        warehouse_documents = connection.sql(
+            "SELECT document_id, event_id FROM raw.source_documents"
+        ).df()
+        catalog_event_ids = {
+            row[0] for row in connection.sql("SELECT event_id FROM metadata.events").fetchall()
+        }
+    reconciliation = reconcile_document_inventory(
+        manifest,
+        warehouse_documents,
+        catalog_event_ids,
+        active_discovery_failures=active_failure_count,
+    )
+    reconciliation_frame = pd.DataFrame(
+        {"metric": list(reconciliation), "value": list(reconciliation.values())}
+    )
+    typer.echo("Event catalog:\n" + event_counts.to_string(index=False))
+    typer.echo("\nEvidence coverage:\n" + evidence_counts.to_string(index=False))
+    typer.echo("\nArtifact reconciliation:\n" + reconciliation_frame.to_string(index=False))
+    if strict and not inventory_reconciliation_is_clean(reconciliation):
+        raise typer.Exit(code=1)
 
 
 @app.command("pilot-inventory")

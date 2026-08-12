@@ -4,6 +4,8 @@ classes:
       - "decision - car"
       - "infringement - car"
       - "offence - car"
+      - "stewards decision"
+      - "steward decision"
     exclude:
       - "summons"
   summons:
@@ -26,6 +28,8 @@ classes:
       - "race directors' event notes"
       - "race director event notes"
       - "race director's competition notes"
+      - "race director's notes"
+      - "race directors note"
   circuit_map:
     include:
       - "circuit map"

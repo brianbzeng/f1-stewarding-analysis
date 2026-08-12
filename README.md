@@ -53,7 +53,7 @@ pilot model, while DuckDB remains the reproducible source of truth.
 ## Repository layout
 
 ```text
-config/       machine-readable source and pilot configuration
+config/       machine-readable source, full-population, and pilot configuration
 data/         raw, interim, processed, and external data (large files ignored)
 docs/         protocol, source register, codebook, lineage, and recruiter mapping
 explorer/     generated, evidence-linked static review application
@@ -77,7 +77,8 @@ python -m pip install -e ".[analysis,dev]"
 pytest
 ```
 
-The first milestone is a three-event feasibility pilot. Do not run the full-season collector until the pilot's extraction, completeness, and manual-review gates pass.
+The three-event feasibility pilot and its expanded manual-review gate are complete. The frozen
+full-study catalog now contains all 173 completed championship events from 2018 through 2025.
 
 ## Pilot commands
 
@@ -111,6 +112,22 @@ Downloads are low-rate and resumable. Linked source files are checksummed; rerun
 local file. The archive parser also records recalled documents that FIA advertises without a usable
 download link, preventing silent loss of decision versions.
 
+## Full-study inventory commands
+
+```powershell
+f1stewards build-study-catalog
+f1stewards study-catalog
+f1stewards init-study-db
+f1stewards study-discover
+f1stewards study-inventory
+```
+
+`build-study-catalog` freezes FastF1 schedules into stable event IDs and FIA archive targets;
+`study-discover` inventories official documents without downloading PDFs unless `--download` is
+supplied. The strict `study-inventory` control exits nonzero if the event catalog, Parquet manifest,
+DuckDB lineage, or active failure queue disagree. Historical FIA URL exceptions are declared in
+configuration and covered by tests. See [the full-corpus inventory](docs/full_corpus_inventory.md).
+
 ## Evidence and interpretation policy
 
 - Every analytical record must link to an official source document.
@@ -122,6 +139,14 @@ download link, preventing silent loss of decision versions.
 - Exact classification arithmetic must be separated from strategy-dependent counterfactual estimates.
 
 ## Project status
+
+The full 2018-2025 event inventory is complete. All 173 cataloged events have official FIA evidence:
+9,462 source-document records, including 1,680 records classified as steward decisions and 45
+unavailable recalled notices. The frozen Parquet manifest and DuckDB lineage agree exactly, every
+event has at least 10 records, and the active event-discovery failure queue is empty. The collector
+supports both the FIA's 2018 event-timing pages and its later decision-document archive, with named
+URL overrides for migration-era gaps and historical event labels. The next milestone is bounded
+evidence retrieval, parsing, and corpus-level validation before statistical analysis begins.
 
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active

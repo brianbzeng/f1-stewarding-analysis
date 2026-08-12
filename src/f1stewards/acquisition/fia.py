@@ -26,6 +26,7 @@ RECALLED_RE = re.compile(
     flags=re.IGNORECASE,
 )
 DEFAULT_USER_AGENT = "f1-stewards-research/0.1 (portfolio research; low-rate requests)"
+LEGACY_DATE_RE = re.compile(r"(?:^|\s)(\d{2})\.(\d{2})(?:\s|$)")
 
 
 def sanitize_transport_url(url: str) -> str:
@@ -156,6 +157,81 @@ def extract_document_links(
     return records
 
 
+def extract_legacy_timing_url(html: str, event_url: str) -> str:
+    """Resolve a 2018 event landing page to its Event & Timing archive."""
+
+    soup = BeautifulSoup(html, "html.parser")
+    for anchor in soup.find_all("a", href=True):
+        label = " ".join(anchor.get_text(" ", strip=True).casefold().split())
+        if "event&timing information" in label or "event & timing information" in label:
+            return urljoin(event_url, str(anchor["href"]))
+    raise ValueError(f"No Event & Timing Information link found at {event_url}")
+
+
+def _legacy_title(title: str, href: str) -> str:
+    normalized_href = href.casefold()
+    if "final_race_classification" in normalized_href:
+        return "Final Race Classification"
+    if "provisional_race_classification" in normalized_href:
+        return "Provisional Race Classification"
+    return title
+
+
+def extract_legacy_document_links(
+    html: str,
+    event: PilotEvent,
+    class_config: dict[str, dict[str, list[str]]],
+    *,
+    archive_url: str,
+    discovered_at: datetime | None = None,
+) -> list[SourceDocument]:
+    """Extract 2018 evidence cards whose markup predates the document archive."""
+
+    soup = BeautifulSoup(html, "html.parser")
+    discovered_at = discovered_at or datetime.now(UTC)
+    records: list[SourceDocument] = []
+    seen_urls: set[str] = set()
+    for anchor in soup.find_all("a", href=True):
+        title_element = anchor.find(class_="title")
+        if title_element is None:
+            continue
+        title = " ".join(title_element.get_text(" ", strip=True).split())
+        href = str(anchor.get("href", "")).strip()
+        if not title or not href:
+            continue
+        document_url = urljoin(archive_url, href)
+        if urlparse(document_url).netloc.casefold() not in {"fia.com", "www.fia.com"}:
+            continue
+        if document_url in seen_urls:
+            continue
+        seen_urls.add(document_url)
+        title = _legacy_title(title, href)
+        parent_text = " ".join((anchor.find_parent("li") or anchor).stripped_strings)
+        date_match = LEGACY_DATE_RE.search(parent_text)
+        published_raw = (
+            f"{date_match.group(1)}.{date_match.group(2)}.{str(event.season)[2:]} "
+            "(legacy page; time unavailable)"
+            if date_match
+            else None
+        )
+        records.append(
+            SourceDocument(
+                document_id=_document_id(event, document_url),
+                pilot_id=event.pilot_id,
+                season=event.season,
+                event_name=event.event_name,
+                title=title,
+                document_url=document_url,
+                archive_url=archive_url,
+                document_class=classify_document(title, class_config),
+                published_at_raw=published_raw,
+                published_at=None,
+                discovered_at=discovered_at,
+            )
+        )
+    return records
+
+
 def build_client(user_agent: str = DEFAULT_USER_AGENT) -> httpx.Client:
     return httpx.Client(
         headers={"User-Agent": user_agent, "Accept": "text/html,application/pdf;q=0.9,*/*;q=0.8"},
@@ -182,6 +258,20 @@ def discover_event(
     class_config: dict[str, dict[str, list[str]]],
 ) -> list[SourceDocument]:
     response = fetch_url(client, str(event.archive_url))
+    if event.archive_system == "legacy_event_timing":
+        response_url = str(response.url)
+        if "/eventtiming-information" in urlparse(response_url).path.casefold():
+            timing_url = response_url
+            timing_response = response
+        else:
+            timing_url = extract_legacy_timing_url(response.text, str(event.archive_url))
+            timing_response = fetch_url(client, timing_url)
+        return extract_legacy_document_links(
+            timing_response.text,
+            event,
+            class_config,
+            archive_url=timing_url,
+        )
     return extract_document_links(response.text, event, class_config)
 
 

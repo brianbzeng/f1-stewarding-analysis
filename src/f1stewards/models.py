@@ -22,20 +22,36 @@ class DocumentClass(StrEnum):
 
 
 class PilotEvent(BaseModel):
-    """One event selected for the feasibility pilot."""
+    """One event in the study catalog; pilot rows retain their original identifiers."""
 
     model_config = ConfigDict(extra="forbid")
 
-    pilot_id: str = Field(pattern=r"^\d{4}-[a-z]{3}$")
+    pilot_id: str = Field(pattern=r"^\d{4}-[a-z0-9]{3}$")
     season: int = Field(ge=2018, le=2025)
+    round_number: int | None = Field(default=None, ge=1, le=30)
     race_date: date
     event_timezone: str
     event_name: str
+    country: str | None = None
+    location: str | None = None
     event_slug: str
-    season_slug: str
+    season_slug: str | None = None
     archive_url: HttpUrl
+    archive_system: Literal["document_archive", "legacy_event_timing"] = "document_archive"
+    event_format: str = "conventional"
+    has_sprint: bool = False
     regime: str
-    selection_reason: str
+    is_pilot: bool = True
+    catalog_source_url: HttpUrl | None = None
+    selection_reason: str = ""
+
+    @model_validator(mode="after")
+    def validate_archive_system(self) -> PilotEvent:
+        if self.archive_system == "document_archive" and not self.season_slug:
+            raise ValueError("document-archive events require a season_slug")
+        if self.archive_system == "legacy_event_timing" and self.season != 2018:
+            raise ValueError("legacy event-timing archives are only configured for 2018")
+        return self
 
 
 class RegulatorySource(BaseModel):
