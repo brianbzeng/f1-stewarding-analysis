@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from enum import StrEnum
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator, model_validator
 
 
 class DocumentClass(StrEnum):
@@ -27,12 +27,53 @@ class PilotEvent(BaseModel):
 
     pilot_id: str = Field(pattern=r"^\d{4}-[a-z]{3}$")
     season: int = Field(ge=2018, le=2025)
+    race_date: date
+    event_timezone: str
     event_name: str
     event_slug: str
     season_slug: str
     archive_url: HttpUrl
     regime: str
     selection_reason: str
+
+
+class RegulatorySource(BaseModel):
+    """One event-linked governing instrument or published guideline."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    source_id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]+$")
+    document_type: str
+    title: str
+    issuing_body: str = "FIA"
+    publication_date: date | None = None
+    effective_from: date | None = None
+    effective_through: date | None = None
+    source_url: HttpUrl
+    resolved_url: HttpUrl | None = None
+    source_status: str
+    applicability_status: str
+    event_role: str
+    event_ids: list[str] = Field(min_length=1)
+    is_guideline: bool = False
+    notes: str
+
+    @field_validator("event_ids")
+    @classmethod
+    def event_ids_must_be_unique(cls, value: list[str]) -> list[str]:
+        if len(value) != len(set(value)):
+            raise ValueError("event_ids must be unique")
+        return value
+
+    @model_validator(mode="after")
+    def validate_effective_window(self) -> RegulatorySource:
+        if (
+            self.effective_from is not None
+            and self.effective_through is not None
+            and self.effective_through < self.effective_from
+        ):
+            raise ValueError("effective_through cannot precede effective_from")
+        return self
 
 
 class SourceDocument(BaseModel):

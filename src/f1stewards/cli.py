@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Annotated
 
 import duckdb
+import pandas as pd
 import typer
 
 from f1stewards.acquisition.fia import (
@@ -16,7 +17,15 @@ from f1stewards.acquisition.fia import (
     download_documents,
     write_manifest,
 )
-from f1stewards.config import PROJECT_ROOT, load_document_classes, load_pilot_events
+from f1stewards.config import (
+    PROJECT_ROOT,
+    load_document_classes,
+    load_pilot_events,
+    load_regulatory_sources,
+)
+from f1stewards.enrichment.fastf1 import fetch_pilot_race, replace_event_enrichment
+from f1stewards.impact import remove_post_race_time_penalty
+from f1stewards.manual import CodedAdjudication, ImpactAssessment
 from f1stewards.models import DocumentClass
 from f1stewards.parsing.decision import parse_decision_pdf
 from f1stewards.warehouse import (
@@ -25,6 +34,7 @@ from f1stewards.warehouse import (
     initialize_database,
     upsert_document_text,
     upsert_pilot_events,
+    upsert_regulatory_sources,
     upsert_source_documents,
 )
 
@@ -75,14 +85,9 @@ def _reuse_verified_downloads(documents, db_path: Path):
             hydrated.append(document.model_copy(update=existing[document.document_id]))
             continue
         local_matches = list(
-            (
-                PROJECT_ROOT
-                / "data"
-                / "raw"
-                / "fia"
-                / str(document.season)
-                / document.pilot_id
-            ).glob(f"{document.document_id}-*.pdf")
+            (PROJECT_ROOT / "data" / "raw" / "fia" / str(document.season) / document.pilot_id).glob(
+                f"{document.document_id}-*.pdf"
+            )
         )
         if len(local_matches) == 1:
             local_path = local_matches[0]
@@ -90,9 +95,7 @@ def _reuse_verified_downloads(documents, db_path: Path):
             hydrated.append(
                 document.model_copy(
                     update={
-                        "retrieved_at": datetime.fromtimestamp(
-                            local_path.stat().st_mtime, tz=UTC
-                        ),
+                        "retrieved_at": datetime.fromtimestamp(local_path.stat().st_mtime, tz=UTC),
                         "content_sha256": hashlib.sha256(content).hexdigest(),
                         "local_path": local_path,
                         "http_status": 200,
@@ -117,9 +120,39 @@ def init_db(
 
     initialize_database(db_path)
     events = load_pilot_events()
+    regulatory_sources = load_regulatory_sources()
     with connect(db_path) as connection:
         upsert_pilot_events(connection, events)
-    typer.echo(f"Initialized {db_path} with {len(events)} pilot events")
+        upsert_regulatory_sources(connection, regulatory_sources)
+    typer.echo(
+        f"Initialized {db_path} with {len(events)} pilot events and "
+        f"{len(regulatory_sources)} regulatory sources"
+    )
+
+
+@app.command("regulatory-audit")
+def regulatory_audit(
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Show the event-date governing and guidance source matrix."""
+
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        matrix = connection.sql(
+            """
+            SELECT
+                l.event_id,
+                l.event_role,
+                s.document_type,
+                s.publication_date,
+                s.applicability_status,
+                s.source_status,
+                s.title
+            FROM metadata.event_regulatory_sources AS l
+            JOIN metadata.regulatory_sources AS s USING (source_id)
+            ORDER BY l.event_id, l.event_role, s.document_type
+            """
+        ).df()
+    typer.echo(matrix.to_string(index=False))
 
 
 @app.command("pilot-discover")
@@ -155,15 +188,10 @@ def pilot_discover(
                     and document.content_sha256 is None
                     and not document.is_recalled
                 ]
-                downloaded = download_documents(
-                    client, selected, PROJECT_ROOT / "data" / "raw"
-                )
-                downloaded_by_id = {
-                    document.document_id: document for document in downloaded
-                }
+                downloaded = download_documents(client, selected, PROJECT_ROOT / "data" / "raw")
+                downloaded_by_id = {document.document_id: document for document in downloaded}
                 documents = [
-                    downloaded_by_id.get(document.document_id, document)
-                    for document in documents
+                    downloaded_by_id.get(document.document_id, document) for document in documents
                 ]
                 failures = sum(document.retrieval_error is not None for document in downloaded)
                 typer.echo(
@@ -226,7 +254,7 @@ def pilot_inventory(
         if show_decisions:
             decisions = connection.sql(
                 """
-                SELECT event_id, title, document_url
+                SELECT document_id, event_id, title, document_url
                 FROM raw.source_documents
                 WHERE document_class = 'steward_decision'
                 ORDER BY event_id, published_at, title
@@ -413,6 +441,33 @@ def build_coding_queue(
             ORDER BY e.season, d.published_at, d.title
             """
         ).df()
+        lap_starts = connection.sql(
+            """
+            SELECT event_id, driver_number, lap_number, lap_start_timestamp
+            FROM raw.fastf1_laps
+            WHERE lap_start_timestamp IS NOT NULL
+            ORDER BY event_id, driver_number, lap_start_timestamp
+            """
+        ).df()
+    events = {event.pilot_id: event for event in load_pilot_events()}
+    for index, row in queue.iterrows():
+        existing_lap = row["lap_number_suggestion"]
+        if (pd.notna(existing_lap) and str(existing_lap).strip()) or not row[
+            "incident_time_raw"
+        ]:
+            continue
+        event = events[row["event_id"]]
+        incident_at = pd.Timestamp(
+            f"{event.race_date.isoformat()} {row['incident_time_raw']}",
+            tz=event.event_timezone,
+        ).tz_convert("UTC")
+        candidates = lap_starts[
+            (lap_starts["event_id"] == row["event_id"])
+            & (lap_starts["driver_number"] == row["driver_number"])
+            & (lap_starts["lap_start_timestamp"] <= incident_at)
+        ]
+        if not candidates.empty:
+            queue.at[index, "lap_number_suggestion"] = candidates.iloc[-1]["lap_number"]
     output_path.parent.mkdir(parents=True, exist_ok=True)
     queue.to_csv(output_path, index=False)
     typer.echo(f"Wrote {len(queue)} candidate document versions to {output_path}")
@@ -502,6 +557,247 @@ def quality_check(
                 typer.echo(f"check {number}: FAIL ({len(result)} rows)\n{result}")
     if failures:
         raise typer.Exit(code=1)
+
+
+@app.command("pilot-fastf1")
+def pilot_fastf1(
+    event_id: Annotated[
+        str | None, typer.Option(help="One pilot id; default loads all missing events.")
+    ] = None,
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Load pilot Race results, laps, and race-control messages from FastF1."""
+
+    initialize_database(db_path)
+    events = load_pilot_events()
+    if event_id:
+        events = [event for event in events if event.pilot_id == event_id]
+        if not events:
+            raise typer.BadParameter(f"Unknown pilot id: {event_id}")
+    with connect(db_path) as connection:
+        loaded_ids = {
+            row[0]
+            for row in connection.sql("SELECT DISTINCT event_id FROM raw.fastf1_results").fetchall()
+        }
+    if not event_id:
+        events = [event for event in events if event.pilot_id not in loaded_ids]
+
+    for event in events:
+        typer.echo(f"Loading FastF1 Race data for {event.pilot_id}...")
+        results, laps, messages = fetch_pilot_race(
+            event,
+            PROJECT_ROOT / "data" / "cache" / "fastf1",
+            PROJECT_ROOT / "data" / "external" / "fastf1",
+        )
+        with connect(db_path) as connection:
+            replace_event_enrichment(connection, event.pilot_id, results, laps, messages)
+        typer.echo(
+            f"{event.pilot_id}: {len(results)} results, {len(laps)} laps, "
+            f"{len(messages)} race-control messages"
+        )
+
+
+@app.command("pilot-messages")
+def pilot_messages(
+    event_id: Annotated[str, typer.Option(help="Pilot event id.")],
+    pattern: Annotated[
+        str, typer.Option(help="Case-insensitive regular expression for message text.")
+    ] = "incident|collision|forcing|noted|investigation",
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Inspect bounded race-control evidence for pilot incident coding."""
+
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        messages = connection.execute(
+            """
+            SELECT
+                message_timestamp,
+                lap_number,
+                category,
+                racing_number,
+                message
+            FROM raw.fastf1_race_control_messages
+            WHERE event_id = ?
+              AND regexp_matches(lower(coalesce(message, '')), lower(?))
+            ORDER BY message_timestamp, message_time_seconds
+            """,
+            [event_id, pattern],
+        ).df()
+    typer.echo(messages.to_string(index=False))
+
+
+@app.command("pilot-results")
+def pilot_results(
+    event_id: Annotated[str, typer.Option(help="Pilot event id.")],
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Inspect normalized pilot Race classifications."""
+
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        results = connection.execute(
+            """
+            SELECT
+                finish_position,
+                driver_number,
+                abbreviation,
+                driver_name,
+                grid_position,
+                laps_completed,
+                result_time_seconds,
+                classification_gap_seconds,
+                status,
+                points
+            FROM raw.fastf1_results
+            WHERE event_id = ?
+            ORDER BY finish_position
+            """,
+            [event_id],
+        ).df()
+    typer.echo(results.to_string(index=False))
+
+
+@app.command("pilot-lap-window")
+def pilot_lap_window(
+    event_id: Annotated[str, typer.Option(help="Pilot event id.")],
+    driver_number: Annotated[int, typer.Option(help="Driver racing number.")],
+    local_time: Annotated[str, typer.Option(help="Official incident time as HH:MM.")],
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Show the five lap starts nearest an official local incident time."""
+
+    events = {event.pilot_id: event for event in load_pilot_events()}
+    if event_id not in events:
+        raise typer.BadParameter(f"Unknown pilot id: {event_id}")
+    event = events[event_id]
+    incident_at = pd.Timestamp(
+        f"{event.race_date.isoformat()} {local_time}", tz=event.event_timezone
+    ).tz_convert("UTC")
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        laps = connection.execute(
+            """
+            SELECT
+                lap_number,
+                lap_start_timestamp,
+                date_diff('second', lap_start_timestamp, ?) AS seconds_after_lap_start
+            FROM raw.fastf1_laps
+            WHERE event_id = ?
+              AND driver_number = ?
+              AND lap_start_timestamp IS NOT NULL
+            ORDER BY abs(date_diff('second', lap_start_timestamp, ?))
+            LIMIT 5
+            """,
+            [incident_at, event_id, driver_number, incident_at],
+        ).df()
+    typer.echo(f"Incident UTC: {incident_at}\n{laps.to_string(index=False)}")
+
+
+@app.command("validate-coding")
+def validate_coding(
+    coding_path: Annotated[Path, typer.Option(help="Reviewable adjudication CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_coded_adjudications.csv"
+    ),
+) -> None:
+    """Validate reviewable records and cross-record uniqueness."""
+
+    frame = pd.read_csv(coding_path)
+    records = []
+    for row_number, row in frame.iterrows():
+        payload = {key: None if pd.isna(value) else value for key, value in row.to_dict().items()}
+        try:
+            records.append(CodedAdjudication.model_validate(payload))
+        except ValueError as exc:
+            typer.echo(f"row {row_number + 2}: {exc}")
+            raise typer.Exit(code=1) from exc
+    ids = [record.adjudication_id for record in records]
+    if len(ids) != len(set(ids)):
+        typer.echo("duplicate adjudication_id detected")
+        raise typer.Exit(code=1)
+    incidents = len({record.incident_id for record in records})
+    pending = sum(record.review_status == "single_coded_pending_human" for record in records)
+    typer.echo(
+        f"Validated {len(records)} adjudications across {incidents} incidents; "
+        f"pending independent human review: {pending}"
+    )
+
+
+@app.command("validate-impact")
+def validate_impact(
+    impact_path: Annotated[Path, typer.Option(help="Competitive-impact assessment CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_impact_assessments.csv"
+    ),
+    coding_path: Annotated[Path, typer.Option(help="Coded adjudication CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_coded_adjudications.csv"
+    ),
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Validate impact tiers and reproduce every claimed mechanical position change."""
+
+    frame = pd.read_csv(impact_path)
+    records = []
+    for row_number, row in frame.iterrows():
+        payload = {key: None if pd.isna(value) else value for key, value in row.to_dict().items()}
+        try:
+            records.append(ImpactAssessment.model_validate(payload))
+        except ValueError as exc:
+            typer.echo(f"row {row_number + 2}: {exc}")
+            raise typer.Exit(code=1) from exc
+
+    coded_ids = set(pd.read_csv(coding_path)["adjudication_id"])
+    missing_adjudications = sorted(
+        record.adjudication_id for record in records if record.adjudication_id not in coded_ids
+    )
+    if missing_adjudications:
+        typer.echo(f"unknown adjudication ids: {', '.join(missing_adjudications)}")
+        raise typer.Exit(code=1)
+
+    mechanical = [record for record in records if record.impact_level == "mechanical"]
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        known_documents = {
+            row[0]
+            for row in connection.sql(
+                "SELECT document_id FROM raw.source_documents"
+            ).fetchall()
+        }
+        for record in records:
+            for document_id in (
+                record.source_document_id,
+                record.classification_source_document_id,
+            ):
+                if document_id not in known_documents:
+                    typer.echo(f"unknown source document id: {document_id}")
+                    raise typer.Exit(code=1)
+        for record in mechanical:
+            event_results = connection.execute(
+                """
+                SELECT
+                    driver_number,
+                    finish_position,
+                    laps_completed,
+                    classification_gap_seconds
+                FROM raw.fastf1_results
+                WHERE event_id = ?
+                """,
+                [record.event_id],
+            ).df()
+            calculated = remove_post_race_time_penalty(
+                event_results,
+                record.driver_number,
+                record.penalty_seconds,
+            )
+            if (
+                calculated.official_finish_position != record.official_finish_position
+                or calculated.counterfactual_finish_position
+                != record.counterfactual_finish_position
+                or calculated.positions_gained_without_penalty
+                != record.positions_gained_without_penalty
+            ):
+                typer.echo(f"mechanical impact mismatch: {record.impact_assessment_id}")
+                raise typer.Exit(code=1)
+    pending = sum(record.review_status == "single_coded_pending_human" for record in records)
+    typer.echo(
+        f"Validated {len(records)} impact assessments; reproduced {len(mechanical)} mechanical "
+        f"calculations; pending independent human review: {pending}"
+    )
 
 
 if __name__ == "__main__":

@@ -4,12 +4,12 @@ The project is an F1 domain analysis, but its delivery is tailored to the HHS OI
 
 ## Evaluated competency evidence
 
-| Competency | Planned evidence |
+| Competency | Repository evidence |
 |---|---|
-| Customer Service | User stories, tested evidence-explorer filters, plain-language guide, and documented usability feedback |
-| Data Analysis | EDA, calibrated models, adjusted associations, sensitivity analysis, and competitive-impact estimates |
-| Data Extraction and Transformation | Versioned FIA PDF/web ingestion, FastF1 enrichment, normalized relational model, and SQL transformations |
-| Technology Application | Python, Jupyter, DuckDB, Parquet, Git, automated tests, CI, and optional Snowflake deployment |
+| Customer Service | Planned user stories, evidence-explorer acceptance criteria, plain-language guide, and documented usability feedback |
+| Data Analysis | Implemented pilot EDA and tiered impact arithmetic; planned calibrated models, adjusted associations, and sensitivity analysis |
+| Data Extraction and Transformation | Implemented versioned FIA PDF/web ingestion, FastF1 enrichment, normalized DuckDB model, and SQL quality checks |
+| Technology Application | Implemented Python package, executed Jupyter notebooks, DuckDB, Parquet, Git, tests, and CI; optional Snowflake deployment follows model freeze |
 
 ## Duty alignment
 
@@ -19,6 +19,19 @@ The project is an F1 domain analysis, but its delivery is tailored to the HHS OI
 - The report has an executive brief, analytical narrative, and technical appendix for different audiences.
 - Source provenance, data integrity, and rule versioning make every finding auditable.
 - Requirements and acceptance criteria link user needs to application behavior.
+
+## GS-12 portfolio signals already visible
+
+- The command-line workflow is restartable and distinguishes acquisition, parsing, enrichment,
+  validation, and audit operations.
+- Pydantic contracts reject invalid adjudication and impact combinations at the analytical boundary.
+- Nine zero-row SQL controls compensate for DuckDB's cross-schema foreign-key limitation and catch
+  missing lineage, impossible values, incomplete mechanical arithmetic, and invalid rule windows.
+- Event-date rule versions are data, not prose-only citations; an archive-link drift is represented as
+  a controlled source exception.
+- The executed notebooks lead with scope, evidence status, and interpretation instead of presenting
+  charts without decision context.
+- Competitive impact separates exact arithmetic from strategy-dependent speculation.
 
 ## Honest qualification boundary
 

@@ -1,6 +1,8 @@
 pilot_events:
   - pilot_id: 2019-aut
     season: 2019
+    race_date: 2019-06-30
+    event_timezone: Europe/Vienna
     event_name: Austrian Grand Prix
     event_slug: Austrian%20Grand%20Prix
     season_slug: season-2019-971
@@ -12,6 +14,8 @@ pilot_events:
 
   - pilot_id: 2023-abu
     season: 2023
+    race_date: 2023-11-26
+    event_timezone: Asia/Dubai
     event_name: Abu Dhabi Grand Prix
     event_slug: Abu%20Dhabi%20Grand%20Prix
     season_slug: season-2023-2042
@@ -23,6 +27,8 @@ pilot_events:
 
   - pilot_id: 2025-aut
     season: 2025
+    race_date: 2025-06-29
+    event_timezone: Europe/Vienna
     event_name: Austrian Grand Prix
     event_slug: Austrian%20Grand%20Prix
     season_slug: season-2025-2071

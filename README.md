@@ -83,7 +83,12 @@ f1stewards pilot-discover
 f1stewards pilot-discover --event-id 2019-aut --download
 f1stewards parse-decisions
 f1stewards parser-audit
+f1stewards pilot-fastf1
 f1stewards build-coding-queue
+f1stewards regulatory-audit
+f1stewards validate-coding
+f1stewards validate-impact
+f1stewards quality-check
 pytest
 ```
 
@@ -106,7 +111,11 @@ download link, preventing silent loss of decision versions.
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active
 retrieval failures. All 26 linked steward-decision PDFs yielded a Decision section; 25 yielded the
-full standard Fact/Infringement/Decision/Reason structure. The initial primary coding queue contains
-nine candidate document versions and requires human review before scale-up.
+full standard Fact/Infringement/Decision/Reason structure. FastF1 enrichment adds 60 classifications,
+3,684 driver laps, and 285 race-control messages. Eleven event-date FIA regulatory sources are
+registered and validated. The nine candidate adjudications and four impact assessments have an
+AI-assisted first coding pass, but every row remains explicitly pending independent human review.
 
-No license has been selected. The repository remains local until publication is explicitly approved.
+The project is published at
+[brianbzeng/f1-stewarding-analysis](https://github.com/brianbzeng/f1-stewarding-analysis).
+No license has been selected.

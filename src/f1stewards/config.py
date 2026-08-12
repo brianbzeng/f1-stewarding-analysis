@@ -7,7 +7,7 @@ from typing import Any
 
 import yaml
 
-from f1stewards.models import PilotEvent
+from f1stewards.models import PilotEvent, RegulatorySource
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -36,3 +36,22 @@ def load_document_classes(path: Path | None = None) -> dict[str, dict[str, list[
     if not isinstance(classes, dict):
         raise ValueError(f"Missing classes mapping in {config_path}")
     return classes
+
+
+def load_regulatory_sources(path: Path | None = None) -> list[RegulatorySource]:
+    config_path = path or PROJECT_ROOT / "config" / "regulatory_sources.yml"
+    payload = load_yaml(config_path)
+    sources = payload.get("regulatory_sources")
+    if not isinstance(sources, list):
+        raise ValueError(f"Missing regulatory_sources list in {config_path}")
+    records = [RegulatorySource.model_validate(source) for source in sources]
+    source_ids = [record.source_id for record in records]
+    if len(source_ids) != len(set(source_ids)):
+        raise ValueError(f"Duplicate source_id in {config_path}")
+    known_events = {event.pilot_id for event in load_pilot_events()}
+    unknown_events = sorted(
+        {event_id for record in records for event_id in record.event_ids} - known_events
+    )
+    if unknown_events:
+        raise ValueError(f"Unknown event_ids in {config_path}: {', '.join(unknown_events)}")
+    return records

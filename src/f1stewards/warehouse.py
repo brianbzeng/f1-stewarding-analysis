@@ -10,7 +10,7 @@ import duckdb
 import pandas as pd
 
 from f1stewards.config import PROJECT_ROOT
-from f1stewards.models import DecisionSections, PilotEvent, SourceDocument
+from f1stewards.models import DecisionSections, PilotEvent, RegulatorySource, SourceDocument
 
 DEFAULT_DB_PATH = PROJECT_ROOT / "data" / "processed" / "f1_stewarding.duckdb"
 
@@ -40,6 +40,7 @@ def upsert_pilot_events(
         {
             "event_id": event.pilot_id,
             "season": event.season,
+            "event_date": event.race_date,
             "event_name": event.event_name,
             "archive_url": str(event.archive_url),
             "guideline_regime": event.regime,
@@ -52,17 +53,72 @@ def upsert_pilot_events(
     connection.execute(
         """
         INSERT INTO metadata.events (
-            event_id, season, event_name, archive_url, guideline_regime, is_pilot
+            event_id, season, event_name, event_date, archive_url,
+            guideline_regime, is_pilot
         )
-        SELECT event_id, season, event_name, archive_url, guideline_regime, is_pilot
+        SELECT event_id, season, event_name, event_date, archive_url,
+               guideline_regime, is_pilot
         FROM event_batch
         ON CONFLICT (event_id) DO UPDATE SET
             archive_url = EXCLUDED.archive_url,
+            event_date = EXCLUDED.event_date,
             guideline_regime = EXCLUDED.guideline_regime,
             is_pilot = EXCLUDED.is_pilot
         """
     )
     connection.unregister("event_batch")
+
+
+def upsert_regulatory_sources(
+    connection: duckdb.DuckDBPyConnection,
+    sources: list[RegulatorySource],
+) -> None:
+    if not sources:
+        return
+    source_rows = []
+    link_rows = []
+    for source in sources:
+        payload = source.model_dump(mode="json")
+        event_ids = payload.pop("event_ids")
+        event_role = payload.pop("event_role")
+        source_rows.append(payload)
+        link_rows.extend(
+            {"event_id": event_id, "source_id": source.source_id, "event_role": event_role}
+            for event_id in event_ids
+        )
+    source_frame = pd.DataFrame(source_rows)
+    link_frame = pd.DataFrame(link_rows)
+    connection.register("regulatory_source_batch", source_frame)
+    connection.register("event_regulatory_source_batch", link_frame)
+    connection.execute(
+        """
+        INSERT INTO metadata.regulatory_sources BY NAME
+        SELECT * FROM regulatory_source_batch
+        ON CONFLICT (source_id) DO UPDATE SET
+            document_type = EXCLUDED.document_type,
+            title = EXCLUDED.title,
+            issuing_body = EXCLUDED.issuing_body,
+            publication_date = EXCLUDED.publication_date,
+            effective_from = EXCLUDED.effective_from,
+            effective_through = EXCLUDED.effective_through,
+            source_url = EXCLUDED.source_url,
+            resolved_url = EXCLUDED.resolved_url,
+            source_status = EXCLUDED.source_status,
+            applicability_status = EXCLUDED.applicability_status,
+            is_guideline = EXCLUDED.is_guideline,
+            notes = EXCLUDED.notes
+        """
+    )
+    connection.execute(
+        """
+        INSERT INTO metadata.event_regulatory_sources BY NAME
+        SELECT * FROM event_regulatory_source_batch
+        ON CONFLICT (event_id, source_id) DO UPDATE SET
+            event_role = EXCLUDED.event_role
+        """
+    )
+    connection.unregister("regulatory_source_batch")
+    connection.unregister("event_regulatory_source_batch")
 
 
 def upsert_source_documents(

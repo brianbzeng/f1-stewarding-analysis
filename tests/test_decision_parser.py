@@ -27,8 +27,7 @@ def test_split_sections_does_not_guess_absent_headings() -> None:
 
 def test_decisions_boilerplate_is_not_a_decision_heading() -> None:
     sections = split_sections(
-        "Decision No further action.\n"
-        "Decisions of the Stewards are taken independently of the FIA."
+        "Decision No further action.\nDecisions of the Stewards are taken independently of the FIA."
     )
     assert sections["decision_text"].startswith("No further action.")
 

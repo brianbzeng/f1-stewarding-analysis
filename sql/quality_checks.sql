@@ -42,3 +42,21 @@ SELECT adjudication_id
 FROM curated.classification_impact
 WHERE impact_level = 'mechanical'
   AND (official_finish_position IS NULL OR mechanical_finish_position IS NULL);
+
+-- Every event/source bridge must resolve on both sides.
+SELECT l.event_id, l.source_id
+FROM metadata.event_regulatory_sources AS l
+LEFT JOIN metadata.events AS e USING (event_id)
+LEFT JOIN metadata.regulatory_sources AS s USING (source_id)
+WHERE e.event_id IS NULL OR s.source_id IS NULL;
+
+-- A source cannot be labeled applicable when its stated window excludes the event.
+SELECT l.event_id, l.source_id, e.event_date, s.effective_from, s.effective_through
+FROM metadata.event_regulatory_sources AS l
+JOIN metadata.events AS e USING (event_id)
+JOIN metadata.regulatory_sources AS s USING (source_id)
+WHERE s.applicability_status LIKE 'applicable%'
+  AND (
+      (s.effective_from IS NOT NULL AND e.event_date < s.effective_from)
+      OR (s.effective_through IS NOT NULL AND e.event_date > s.effective_through)
+  );

@@ -7,6 +7,8 @@ The warehouse separates source documents, incidents, adjudications, people, rule
 | Table | Grain |
 |---|---|
 | `events` | one championship event |
+| `regulatory_sources` | one versioned governing instrument or published guideline |
+| `event_regulatory_sources` | one source assignment to one event |
 | `sessions` | one event session |
 | `source_documents` | one retrieved document version |
 | `incidents` | one underlying on-track incident |
@@ -20,6 +22,11 @@ The warehouse separates source documents, incidents, adjudications, people, rule
 | `guideline_sanctions` | one offence-session-guideline recommendation |
 | `classifications` | one driver result in one session and classification version |
 | `impact_estimates` | one counterfactual method for one adjudication |
+
+The implemented pilot enrichment also keeps `fastf1_results`, `fastf1_laps`, and
+`fastf1_race_control_messages` in the raw schema. `result_time_seconds` preserves FastF1's source
+semantics; `classification_gap_seconds` normalizes the winner to zero so same-lap re-ranking cannot
+accidentally compare the winner's total elapsed time with another driver's gap.
 
 ## Decision lineage
 
