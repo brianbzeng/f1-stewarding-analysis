@@ -4,10 +4,10 @@ Run date: 2026-08-12
 
 ## Outcome
 
-The archive, parser, coding, timing, and original independent-review gates pass. The 15-target
-review is complete and the immutable reconciled pilot is `pilot-0681d52afdea`. The approved
-second-stage extension is implemented as 11 new pending review targets; it does not alter the
-existing release.
+The archive, parser, coding, timing, and independent-review gates pass. The original immutable
+15-target reconciliation remains `pilot-0681d52afdea`. All 11 second-stage extension targets were
+subsequently agreed without corrections and packaged with the original targets in the separate
+expanded reconciliation `pilot-41f4502411c2`.
 
 | Metric | Result |
 |---|---:|
@@ -26,13 +26,13 @@ existing release.
 | FastF1 race-control messages | 285 |
 | Event-linked regulatory sources | 11 |
 | Reviewed sanction-impact assessments | 4 |
-| Affected-driver harm assessments | 9 (2 reviewed; 7 pending extension review) |
-| Source-preserving incident locations | 1 pending |
-| Directed multi-car relation edges | 2 pending |
-| Cross-event sanction effects | 1 pending |
+| Affected-driver harm assessments | 9 reviewed |
+| Source-preserving incident locations | 1 reviewed |
+| Directed multi-car relation edges | 2 reviewed |
+| Cross-event sanction effects | 1 reviewed |
 | Reproduced mechanical impact calculations | 2 |
-| Independent review | 15/26 complete; 11 extension rows pending |
-| Reconciled release | `pilot-0681d52afdea` (`double_coded`) |
+| Independent review | 26/26 complete; 26 agree; 0 corrections |
+| Reconciled releases | `pilot-0681d52afdea` (original) and `pilot-41f4502411c2` (expanded v3) |
 
 ## What the pilot established
 
@@ -58,11 +58,12 @@ existing release.
 
 ## Independent-review result
 
-The review covered nine adjudications, four sanction-impact assessments, and two mirrored harm
-assessments. All 15 targets were agreed, with no corrected fields or unresolved discussions. The
-reconciliation preserves the original first pass and records every review decision in its audit.
-Recalled 2025 documents 29 and 39 remain preserved as archive records but were unavailable for
-content review.
+The completed review covers nine adjudications, four sanction-impact assessments, nine harm
+assessments, one incident location, two directed relation edges, and one cross-event sanction
+effect. All 26 targets were agreed with no corrected fields or unresolved discussions. The two
+content-addressed reconciliations preserve the first passes and record every review decision in
+their audits. Recalled 2025 documents 29 and 39 remain preserved as archive records but were
+unavailable for content review.
 
 ## Implemented second-stage extension
 
@@ -80,10 +81,9 @@ invented fault finding.
 
 ## Scale recommendation
 
-The technical pilot and original review support continued method and report development. Before collecting
-all 2018–2025 events, implement and test the accepted second-stage extensions: separate affected-
-driver harm records, multi-car harm chains, turn-range locations, and cross-event grid-sanction
-effects; that implementation is now complete. Independently review and reconcile the 11 extension rows before the
-explicit full-collection go/no-go decision. The purposive three-event yield of 2.67 candidate
-incidents per event is not a power estimate, and the recorded 4.1 minutes cover only the original
-review—not the extension or a full-corpus staffing forecast.
+The technical pilot and completed review support continued method and report development. The
+accepted second-stage extensions are implemented, independently reviewed, and reconciled. The
+automated scale-readiness result is therefore `human_go_no_go_required`: a person must decide
+whether the measured review burden and analytical yield justify full 2018-2025 collection. The
+purposive three-event yield of 2.67 candidate incidents per event is not a power estimate, and the
+recorded 5.2 review minutes are a pilot measurement rather than a full-corpus staffing forecast.

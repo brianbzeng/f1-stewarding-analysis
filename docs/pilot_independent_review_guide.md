@@ -5,8 +5,8 @@ must remain separate from the initial file so agreement and corrections are audi
 
 ## What to review
 
-Open `data/manual/pilot_independent_review.csv`. It contains 26 targets. The original 15 are
-complete and preserved; the second-stage extension adds 11 pending targets:
+Open `data/manual/pilot_independent_review.csv`. It contains 26 completed targets. The original 15
+are preserved; the second-stage extension added 11 targets that are now also agreed:
 
 - nine accused-driver adjudications;
 - two mechanically calculated post-race penalty impacts;

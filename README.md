@@ -142,12 +142,12 @@ manifests.
 
 The approved second-stage extension is implemented without altering that release. The staging layer
 now contains nine affected-driver harm rows (one per adjudication), one source-preserving turn range,
-two directed edges for a three-car interaction, and one cross-event sanction record. Eleven new
-review targets remain pending, so `review-status` reports 15/26 complete and a new v3 reconciliation
-is blocked until those records receive independent review.
+two directed edges for a three-car interaction, and one cross-event sanction record. All 26 review
+targets agree with no corrections or unresolved discussions. Reconciliation `pilot-41f4502411c2`
+packages the expanded v3 schema as a separate immutable `double_coded` release.
 
 A dependency-free pilot evidence explorer is also generated from the same DuckDB and curated manual
-inputs. The current provisional build exposes nine candidate adjudications, four sanction-impact
+inputs. The current reviewed build exposes nine candidate adjudications, four sanction-impact
 assessments, nine victim-harm rows, source-preserving incident context, and the exact P7-to-P10
 application of Antonelli's carried grid penalty. Official evidence links, data-quality state, build
 lineage, and a downloadable filtered extract remain visible. Comparable-case and model views remain

@@ -1,0 +1,39 @@
+{
+  "adjudication_count": 9,
+  "cross_event_sanction_effect_count": 1,
+  "field_correction_count": 0,
+  "harm_assessment_count": 9,
+  "impact_assessment_count": 4,
+  "incident_location_count": 1,
+  "incident_relation_count": 2,
+  "input_sha256": {
+    "coded_adjudications": "f03b2a77a239f49d124516914a3be3207bedecb3d94e6168f9ae1869d9a710a9",
+    "cross_event_sanction_effects": "726408153d11694cf43d17a14badb8727c4db0771d10c65a60519d9dba819714",
+    "harm_assessments": "6948c9bb33ecffe0f59ee36bd34316e6b4a5fe674ed93dc8c72ffb1ec9d65b27",
+    "impact_assessments": "e10a889e69366504c66917f3bbb977a1101b64d34e81f3f89a6e0408a964b85f",
+    "incident_locations": "81a9dacae825459f464a06b609881b4419eb07f40c03cc38e5f7f00676fb6562",
+    "incident_relations": "4702bf1da0d466e3f19e6eb5ac0497fffcf197ed08907f3bd9954542442f058d",
+    "independent_review": "7da673a450c7fd63e9357bf0bfff3ffe950ade4a86b511479e1b813cd012313c"
+  },
+  "method_version": "pilot_reconciliation_v3",
+  "output_sha256": {
+    "adjudications.csv": "ebc418c8e2ad4098eb9d99bf7a2dba8c40a3de3679732700a5a1541c94db13a6",
+    "cross_event_sanction_effects.csv": "1e9e8e0c150e5e71f194c8e1aac0e202dc48544eff591465ceb820805b69d893",
+    "harm_assessments.csv": "76e9487d7e6612159e91a8252354bd8756b63bf0d70270b7bc13e3be299816bb",
+    "impact_assessments.csv": "1d13e0e67dc16b1043e6b57b78e9b6fddbac217443764abe64dbd15f141d61ba",
+    "incident_locations.csv": "222cffc2c08a3025e47b88762d486d23509854e81faae3d068375d831105a24b",
+    "incident_relations.csv": "bcb792ebe943bcdddb69985c8b5cff166b155f7a361a4132db52d480e1c5c643",
+    "reconciliation_audit.csv": "092d536ec0f0572dedac50d9a5333e814bf9eeb7fb6d4fdf7987a5d5f8d9a3ce"
+  },
+  "reconciled_at_utc": "2026-08-12T23:01:23+00:00",
+  "reconciliation_id": "pilot-41f4502411c2",
+  "release_status": "double_coded",
+  "review_decision_counts": {
+    "agree": 26
+  },
+  "review_target_count": 26,
+  "reviewer_ids": [
+    "brian_zeng"
+  ],
+  "schema_version": "2.0"
+}

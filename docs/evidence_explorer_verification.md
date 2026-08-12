@@ -45,8 +45,9 @@ Before treating a generated artifact as a release candidate:
 
 The current artifact is suitable as a pipeline and evidence-traceability demonstration. It is not
 suitable for substantive claims about steward consistency, nationality effects, or error rates.
-The original 15 review targets are complete. Eleven extension targets remain pending; the full
-2018-2025 corpus has not been built.
+All 26 pilot review targets agree and the expanded records are reconciled in
+`pilot-41f4502411c2`. The explorer is therefore labeled `reviewed`; the full 2018-2025 corpus has
+not been built.
 
 ## Previously verified pre-harm pilot build - 2026-08-12
 
