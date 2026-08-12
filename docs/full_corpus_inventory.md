@@ -44,7 +44,9 @@ The configuration, rather than hidden scraper branches, is the audit trail for t
    event IDs, duplicate season/round pairs, missing pilot events, and orphan URL overrides fail
    catalog generation.
 3. `f1stewards study-discover` writes the content-addressed source lineage to Parquet and DuckDB,
-   while retaining an event-level retry queue for archive failures.
+   while retaining an event-level retry queue for archive failures. With `--download`, its default
+   `decisions` evidence profile retrieves only steward outcomes; broader adjudication and impact
+   profiles are explicit in `config/evidence_profiles.yml`.
 4. `f1stewards study-inventory` reconciles document IDs and event coverage across the catalog,
    Parquet manifest, DuckDB, and failure queue. It exits nonzero on any mismatch by default.
 5. `f1stewards quality-check` separately requires every frozen event to resolve to at least one

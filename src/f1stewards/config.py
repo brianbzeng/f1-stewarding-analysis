@@ -10,6 +10,7 @@ from typing import Any
 import yaml
 
 from f1stewards.models import (
+    DocumentClass,
     InternationalSportingCodeIssue,
     PilotEvent,
     RegulatorySource,
@@ -87,6 +88,26 @@ def load_document_classes(path: Path | None = None) -> dict[str, dict[str, list[
     if not isinstance(classes, dict):
         raise ValueError(f"Missing classes mapping in {config_path}")
     return classes
+
+
+def load_evidence_profiles(path: Path | None = None) -> dict[str, set[DocumentClass]]:
+    config_path = path or PROJECT_ROOT / "config" / "evidence_profiles.yml"
+    payload = load_yaml(config_path)
+    raw_profiles = payload.get("evidence_profiles")
+    if not isinstance(raw_profiles, dict) or not raw_profiles:
+        raise ValueError(f"Missing evidence_profiles mapping in {config_path}")
+    profiles: dict[str, set[DocumentClass]] = {}
+    for name, raw_profile in raw_profiles.items():
+        if not isinstance(raw_profile, dict):
+            raise ValueError(f"Evidence profile {name} must be a mapping")
+        raw_classes = raw_profile.get("document_classes")
+        if not isinstance(raw_classes, list) or not raw_classes:
+            raise ValueError(f"Evidence profile {name} requires document_classes")
+        try:
+            profiles[str(name)] = {DocumentClass(value) for value in raw_classes}
+        except ValueError as exc:
+            raise ValueError(f"Evidence profile {name} contains an unknown class") from exc
+    return profiles
 
 
 def load_regulatory_sources(path: Path | None = None) -> list[RegulatorySource]:

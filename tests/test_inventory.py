@@ -46,6 +46,7 @@ def test_inventory_reconciliation_reports_cross_artifact_drift() -> None:
         warehouse,
         {"2025-aut", "2024-gbr", "2023-abu"},
         active_discovery_failures=2,
+        active_retrieval_failures=3,
     )
 
     assert metrics["manifest_duplicate_document_ids"] == 1
@@ -55,4 +56,5 @@ def test_inventory_reconciliation_reports_cross_artifact_drift() -> None:
     assert metrics["catalog_events_without_warehouse_documents"] == 1
     assert metrics["manifest_unknown_event_ids"] == 1
     assert metrics["active_discovery_failures"] == 2
+    assert metrics["active_retrieval_failures"] == 3
     assert not inventory_reconciliation_is_clean(metrics)

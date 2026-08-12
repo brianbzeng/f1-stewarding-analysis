@@ -15,6 +15,7 @@ INVENTORY_DISCREPANCY_KEYS = (
     "manifest_unknown_event_ids",
     "warehouse_unknown_event_ids",
     "active_discovery_failures",
+    "active_retrieval_failures",
 )
 
 
@@ -24,6 +25,7 @@ def reconcile_document_inventory(
     catalog_event_ids: Collection[str],
     *,
     active_discovery_failures: int = 0,
+    active_retrieval_failures: int = 0,
 ) -> dict[str, int]:
     """Compare the frozen Parquet manifest, DuckDB lineage, and event catalog."""
 
@@ -53,6 +55,7 @@ def reconcile_document_inventory(
         "manifest_unknown_event_ids": len(manifest_event_ids - catalog_ids),
         "warehouse_unknown_event_ids": len(warehouse_event_ids - catalog_ids),
         "active_discovery_failures": active_discovery_failures,
+        "active_retrieval_failures": active_retrieval_failures,
     }
 
 

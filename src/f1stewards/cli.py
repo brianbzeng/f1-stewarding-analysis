@@ -24,6 +24,7 @@ from f1stewards.config import (
     PROJECT_ROOT,
     load_analysis_thresholds,
     load_document_classes,
+    load_evidence_profiles,
     load_full_collection_settings,
     load_international_sporting_code_issues,
     load_pilot_events,
@@ -454,6 +455,9 @@ def study_discover(
     event_delay_seconds: Annotated[
         float, typer.Option(help="Delay between FIA event-page requests.")
     ] = 0.5,
+    download_profile: Annotated[
+        str, typer.Option(help="Configured evidence profile used with --download.")
+    ] = "decisions",
     db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
     catalog_path: Annotated[Path, typer.Option(help="Frozen study-event CSV.")] = (
         PROJECT_ROOT / "config" / "study_events.csv"
@@ -477,8 +481,16 @@ def study_discover(
             raise typer.BadParameter("Season must be between 2018 and 2025")
         events = [event for event in events if event.season == season]
     classes = load_document_classes()
+    evidence_profiles = load_evidence_profiles()
+    if download_profile not in evidence_profiles:
+        choices = ", ".join(sorted(evidence_profiles))
+        raise typer.BadParameter(
+            f"Unknown download profile: {download_profile}. Available profiles: {choices}"
+        )
+    selected_classes = evidence_profiles[download_profile]
     all_documents = []
     failures: list[dict[str, object]] = []
+    retrieval_failure_count = 0
     attempted_event_ids = {event.pilot_id for event in events}
     with build_client() as client:
         for index, event in enumerate(events):
@@ -504,7 +516,7 @@ def study_discover(
                 selected = [
                     document
                     for document in documents
-                    if document.document_class in PILOT_EVIDENCE_CLASSES
+                    if document.document_class in selected_classes
                     and document.content_sha256 is None
                     and not document.is_recalled
                 ]
@@ -518,10 +530,13 @@ def study_discover(
                 documents = [
                     downloaded_by_id.get(document.document_id, document) for document in documents
                 ]
-                failures = sum(document.retrieval_error is not None for document in downloaded)
+                download_failure_count = sum(
+                    document.retrieval_error is not None for document in downloaded
+                )
+                retrieval_failure_count += download_failure_count
                 typer.echo(
-                    f"{event.pilot_id}: downloaded {len(downloaded) - failures}; "
-                    f"failures {failures}"
+                    f"{event.pilot_id}: downloaded {len(downloaded) - download_failure_count}; "
+                    f"failures {download_failure_count}"
                 )
             all_documents.extend(documents)
 
@@ -535,9 +550,10 @@ def study_discover(
             upsert_source_documents(connection, all_documents)
     typer.echo(
         f"Wrote {len(all_documents)} lineage rows across {len(events)} events to "
-        f"{manifest_path} and {db_path}; active discovery failures: {len(failures)}"
+        f"{manifest_path} and {db_path}; active discovery failures: {len(failures)}; "
+        f"retrieval failures: {retrieval_failure_count}"
     )
-    if failures:
+    if failures or retrieval_failure_count:
         raise typer.Exit(code=1)
 
 
@@ -597,6 +613,14 @@ def study_inventory(
         warehouse_documents = connection.sql(
             "SELECT document_id, event_id FROM raw.source_documents"
         ).df()
+        active_retrieval_failures = connection.sql(
+            """
+            SELECT count(*)
+            FROM raw.source_documents
+            WHERE retrieval_error IS NOT NULL
+              AND NOT is_recalled
+            """
+        ).fetchone()[0]
         catalog_event_ids = {
             row[0] for row in connection.sql("SELECT event_id FROM metadata.events").fetchall()
         }
@@ -605,6 +629,7 @@ def study_inventory(
         warehouse_documents,
         catalog_event_ids,
         active_discovery_failures=active_failure_count,
+        active_retrieval_failures=active_retrieval_failures,
     )
     reconciliation_frame = pd.DataFrame(
         {"metric": list(reconciliation), "value": list(reconciliation.values())}

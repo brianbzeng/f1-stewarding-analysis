@@ -5,6 +5,7 @@ import pytest
 
 from f1stewards.config import (
     load_analysis_thresholds,
+    load_evidence_profiles,
     load_full_collection_settings,
     load_international_sporting_code_issues,
     load_regulatory_sources,
@@ -12,6 +13,7 @@ from f1stewards.config import (
     select_international_sporting_code,
     select_sporting_regulation,
 )
+from f1stewards.models import DocumentClass
 
 
 def test_regulatory_sources_validate_and_cover_each_pilot() -> None:
@@ -71,6 +73,14 @@ def test_full_collection_settings_cover_completed_study_seasons() -> None:
     assert sum(settings["expected_event_counts"].values()) == 173
     assert settings["season_slugs"][2025] == "season-2025-2071"
     assert settings["pilot_event_ids"] == ["2019-aut", "2023-abu", "2025-aut"]
+
+
+def test_evidence_profiles_bound_retrieval_scope() -> None:
+    profiles = load_evidence_profiles()
+
+    assert profiles["decisions"] == {DocumentClass.STEWARD_DECISION}
+    assert DocumentClass.SUMMONS in profiles["adjudications"]
+    assert DocumentClass.OTHER not in profiles["full_recognized"]
 
 
 def test_sporting_regulation_catalog_covers_2018_through_2025() -> None:

@@ -119,6 +119,7 @@ f1stewards build-study-catalog
 f1stewards study-catalog
 f1stewards init-study-db
 f1stewards study-discover
+f1stewards study-discover --download --download-profile decisions
 f1stewards study-inventory
 ```
 
@@ -127,6 +128,8 @@ f1stewards study-inventory
 supplied. The strict `study-inventory` control exits nonzero if the event catalog, Parquet manifest,
 DuckDB lineage, or active failure queue disagree. Historical FIA URL exceptions are declared in
 configuration and covered by tests. See [the full-corpus inventory](docs/full_corpus_inventory.md).
+Retrieval profiles are declared in `config/evidence_profiles.yml`; the default `decisions` profile
+avoids downloading summonses, classifications, notes, and circuit maps before they are needed.
 
 ## Evidence and interpretation policy
 

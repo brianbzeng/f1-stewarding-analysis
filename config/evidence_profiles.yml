@@ -1,0 +1,27 @@
+evidence_profiles:
+  decisions:
+    description: Primary steward outcome documents for corpus parsing and adjudication coding.
+    document_classes: [steward_decision]
+
+  adjudications:
+    description: Steward outcomes plus summonses used to reconstruct referred incidents.
+    document_classes: [steward_decision, summons]
+
+  impact_support:
+    description: Adjudication evidence plus official final and provisional classifications.
+    document_classes:
+      - steward_decision
+      - summons
+      - final_classification
+      - provisional_classification
+
+  full_recognized:
+    description: Every recognized evidence class; excludes the broad other category.
+    document_classes:
+      - steward_decision
+      - summons
+      - final_classification
+      - provisional_classification
+      - championship_points
+      - race_director_notes
+      - circuit_map

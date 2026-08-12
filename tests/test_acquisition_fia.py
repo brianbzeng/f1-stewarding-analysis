@@ -4,6 +4,7 @@ from pathlib import Path
 import httpx
 
 from f1stewards.acquisition.fia import (
+    _resolve_pdf_response,
     classify_document,
     discover_event,
     extract_document_links,
@@ -126,3 +127,25 @@ def test_discover_event_accepts_direct_legacy_timing_page() -> None:
     assert requests == [timing_url]
     assert len(records) == 1
     assert str(records[0].archive_url) == timing_url
+
+
+def test_resolve_pdf_response_rejects_non_pdf_target() -> None:
+    wrapper_url = "https://www.fia.com/document-wrapper"
+    target_url = "https://www.fia.com/not-a-pdf.pdf"
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if str(request.url) == wrapper_url:
+            return httpx.Response(
+                200,
+                text=f'<a href="{target_url}">Download</a>',
+                request=request,
+            )
+        return httpx.Response(200, text="still HTML", request=request)
+
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        try:
+            _resolve_pdf_response(client, wrapper_url)
+        except ValueError as exc:
+            assert "not a PDF" in str(exc)
+        else:
+            raise AssertionError("non-PDF target must fail validation")

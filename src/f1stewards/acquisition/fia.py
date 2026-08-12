@@ -278,8 +278,10 @@ def discover_event(
 def _resolve_pdf_response(client: httpx.Client, document_url: str) -> httpx.Response:
     response = fetch_url(client, sanitize_transport_url(document_url))
     content_type = response.headers.get("content-type", "").casefold()
-    if "application/pdf" in content_type or response.content.startswith(b"%PDF"):
+    if b"%PDF" in response.content[:1024]:
         return response
+    if "application/pdf" in content_type:
+        raise ValueError(f"Response advertised PDF content without a PDF signature: {document_url}")
 
     soup = BeautifulSoup(response.text, "html.parser")
     candidates: list[str] = []
@@ -290,7 +292,10 @@ def _resolve_pdf_response(client: httpx.Client, document_url: str) -> httpx.Resp
                 candidates.append(urljoin(str(response.url), str(value)))
     if not candidates:
         raise ValueError(f"No PDF target found at {document_url}")
-    return fetch_url(client, candidates[0])
+    pdf_response = fetch_url(client, candidates[0])
+    if b"%PDF" not in pdf_response.content[:1024]:
+        raise ValueError(f"Resolved target is not a PDF: {candidates[0]}")
+    return pdf_response
 
 
 def _safe_filename(document: SourceDocument) -> str:
