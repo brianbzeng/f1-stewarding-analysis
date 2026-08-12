@@ -2,8 +2,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
+import pandas as pd
 
 from f1stewards.acquisition.fia import (
+    _normalized_pdf_bytes,
     _resolve_pdf_response,
     classify_document,
     discover_event,
@@ -11,6 +13,7 @@ from f1stewards.acquisition.fia import (
     extract_legacy_document_links,
     extract_legacy_timing_url,
     sanitize_transport_url,
+    write_manifest,
 )
 from f1stewards.config import load_document_classes, load_pilot_events
 from f1stewards.models import DocumentClass
@@ -149,3 +152,38 @@ def test_resolve_pdf_response_rejects_non_pdf_target() -> None:
             assert "not a PDF" in str(exc)
         else:
             raise AssertionError("non-PDF target must fail validation")
+
+
+def test_normalize_pdf_bytes_decodes_valid_base64_wrapper() -> None:
+    encoded = b"JVBERi0xLjQKJXRlc3Q="
+    assert _normalized_pdf_bytes(encoded) == b"%PDF-1.4\n%test"
+    assert _normalized_pdf_bytes(b"JVBER-not-valid-base64") is None
+
+
+def test_manifest_retry_can_clear_prior_retrieval_error(tmp_path: Path) -> None:
+    path = tmp_path / "manifest.parquet"
+    event = load_pilot_events()[0]
+    document = extract_document_links(
+        (FIXTURES / "fia_archive.html").read_text(encoding="utf-8"),
+        event,
+        load_document_classes(),
+        discovered_at=datetime(2026, 8, 12, tzinfo=UTC),
+    )[0]
+    failed = document.model_copy(
+        update={"retrieved_at": datetime(2026, 8, 12, tzinfo=UTC), "retrieval_error": "bad"}
+    )
+    succeeded = document.model_copy(
+        update={
+            "retrieved_at": datetime(2026, 8, 13, tzinfo=UTC),
+            "retrieval_error": None,
+            "content_sha256": "a" * 64,
+            "local_path": tmp_path / "document.pdf",
+        }
+    )
+
+    write_manifest([failed], path)
+    write_manifest([succeeded], path)
+    row = pd.read_parquet(path).iloc[0]
+
+    assert pd.isna(row["retrieval_error"])
+    assert row["content_sha256"] == "a" * 64

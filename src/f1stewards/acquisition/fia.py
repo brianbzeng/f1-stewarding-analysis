@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import base64
+import binascii
 import hashlib
 import re
 import time
@@ -278,7 +280,7 @@ def discover_event(
 def _resolve_pdf_response(client: httpx.Client, document_url: str) -> httpx.Response:
     response = fetch_url(client, sanitize_transport_url(document_url))
     content_type = response.headers.get("content-type", "").casefold()
-    if b"%PDF" in response.content[:1024]:
+    if _normalized_pdf_bytes(response.content) is not None:
         return response
     if "application/pdf" in content_type:
         raise ValueError(f"Response advertised PDF content without a PDF signature: {document_url}")
@@ -293,9 +295,26 @@ def _resolve_pdf_response(client: httpx.Client, document_url: str) -> httpx.Resp
     if not candidates:
         raise ValueError(f"No PDF target found at {document_url}")
     pdf_response = fetch_url(client, candidates[0])
-    if b"%PDF" not in pdf_response.content[:1024]:
+    if _normalized_pdf_bytes(pdf_response.content) is None:
         raise ValueError(f"Resolved target is not a PDF: {candidates[0]}")
     return pdf_response
+
+
+def _normalized_pdf_bytes(content: bytes) -> bytes | None:
+    """Return a genuine PDF body, including narrowly validated base64-wrapped FIA files."""
+
+    signature_index = content[:1024].find(b"%PDF")
+    if signature_index >= 0:
+        return content[signature_index:]
+    encoded = b"".join(content.split())
+    if not encoded.startswith(b"JVBER"):
+        return None
+    try:
+        decoded = base64.b64decode(encoded, validate=True)
+    except (binascii.Error, ValueError):
+        return None
+    signature_index = decoded[:1024].find(b"%PDF")
+    return decoded[signature_index:] if signature_index >= 0 else None
 
 
 def _safe_filename(document: SourceDocument) -> str:
@@ -320,7 +339,9 @@ def download_documents(
         target_dir.mkdir(parents=True, exist_ok=True)
         try:
             response = _resolve_pdf_response(client, str(document.document_url))
-            content = response.content
+            content = _normalized_pdf_bytes(response.content)
+            if content is None:
+                raise ValueError(f"Resolved content is not a PDF: {document.document_url}")
             sha256 = hashlib.sha256(content).hexdigest()
             target = target_dir / _safe_filename(document)
             target.write_bytes(content)
@@ -353,13 +374,9 @@ def write_manifest(documents: Iterable[SourceDocument], path: Path) -> None:
         all_columns = list(dict.fromkeys([*existing.columns, *incoming.columns]))
         existing = existing.reindex(columns=all_columns)
         incoming = incoming.reindex(columns=all_columns)
-        existing.update(incoming)
-        new_rows = incoming.loc[~incoming.index.isin(existing.index)]
-        if new_rows.empty:
-            frame = existing
-        else:
-            parts = [part.dropna(axis=1, how="all") for part in (existing, new_rows)]
-            frame = pd.concat(parts).reindex(columns=all_columns)
+        existing = existing.loc[~existing.index.isin(incoming.index)]
+        parts = [part.dropna(axis=1, how="all") for part in (existing, incoming)]
+        frame = pd.concat(parts).reindex(columns=all_columns)
         frame = frame.reset_index()
     else:
         frame = incoming

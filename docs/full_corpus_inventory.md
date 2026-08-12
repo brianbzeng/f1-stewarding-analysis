@@ -31,6 +31,13 @@ remaining 13 are retained in an explicit manual-review queue; they are mostly pe
 re-scrutineering rulings, protests, or event-wide procedural decisions rather than silently failed
 parses.
 
+The 2019 archive exposes one further source-system anomaly: an Australian Grand Prix file declares
+PDF content but serves a base64-wrapped PDF body. Retrieval accepts this only when strict base64
+validation succeeds and the decoded bytes contain a PDF signature. The normalized file is then
+checksummed like every other source. All 250 decision-labelled 2019 files are genuine steward
+decisions; 231 (92.4%) expose the standard labeled Decision section and 19 remain in the explicit
+nonstandard-format review queue.
+
 ## Archive systems
 
 - For 2019-2025, the collector uses the FIA decision-document archive and its published timestamps.

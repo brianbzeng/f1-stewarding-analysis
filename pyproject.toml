@@ -48,7 +48,8 @@ f1stewards = "f1stewards.cli:app"
 packages = ["src/f1stewards"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --strict-markers --basetemp=.pytest_tmp"
+addopts = "-ra --strict-markers --basetemp=.pytest_tmp_codex"
+cache_dir = ".pytest_cache_codex"
 testpaths = ["tests"]
 
 [tool.ruff]
