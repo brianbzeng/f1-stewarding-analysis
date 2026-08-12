@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 from typing import Any
 
 import yaml
 
-from f1stewards.models import PilotEvent, RegulatorySource
+from f1stewards.models import PilotEvent, RegulatorySource, SportingRegulationIssue
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -83,3 +84,47 @@ def load_analysis_thresholds(path: Path | None = None) -> dict[str, Any]:
     if not valid_fractions:
         raise ValueError("Guideline threshold fractions must be between zero and one")
     return thresholds
+
+
+def load_sporting_regulation_issues(
+    path: Path | None = None,
+) -> list[SportingRegulationIssue]:
+    config_path = path or PROJECT_ROOT / "config" / "f1_sporting_regulation_issues.yml"
+    payload = load_yaml(config_path)
+    issues = payload.get("sporting_regulation_issues")
+    if not isinstance(issues, list):
+        raise ValueError(f"Missing sporting_regulation_issues list in {config_path}")
+    records = [SportingRegulationIssue.model_validate(issue) for issue in issues]
+    ids = [record.source_id for record in records]
+    keys = [(record.season, record.precedence) for record in records]
+    if len(ids) != len(set(ids)):
+        raise ValueError(f"Duplicate source_id in {config_path}")
+    if len(keys) != len(set(keys)):
+        raise ValueError(f"Duplicate season/precedence in {config_path}")
+    covered_seasons = {record.season for record in records}
+    if covered_seasons != set(range(2018, 2026)):
+        raise ValueError("Sporting regulation catalog must cover every season from 2018 to 2025")
+    for season in covered_seasons:
+        season_issues = sorted(
+            (record for record in records if record.season == season),
+            key=lambda record: record.precedence,
+        )
+        publication_dates = [record.publication_date for record in season_issues]
+        if publication_dates != sorted(publication_dates):
+            raise ValueError(f"{season} issue precedence must follow publication date")
+    return records
+
+
+def select_sporting_regulation(
+    issues: list[SportingRegulationIssue],
+    season: int,
+    event_date: date,
+) -> SportingRegulationIssue:
+    candidates = [
+        issue
+        for issue in issues
+        if issue.season == season and issue.publication_date <= event_date
+    ]
+    if not candidates:
+        raise ValueError(f"No {season} Sporting Regulation issue available by {event_date}")
+    return max(candidates, key=lambda issue: (issue.publication_date, issue.precedence))

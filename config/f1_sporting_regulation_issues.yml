@@ -1,0 +1,106 @@
+# Titles and publication dates are transcribed from the official FIA Formula One regulation archive.
+# Entries without a direct document_url retain verified archive metadata but require binary resolution
+# and hashing before clause-level use. `precedence` resolves same-day revisions such as 2024 Issue 6.
+sporting_regulation_issues:
+  - {source_id: fia-f1sr-2018-01, season: 2018, precedence: 1, publication_date: 2017-04-30, issue_label: initial-2017-04-30, title: Formula One - Sporting Regulations - 2018, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2018-02, season: 2018, precedence: 2, publication_date: 2017-09-21, issue_label: revision-2017-09-21, title: Formula One - Sporting Regulations - 2018, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2018-03, season: 2018, precedence: 3, publication_date: 2017-12-07, issue_label: revision-2017-12-07, title: Formula One - Sporting Regulations - 2018, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2018-04, season: 2018, precedence: 4, publication_date: 2018-06-07, issue_label: revision-2018-06-07, title: Formula One - Sporting Regulations - 2018, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2018-05, season: 2018, precedence: 5, publication_date: 2018-07-17, issue_label: revision-2018-07-17, title: Formula One - Sporting Regulations - 2018, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+
+  - {source_id: fia-f1sr-2019-01, season: 2019, precedence: 1, publication_date: 2018-10-15, issue_label: initial-2018-10-15, title: Formula One - Sporting Regulations - 2019, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2019-02, season: 2019, precedence: 2, publication_date: 2018-12-20, issue_label: revision-2018-12-20, title: Formula One - Sporting Regulations - 2019, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - source_id: fia-f1sr-2019-03
+    season: 2019
+    precedence: 3
+    publication_date: 2019-03-12
+    issue_label: revision-2019-03-12
+    title: Formula One - Sporting Regulations - 2019
+    archive_url: https://www.fia.com/regulation/category/110
+    document_url: https://www.fia.com/sites/default/files/2019_sporting_regulations_-_2019-03-12.pdf
+    resolution_status: verified_official_binary
+    selection_status: event_verified
+    notes: Applicable pilot version for the 2019 Austrian Grand Prix.
+
+  - {source_id: fia-f1sr-2020-01, season: 2020, precedence: 1, publication_date: 2019-04-30, issue_label: initial-2019-04-30, title: Formula One - Sporting Regulations - 2020, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-02, season: 2020, precedence: 2, publication_date: 2019-12-04, issue_label: revision-2019-12-04, title: Formula One - Sporting Regulations - 2020, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-03, season: 2020, precedence: 3, publication_date: 2020-03-06, issue_label: revision-2020-03-06, title: Formula 1 - Sporting Regulations - 2020, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-04, season: 2020, precedence: 4, publication_date: 2020-03-18, issue_label: revision-2020-03-18, title: Formula 1 - Sporting Regulations - 2020, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-05, season: 2020, precedence: 5, publication_date: 2020-03-30, issue_label: revision-2020-03-30, title: Formula 1 - Sporting Regulations - 2020, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-06, season: 2020, precedence: 6, publication_date: 2020-04-07, issue_label: revision-2020-04-07, title: Formula 1 - Sporting Regulations - 2020, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-07, season: 2020, precedence: 7, publication_date: 2020-04-28, issue_label: revision-2020-04-28, title: Formula 1 - Sporting Regulations - 2020, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-08, season: 2020, precedence: 8, publication_date: 2020-05-27, issue_label: revision-2020-05-27, title: Formula 1 - Sporting Regulations - 2020, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-09, season: 2020, precedence: 9, publication_date: 2020-06-19, issue_label: revision-2020-06-19, title: Formula 1 - Sporting Regulations - 2020, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-10, season: 2020, precedence: 10, publication_date: 2020-07-29, issue_label: revision-2020-07-29, title: Formula 1 - Sporting Regulations - 2020, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-11, season: 2020, precedence: 11, publication_date: 2020-08-25, issue_label: revision-2020-08-25, title: Formula 1 - Sporting Regulations - 2020, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-12, season: 2020, precedence: 12, publication_date: 2020-10-26, issue_label: issue-12, title: Formula 1 - Sporting Regulations - 2020, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-13, season: 2020, precedence: 13, publication_date: 2020-11-04, issue_label: issue-13, title: Formula 1 - Sporting Regulations - 2020 - Issue 13, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2020-14, season: 2020, precedence: 14, publication_date: 2020-11-23, issue_label: issue-14, title: Formula 1 - Sporting Regulations - 2020 - Issue 14, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+
+  - {source_id: fia-f1sr-2021-01, season: 2021, precedence: 1, publication_date: 2019-10-31, issue_label: initial-2019-10-31, title: 2021 Formula 1 Sporting Regulations, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2021-02, season: 2021, precedence: 2, publication_date: 2020-05-27, issue_label: revision-2020-05-27, title: Formula 1 - Sporting Regulations - 2021, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2021-03, season: 2021, precedence: 3, publication_date: 2020-06-19, issue_label: revision-2020-06-19, title: Formula 1 - Sporting Regulations - 2021, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2021-04, season: 2021, precedence: 4, publication_date: 2020-10-30, issue_label: issue-4, title: Formula 1 - Sporting Regulations - 2021 - Issue 4, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2021-05, season: 2021, precedence: 5, publication_date: 2020-12-16, issue_label: issue-5, title: Formula 1 - Sporting Regulations - 2021 - Issue 5, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2021-06, season: 2021, precedence: 6, publication_date: 2021-02-23, issue_label: issue-6, title: Formula 1 - Sporting Regulations - 2021 - Issue 6, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2021-07, season: 2021, precedence: 7, publication_date: 2021-03-19, issue_label: issue-7, title: Formula 1 - Sporting Regulations - 2021 - Issue 7, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2021-08, season: 2021, precedence: 8, publication_date: 2021-04-28, issue_label: issue-8, title: Formula 1 - Sporting Regulations - 2021 - Issue 8, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2021-09, season: 2021, precedence: 9, publication_date: 2021-05-17, issue_label: issue-9, title: Formula 1 - Sporting Regulations - 2021 - Issue 9, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2021-10, season: 2021, precedence: 10, publication_date: 2021-07-01, issue_label: issue-10, title: Formula 1 - Sporting Regulations - 2021 - Issue 10, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2021-11, season: 2021, precedence: 11, publication_date: 2021-07-13, issue_label: issue-11, title: Formula 1 - Sporting Regulations - 2021 - Issue 11, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2021-12, season: 2021, precedence: 12, publication_date: 2021-11-11, issue_label: issue-12, title: Formula 1 - Sporting Regulations - 2021 - Issue 12, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2021-13, season: 2021, precedence: 13, publication_date: 2021-12-08, issue_label: issue-13, title: Formula 1 - Sporting Regulations - 2021 - Issue 13, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+
+  - {source_id: fia-f1sr-2022-01, season: 2022, precedence: 1, publication_date: 2020-05-27, issue_label: issue-1, title: Formula 1 - Sporting Regulations - 2022, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2022-02, season: 2022, precedence: 2, publication_date: 2021-02-23, issue_label: issue-2, title: Formula 1 - Sporting Regulations - 2022 - Issue 2, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2022-03, season: 2022, precedence: 3, publication_date: 2021-04-30, issue_label: issue-3, title: Formula 1 - Sporting Regulations - 2022 - Issue 3, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2022-04, season: 2022, precedence: 4, publication_date: 2022-02-18, issue_label: issue-4, title: Formula 1 - Sporting Regulations - 2022 - Issue 4, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2022-05, season: 2022, precedence: 5, publication_date: 2022-03-15, issue_label: issue-5, title: Formula 1 - Sporting Regulations - 2022 - Issue 5, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2022-06, season: 2022, precedence: 6, publication_date: 2022-04-29, issue_label: issue-6, title: Formula 1 - Sporting Regulations - 2022 - Issue 6, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2022-07, season: 2022, precedence: 7, publication_date: 2022-06-29, issue_label: issue-7, title: Formula 1 - Sporting Regulations - 2022 - Issue 7, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2022-08, season: 2022, precedence: 8, publication_date: 2022-07-19, issue_label: issue-8, title: FIA 2022 Formula 1 Sporting Regulations - Issue 8, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2022-09, season: 2022, precedence: 9, publication_date: 2022-10-19, issue_label: issue-9, title: FIA 2022 Formula 1 Sporting Regulations - Issue 9, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+
+  - {source_id: fia-f1sr-2023-01, season: 2023, precedence: 1, publication_date: 2022-07-19, issue_label: issue-1, title: Formula 1 - Sporting Regulations - 2023 - Issue 1, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2023-02, season: 2023, precedence: 2, publication_date: 2022-09-30, issue_label: issue-2, title: FIA 2023 Formula 1 Sporting Regulations - Issue 2, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2023-03, season: 2023, precedence: 3, publication_date: 2022-10-19, issue_label: issue-3, title: FIA 2023 Formula 1 Sporting Regulations - Issue 3, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2023-04, season: 2023, precedence: 4, publication_date: 2023-02-22, issue_label: issue-4, title: FIA 2023 Formula 1 Sporting Regulations - Issue 4, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2023-05, season: 2023, precedence: 5, publication_date: 2023-04-25, issue_label: issue-5, title: FIA 2023 Formula 1 Sporting Regulations - Issue 5, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2023-06, season: 2023, precedence: 6, publication_date: 2023-08-31, issue_label: issue-6, title: FIA 2023 Formula 1 Sporting Regulations - Issue 6, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - source_id: fia-f1sr-2023-07
+    season: 2023
+    precedence: 7
+    publication_date: 2023-10-25
+    issue_label: issue-7
+    title: FIA 2023 Formula 1 Sporting Regulations - Issue 7
+    archive_url: https://www.fia.com/regulation/category/110
+    document_url: https://www.fia.com/sites/default/files/fia_2023_formula_1_sporting_regulations_-_issue_7_-_2023-10-25-v2.pdf
+    resolution_status: verified_official_binary
+    selection_status: event_verified
+    notes: Applicable pilot version for the 2023 Abu Dhabi Grand Prix.
+  - {source_id: fia-f1sr-2023-08, season: 2023, precedence: 8, publication_date: 2023-12-06, issue_label: issue-8, title: FIA 2023 Formula 1 Sporting Regulations - Issue 8, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+
+  - {source_id: fia-f1sr-2024-01, season: 2024, precedence: 1, publication_date: 2023-09-26, issue_label: issue-1, title: FIA 2024 Formula 1 Sporting Regulations - Issue 1, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2024-02, season: 2024, precedence: 2, publication_date: 2023-10-25, issue_label: issue-2, title: FIA 2024 Formula 1 Sporting Regulations - Issue 2, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2024-03, season: 2024, precedence: 3, publication_date: 2023-12-06, issue_label: issue-3, title: FIA 2024 Formula 1 Sporting Regulations - Issue 3, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2024-04, season: 2024, precedence: 4, publication_date: 2024-02-13, issue_label: issue-4, title: FIA 2024 Formula 1 Sporting Regulations - Issue 4, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2024-05, season: 2024, precedence: 5, publication_date: 2024-02-28, issue_label: issue-5, title: FIA 2024 Formula 1 Sporting Regulations - Issue 5, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2024-06-v1, season: 2024, precedence: 6, publication_date: 2024-04-30, issue_label: issue-6-v1, title: FIA 2024 Formula 1 Sporting Regulations - Issue 6 v1, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified, notes: Superseded by Issue 6 v2 on the same publication date.}
+  - {source_id: fia-f1sr-2024-06-v2, season: 2024, precedence: 7, publication_date: 2024-04-30, issue_label: issue-6-v2, title: FIA 2024 Formula 1 Sporting Regulations - Issue 6 v2, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2024-07, season: 2024, precedence: 8, publication_date: 2024-07-31, issue_label: issue-7, title: FIA 2024 Formula 1 Sporting Regulations - Issue 7, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+
+  - {source_id: fia-f1sr-2025-01, season: 2025, precedence: 1, publication_date: 2024-07-31, issue_label: issue-1, title: FIA 2025 Formula 1 Sporting Regulations - Issue 1, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2025-02, season: 2025, precedence: 2, publication_date: 2024-10-17, issue_label: issue-2, title: FIA 2025 Formula 1 Sporting Regulations - Issue 2, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2025-03, season: 2025, precedence: 3, publication_date: 2024-12-12, issue_label: issue-3, title: FIA 2025 Formula 1 Sporting Regulations - Issue 3, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - {source_id: fia-f1sr-2025-04, season: 2025, precedence: 4, publication_date: 2025-02-26, issue_label: issue-4, title: FIA 2025 Formula 1 Sporting Regulations - Issue 4, archive_url: https://www.fia.com/regulation/category/110, resolution_status: archive_metadata_verified}
+  - source_id: fia-f1sr-2025-05
+    season: 2025
+    precedence: 5
+    publication_date: 2025-04-30
+    issue_label: issue-5
+    title: FIA 2025 Formula 1 Sporting Regulations - Issue 5
+    archive_url: https://www.fia.com/regulation/category/110
+    document_url: https://www.fia.com/system/files/documents/fia_2025_formula_1_sporting_regulations_-_issue_5_-_2025-04-30.pdf
+    resolution_status: verified_official_binary
+    selection_status: event_verified
+    notes: Applicable pilot version for the 2025 Austrian Grand Prix.

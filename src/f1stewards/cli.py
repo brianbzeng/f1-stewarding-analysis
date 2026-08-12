@@ -22,6 +22,7 @@ from f1stewards.config import (
     load_document_classes,
     load_pilot_events,
     load_regulatory_sources,
+    load_sporting_regulation_issues,
 )
 from f1stewards.enrichment.fastf1 import fetch_pilot_race, replace_event_enrichment
 from f1stewards.impact import remove_post_race_time_penalty
@@ -33,6 +34,7 @@ from f1stewards.warehouse import (
     connect,
     initialize_database,
     replace_claim_ledger,
+    replace_sporting_regulation_issues,
     upsert_document_text,
     upsert_pilot_events,
     upsert_regulatory_sources,
@@ -122,13 +124,18 @@ def init_db(
     initialize_database(db_path)
     events = load_pilot_events()
     regulatory_sources = load_regulatory_sources()
+    sporting_regulation_issues = load_sporting_regulation_issues()
     with connect(db_path) as connection:
         upsert_pilot_events(connection, events)
         upsert_regulatory_sources(connection, regulatory_sources)
+        issue_count = replace_sporting_regulation_issues(
+            connection, sporting_regulation_issues
+        )
         claim_count = replace_claim_ledger(connection)
     typer.echo(
         f"Initialized {db_path} with {len(events)} pilot events and "
-        f"{len(regulatory_sources)} regulatory sources; loaded {claim_count} report claims"
+        f"{len(regulatory_sources)} event-linked regulatory sources; loaded "
+        f"{issue_count} Sporting Regulation issues and {claim_count} report claims"
     )
 
 
@@ -178,6 +185,44 @@ def regulatory_audit(
             """
         ).df()
     typer.echo(matrix.to_string(index=False))
+
+
+@app.command("sporting-regulation-audit")
+def sporting_regulation_audit(
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Show catalog coverage and the event-date issue selected for each loaded event."""
+
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        coverage = connection.sql(
+            """
+            SELECT
+                season,
+                count(*) AS issue_count,
+                count(document_url) AS resolved_binary_count,
+                min(publication_date) AS first_publication,
+                max(publication_date) AS last_publication
+            FROM metadata.sporting_regulation_issues
+            GROUP BY season
+            ORDER BY season
+            """
+        ).df()
+        selected = connection.sql(
+            """
+            SELECT
+                event_id,
+                event_date,
+                source_id,
+                issue_label,
+                publication_date,
+                resolution_status,
+                selection_status
+            FROM analysis.v_event_sporting_regulation_selection
+            ORDER BY event_date
+            """
+        ).df()
+    typer.echo("Catalog coverage:\n" + coverage.to_string(index=False))
+    typer.echo("\nEvent-date selections:\n" + selected.to_string(index=False))
 
 
 @app.command("pilot-discover")

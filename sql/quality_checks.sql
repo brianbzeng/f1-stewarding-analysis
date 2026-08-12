@@ -66,3 +66,19 @@ SELECT claim_id, status, evidence_grade_if_met
 FROM metadata.claim_ledger
 WHERE status IN ('supported_for_inference', 'descriptive_only', 'case_study_only')
   AND evidence_grade_if_met NOT IN ('A', 'B', 'C', 'D');
+
+-- Every dated event must map to the latest Sporting Regulation issue published by that date.
+SELECT e.event_id, e.season, e.event_date
+FROM metadata.events AS e
+LEFT JOIN analysis.v_event_sporting_regulation_selection AS r USING (event_id)
+WHERE e.event_date IS NOT NULL
+  AND r.source_id IS NULL;
+
+-- Pilot clause-level work requires an event-verified official binary, not archive metadata alone.
+SELECT event_id, source_id, resolution_status, selection_status
+FROM analysis.v_event_sporting_regulation_selection
+WHERE event_id IN ('2019-aut', '2023-abu', '2025-aut')
+  AND (
+      resolution_status <> 'verified_official_binary'
+      OR selection_status <> 'event_verified'
+  );

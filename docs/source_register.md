@@ -5,6 +5,9 @@ This register defines the public evidence hierarchy. Exact downloaded versions, 
 The pilot's machine-readable event/source assignments live in
 `config/regulatory_sources.yml` and load into `metadata.regulatory_sources` plus
 `metadata.event_regulatory_sources`. `f1stewards regulatory-audit` prints the matrix.
+The full Sporting Regulation publication schedule and its event-date selector are documented in
+`docs/regulatory_catalog_method.md`; unresolved coverage is explicit in
+`reports/regulatory_source_gap_register.csv`.
 
 ## Evidence hierarchy
 

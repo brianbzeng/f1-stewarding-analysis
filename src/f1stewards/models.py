@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from enum import StrEnum
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator, model_validator
 
@@ -73,6 +74,37 @@ class RegulatorySource(BaseModel):
             and self.effective_through < self.effective_from
         ):
             raise ValueError("effective_through cannot precede effective_from")
+        return self
+
+
+class SportingRegulationIssue(BaseModel):
+    """One FIA archive entry in the 2018-2025 F1 Sporting Regulation history."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    source_id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]+$")
+    season: int = Field(ge=2018, le=2025)
+    precedence: int = Field(ge=1)
+    publication_date: date
+    issue_label: str
+    title: str
+    archive_url: HttpUrl
+    document_url: HttpUrl | None = None
+    resolution_status: Literal["archive_metadata_verified", "verified_official_binary"]
+    selection_status: Literal["provisional_by_publication_date", "event_verified"] = (
+        "provisional_by_publication_date"
+    )
+    notes: str = ""
+
+    @model_validator(mode="after")
+    def verified_records_require_a_binary(self) -> SportingRegulationIssue:
+        if self.resolution_status == "verified_official_binary" and self.document_url is None:
+            raise ValueError("verified_official_binary requires document_url")
+        if (
+            self.selection_status == "event_verified"
+            and self.resolution_status != "verified_official_binary"
+        ):
+            raise ValueError("event_verified requires verified_official_binary")
         return self
 
 

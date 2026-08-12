@@ -10,7 +10,13 @@ import duckdb
 import pandas as pd
 
 from f1stewards.config import PROJECT_ROOT
-from f1stewards.models import DecisionSections, PilotEvent, RegulatorySource, SourceDocument
+from f1stewards.models import (
+    DecisionSections,
+    PilotEvent,
+    RegulatorySource,
+    SourceDocument,
+    SportingRegulationIssue,
+)
 
 DEFAULT_DB_PATH = PROJECT_ROOT / "data" / "processed" / "f1_stewarding.duckdb"
 
@@ -119,6 +125,27 @@ def upsert_regulatory_sources(
     )
     connection.unregister("regulatory_source_batch")
     connection.unregister("event_regulatory_source_batch")
+
+
+def replace_sporting_regulation_issues(
+    connection: duckdb.DuckDBPyConnection,
+    issues: list[SportingRegulationIssue],
+) -> int:
+    """Replace the archive-derived Sporting Regulation issue catalog."""
+
+    if not issues:
+        raise ValueError("Sporting Regulation issue catalog cannot be empty")
+    frame = pd.DataFrame([issue.model_dump(mode="json") for issue in issues])
+    connection.register("sporting_regulation_issue_batch", frame)
+    connection.execute("DELETE FROM metadata.sporting_regulation_issues")
+    connection.execute(
+        """
+        INSERT INTO metadata.sporting_regulation_issues BY NAME
+        SELECT * FROM sporting_regulation_issue_batch
+        """
+    )
+    connection.unregister("sporting_regulation_issue_batch")
+    return len(frame)
 
 
 def replace_claim_ledger(

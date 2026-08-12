@@ -86,6 +86,7 @@ f1stewards parser-audit
 f1stewards pilot-fastf1
 f1stewards build-coding-queue
 f1stewards regulatory-audit
+f1stewards sporting-regulation-audit
 f1stewards claim-audit
 f1stewards validate-coding
 f1stewards validate-impact
@@ -114,8 +115,11 @@ Milestone 1 foundation is complete. The three-event archive pilot discovered 156
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active
 retrieval failures. All 26 linked steward-decision PDFs yielded a Decision section; 25 yielded the
 full standard Fact/Infringement/Decision/Reason structure. FastF1 enrichment adds 60 classifications,
-3,684 driver laps, and 285 race-control messages. Eleven event-date FIA regulatory sources are
-registered and validated. The nine candidate adjudications and four impact assessments have an
+3,684 driver laps, and 285 race-control messages. Eleven pilot event-date FIA regulatory sources are
+registered and validated. A separate 65-issue Sporting Regulation catalog covers every season from
+2018 through 2025 and deterministically selects the candidate issue published by each event date;
+the exact PDFs for all three pilot selections are resolved. The nine candidate adjudications and
+four impact assessments have an
 AI-assisted first coding pass, but every row remains explicitly pending independent human review.
 The separate 13-row review packet preserves corrections and measured review effort without
 overwriting the first pass.

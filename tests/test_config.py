@@ -1,8 +1,14 @@
+from datetime import date
 from pathlib import Path
 
 import pytest
 
-from f1stewards.config import load_analysis_thresholds, load_regulatory_sources
+from f1stewards.config import (
+    load_analysis_thresholds,
+    load_regulatory_sources,
+    load_sporting_regulation_issues,
+    select_sporting_regulation,
+)
 
 
 def test_regulatory_sources_validate_and_cover_each_pilot() -> None:
@@ -41,3 +47,39 @@ def test_analysis_thresholds_cover_all_planned_components() -> None:
     assert thresholds["consistency"]["validation_group"] == "event_id"
     assert thresholds["guideline_conformance"]["minimum_mappable_fraction"] == 0.8
     assert thresholds["competitive_impact"]["mechanical_same_lap_only"] is True
+
+
+def test_sporting_regulation_catalog_covers_2018_through_2025() -> None:
+    issues = load_sporting_regulation_issues()
+
+    assert len(issues) == 65
+    assert {issue.season for issue in issues} == set(range(2018, 2026))
+    assert sum(issue.document_url is not None for issue in issues) == 3
+
+
+@pytest.mark.parametrize(
+    ("season", "event_date", "expected_source_id"),
+    [
+        (2019, date(2019, 6, 30), "fia-f1sr-2019-03"),
+        (2023, date(2023, 11, 26), "fia-f1sr-2023-07"),
+        (2025, date(2025, 6, 29), "fia-f1sr-2025-05"),
+        (2024, date(2024, 5, 1), "fia-f1sr-2024-06-v2"),
+    ],
+)
+def test_sporting_regulation_selection_uses_event_date_and_precedence(
+    season: int,
+    event_date: date,
+    expected_source_id: str,
+) -> None:
+    selected = select_sporting_regulation(
+        load_sporting_regulation_issues(), season, event_date
+    )
+
+    assert selected.source_id == expected_source_id
+
+
+def test_sporting_regulation_selection_rejects_date_before_catalog() -> None:
+    with pytest.raises(ValueError, match="No 2018 Sporting Regulation issue"):
+        select_sporting_regulation(
+            load_sporting_regulation_issues(), 2018, date(2017, 1, 1)
+        )
