@@ -4,11 +4,11 @@
 
 Reconciliation creates a new analytical version after independent review. It never edits the
 AI-assisted first-pass CSVs or the reviewer’s original decisions. The result is a content-addressed
-directory whose identity is derived from SHA-256 hashes of all three inputs.
+directory whose identity is derived from SHA-256 hashes of all four inputs.
 
 ## Preconditions
 
-- `f1stewards review-status` reports 13/13 complete.
+- `f1stewards review-status` reports 15/15 complete.
 - Every review decision is `agree` or `correct`.
 - No row remains `pending` or `needs_discussion`.
 - Every correction contains evidence notes and a non-empty JSON object.
@@ -20,12 +20,13 @@ f1stewards reconcile-pilot
 ```
 
 The command validates target coverage, applies permitted corrections in memory, validates the full
-result against the Pydantic adjudication or impact contract, and then writes:
+result against the Pydantic adjudication, impact, and harm contracts, and then writes:
 
 ```text
 data/manual/reconciled/pilot-<input digest>/
   adjudications.csv
   impact_assessments.csv
+  harm_assessments.csv
   reconciliation_audit.csv
   manifest.json
 ```
@@ -69,10 +70,13 @@ Use the paths printed by the command:
 f1stewards validate-coding --coding-path <directory>\adjudications.csv
 f1stewards validate-impact --coding-path <directory>\adjudications.csv `
   --impact-path <directory>\impact_assessments.csv
+f1stewards validate-harm --coding-path <directory>\adjudications.csv `
+  --harm-path <directory>\harm_assessments.csv
 f1stewards scale-readiness --coding-path <directory>\adjudications.csv `
   --impact-path <directory>\impact_assessments.csv
 f1stewards build-explorer --coding-path <directory>\adjudications.csv `
-  --impact-path <directory>\impact_assessments.csv
+  --impact-path <directory>\impact_assessments.csv `
+  --harm-path <directory>\harm_assessments.csv
 ```
 
 The go/no-go decision for full collection remains human. Reconciliation proves review completion and

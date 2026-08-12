@@ -49,15 +49,16 @@ These events test the pipeline. They are not selected as evidence for the final 
 ## Current result
 
 - Technical acquisition and parsing gates pass: 156 archive records, 67 retrieved evidence PDFs,
-  no active retrieval failures, and 26/26 decision sections extracted.
+  no active retrieval failures, and 25/26 complete decision sections extracted.
 - FastF1 links all three Race sessions and supplies 60 classifications, 3,684 driver laps, and 285
   Race Control messages.
 - Eleven event-linked regulatory sources are validated. The 2023 Appendix L event-date binary
   remains unresolved because the archive's current link has drifted to a post-event revision.
-- Nine provisional adjudications and four provisional impact assessments pass structural
-  validation. All remain pending independent human review.
-- Full-season collection remains on hold until the independent review measures effort and confirms
-  the controlled vocabulary and lineage process.
+- Nine adjudications, four impact assessments, and two mirrored harm assessments pass structural
+  validation and completed a 15/15 independent review with no disagreements or corrections.
+- Reconciliation `pilot-0681d52afdea` contains the immutable `double_coded` pilot. Full-season
+  collection now requires an explicit human decision on pilot yield, measured review burden, and
+  the accepted second-stage harm and cross-event sanction extensions.
 
 ## Pass criteria
 

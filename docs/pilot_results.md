@@ -4,8 +4,9 @@ Run date: 2026-08-12
 
 ## Outcome
 
-The archive and parser pilot passes its technical feasibility gates, with a conditional hold on
-full-season scale-up until the nine-row primary coding queue receives a documented human review.
+The archive, parser, coding, timing, and independent-review gates pass. The 15-target review is
+complete and the immutable reconciled pilot is `pilot-0681d52afdea`. Full-season scale-up now
+requires an explicit human go/no-go decision on analytical yield and review burden.
 
 | Metric | Result |
 |---|---:|
@@ -15,17 +16,19 @@ full-season scale-up until the nine-row primary coding queue receives a document
 | Active retrieval failures | 0 |
 | Unavailable recalled records preserved | 2 |
 | Steward-decision PDFs parsed | 26 |
-| Decision sections extracted | 26/26 |
+| Complete decision sections extracted | 25/26 |
 | Full standard section sets extracted | 25/26 |
 | Candidate primary document versions | 9 |
-| Provisional accused-driver adjudications | 9 across 8 incidents |
+| Reviewed accused-driver adjudications | 9 across 8 incidents |
 | FastF1 classifications | 60 |
 | FastF1 driver laps | 3,684 |
 | FastF1 race-control messages | 285 |
 | Event-linked regulatory sources | 11 |
-| Provisional sanction-impact assessments | 4 |
-| Provisional mirrored victim-harm assessments | 2 |
+| Reviewed sanction-impact assessments | 4 |
+| Reviewed mirrored driver-outcome assessments | 2 |
 | Reproduced mechanical impact calculations | 2 |
+| Independent review | 15/15 agree |
+| Reconciled release | `pilot-0681d52afdea` (`double_coded`) |
 
 ## What the pilot established
 
@@ -46,23 +49,22 @@ full-season scale-up until the nine-row primary coding queue receives a document
   global race lap. Lap coding must reconcile the written reason, Race Control, and timing rather
   than accept an automated nearest-lap suggestion as fact.
 - Competitive impact must be tiered. The two post-race-added time penalties can be re-ranked
-  mechanically; a served penalty and a next-event grid penalty cannot.
+  mechanically. A served penalty remains strategy-dependent. A next-event grid penalty has an exact
+  starting-grid effect, but its finish and points effect remains counterfactual.
 
-## Remaining independent-review gate
+## Independent-review result
 
-The nine candidate rows cover paired 2019 Austria decisions, two 2023 Abu Dhabi collision decisions,
-and five 2025 Austria decisions involving collisions or forcing a driver off track. An AI-assisted
-first pass has coded their incident grouping, final outcome, counterpart, lap/turn, evidence,
-guideline conformance, and primary-study inclusion. An independent reviewer must confirm or correct
-each field and reconcile disagreements. Recalled 2025 documents 29 and 39 are preserved as archive
-records but were unavailable for content review.
+The review covered nine adjudications, four sanction-impact assessments, and two mirrored harm
+assessments. All 15 targets were agreed, with no corrected fields or unresolved discussions. The
+reconciliation preserves the original first pass and records every review decision in its audit.
+Recalled 2025 documents 29 and 39 remain preserved as archive records but were unavailable for
+content review.
 
 ## Scale recommendation
 
-The technical pilot supports continued method and report development. Do not collect all 2018–2025
-events until independent review estimates minutes per record, tests the controlled vocabulary, and
-confirms that recalled/corrected lineage can be resolved with an acceptable unresolved rate.
-
-The independent-review packet contains 15 targets and is currently 1/15 started: the first
-adjudication remains `needs_discussion`, and the two new harm rows are pending. Pending status is
-an expected gate condition, not a validation failure.
+The technical and review pilots support continued method and report development. Before collecting
+all 2018–2025 events, implement and test the accepted second-stage extensions: separate affected-
+driver harm records, multi-car harm chains, turn-range locations, and cross-event grid-sanction
+effects. The purposive three-event yield of 2.67 candidate incidents per event is not a power
+estimate, and the recorded 4.1 review minutes should be treated as a workflow measurement rather
+than a full-corpus staffing forecast.

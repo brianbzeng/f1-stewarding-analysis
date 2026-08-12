@@ -1,0 +1,30 @@
+{
+  "adjudication_count": 9,
+  "field_correction_count": 0,
+  "harm_assessment_count": 2,
+  "impact_assessment_count": 4,
+  "input_sha256": {
+    "coded_adjudications": "f03b2a77a239f49d124516914a3be3207bedecb3d94e6168f9ae1869d9a710a9",
+    "harm_assessments": "a04d3d7c94a8f1242c70513241d54297d526a74b08f92924ee22ff27955a9c86",
+    "impact_assessments": "e10a889e69366504c66917f3bbb977a1101b64d34e81f3f89a6e0408a964b85f",
+    "independent_review": "f127d590cd28ece01fdd41d7cda9ec6329ce4eb34a2c108e309830c24d287637"
+  },
+  "method_version": "pilot_reconciliation_v2",
+  "output_sha256": {
+    "adjudications.csv": "ebc418c8e2ad4098eb9d99bf7a2dba8c40a3de3679732700a5a1541c94db13a6",
+    "harm_assessments.csv": "95612f07d248a4e82a41d16fd958ae94dce9acf4bd49b063dc512bc7c2fb08b8",
+    "impact_assessments.csv": "1d13e0e67dc16b1043e6b57b78e9b6fddbac217443764abe64dbd15f141d61ba",
+    "reconciliation_audit.csv": "fe914d806eab67107c409c97fe2d7907c7ac400fd733efb4d2257cd48a783f66"
+  },
+  "reconciled_at_utc": "2026-08-12T20:02:35+00:00",
+  "reconciliation_id": "pilot-0681d52afdea",
+  "release_status": "double_coded",
+  "review_decision_counts": {
+    "agree": 15
+  },
+  "review_target_count": 15,
+  "reviewer_ids": [
+    "brian_zeng"
+  ],
+  "schema_version": "1.0"
+}

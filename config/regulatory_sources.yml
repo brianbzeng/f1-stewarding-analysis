@@ -156,16 +156,17 @@ regulatory_sources:
 
   - source_id: fia-2025-stewards-penalty-guidelines-2025-05-14
     document_type: stewards_penalty_guidelines
-    title: Appendix B to the International Sporting Code, Stewards Penalty Guidelines
-    publication_date: 2025-05-14
+    title: 2025 Formula 1 Penalty and Point Guidelines
+    publication_date: 2025-06-25
     effective_from: 2025-05-14
     effective_through: 2025-12-31
-    source_url: https://www.fia.com/system/files/documents/appendix_b_to_the_international_sporting_code-_stewards_penalty_guidelines_14.05.2025.pdf
+    source_url: https://www.fia.com/sites/default/files/2025_f1_guidelines_penalty_points_overview_-_14_may_clean_0.pdf
     source_status: verified_official_binary
     applicability_status: applicable_verified
     event_role: interpretive_guidance
     event_ids: [2025-aut]
     is_guideline: true
     notes: >-
-      Public sanction baselines, mitigating ranges, grid-penalty substitutions, and maximum
-      penalty-point guidance in force before the 2025 Austrian Grand Prix.
+      Version dated 14 May and publicly released by the FIA on 25 June 2025. It provides Formula 1
+      sanction baselines, mitigating ranges, grid-penalty substitutions, and penalty-point guidance
+      applicable before the 2025 Austrian Grand Prix.

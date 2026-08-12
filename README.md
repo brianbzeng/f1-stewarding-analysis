@@ -124,28 +124,26 @@ download link, preventing silent loss of decision versions.
 
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active
-retrieval failures. All 26 linked steward-decision PDFs yielded a Decision section; 25 yielded the
-full standard Fact/Infringement/Decision/Reason structure. FastF1 enrichment adds 60 classifications,
+retrieval failures. Of 26 linked steward-decision PDFs, 25 yielded a complete Decision section and
+the full standard Fact/Infringement/Decision/Reason structure. FastF1 enrichment adds 60 classifications,
 3,684 driver laps, and 285 race-control messages. Eleven pilot event-date FIA regulatory sources are
 registered and validated. A separate 65-issue Sporting Regulation catalog covers every season from
 2018 through 2025 and deterministically selects the candidate issue published by each event date;
 the exact PDFs for all three pilot selections are resolved. A nine-issue International Sporting Code
 catalog separately models effective windows, including the April 2020 revision and unresolved
-publication metadata for older binaries. The nine candidate adjudications and
-four impact assessments have an
-AI-assisted first coding pass, but every row remains explicitly pending independent human review.
-The separate 15-row review packet, now including two mirrored victim-harm assessments, preserves corrections and measured review effort without
-overwriting the first pass.
-Completed reviews are reconciled into new content-addressed files with protected lineage fields,
-whole-record validation, a field-level change log, and SHA-256 input/output manifests; the command
-cannot overwrite a previously generated version.
+publication metadata for older binaries. The nine candidate adjudications, four impact assessments,
+and two mirrored harm assessments retain their protected AI-assisted first pass. The separate 15-row
+independent review is complete with 15 agreements, no corrections, and no unresolved discussions.
+Reconciliation `pilot-0681d52afdea` promotes immutable copies to `double_coded` while preserving the
+first pass, review notes, protected lineage fields, a field-level audit, and SHA-256 input/output
+manifests.
 
 A dependency-free pilot evidence explorer is also generated from the same DuckDB and curated manual
 inputs. It exposes nine candidate adjudications, four sanction-impact assessments, and two mirrored
 victim-harm assessments with exact filters,
 official evidence links, data-quality state, build lineage, and a downloadable filtered extract.
-The explorer remains visibly provisional, and comparable-case/model views remain unavailable until
-independent review, reconciliation, full-corpus collection, and model validation pass their gates.
+The explorer uses the reconciled pilot records. Comparable-case and model views remain unavailable
+until the full corpus is collected and model validation passes its gates.
 
 The optional Snowflake/Snowsight package exports 13 content-addressed Parquet tables, excludes
 machine-specific cache paths, verifies every file hash/schema/count locally, and supplies worksheet
