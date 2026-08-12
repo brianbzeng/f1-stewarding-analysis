@@ -32,6 +32,8 @@ The project is an F1 domain analysis, but its delivery is tailored to the HHS OI
 - Versioned Sporting Regulation and International Sporting Code catalogs, event-date SQL selectors,
   and a measured scale-readiness command turn
   research governance into reproducible application behavior.
+- Content-addressed reconciliation preserves the initial coding and human review, applies only
+  validated correction patches, emits a field-level audit, and verifies input/output checksums.
 - The executed notebooks lead with scope, evidence status, and interpretation instead of presenting
   charts without decision context.
 - Competitive impact separates exact arithmetic from strategy-dependent speculation.

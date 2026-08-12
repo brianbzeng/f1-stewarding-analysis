@@ -93,6 +93,7 @@ f1stewards claim-audit
 f1stewards validate-coding
 f1stewards validate-impact
 f1stewards review-status
+f1stewards reconcile-pilot
 f1stewards scale-readiness
 f1stewards build-explorer
 f1stewards quality-check
@@ -129,6 +130,9 @@ four impact assessments have an
 AI-assisted first coding pass, but every row remains explicitly pending independent human review.
 The separate 13-row review packet preserves corrections and measured review effort without
 overwriting the first pass.
+Completed reviews are reconciled into new content-addressed files with protected lineage fields,
+whole-record validation, a field-level change log, and SHA-256 input/output manifests; the command
+cannot overwrite a previously generated version.
 
 A dependency-free pilot evidence explorer is also generated from the same DuckDB and curated manual
 inputs. It exposes nine candidate adjudications and four impact assessments with exact filters,

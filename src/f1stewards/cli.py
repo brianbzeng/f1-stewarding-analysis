@@ -37,6 +37,10 @@ from f1stewards.readiness import (
     load_pilot_manual_records,
     readiness_decision,
 )
+from f1stewards.reconciliation import (
+    build_pilot_reconciliation,
+    write_reconciliation_bundle,
+)
 from f1stewards.warehouse import (
     DEFAULT_DB_PATH,
     connect,
@@ -982,6 +986,37 @@ def review_status(
     )
     if not decisions.empty:
         typer.echo(decisions.to_string())
+
+
+@app.command("reconcile-pilot")
+def reconcile_pilot(
+    review_path: Annotated[Path, typer.Option(help="Completed independent-review CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_independent_review.csv"
+    ),
+    coding_path: Annotated[Path, typer.Option(help="First-pass adjudication CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_coded_adjudications.csv"
+    ),
+    impact_path: Annotated[Path, typer.Option(help="First-pass impact-assessment CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_impact_assessments.csv"
+    ),
+    output_root: Annotated[
+        Path, typer.Option(help="Parent for immutable content-addressed outputs.")
+    ] = PROJECT_ROOT / "data" / "manual" / "reconciled",
+) -> None:
+    """Create validated reconciled versions without changing first-pass inputs."""
+
+    try:
+        bundle = build_pilot_reconciliation(coding_path, impact_path, review_path)
+        output_directory, created = write_reconciliation_bundle(bundle, output_root)
+    except (ValueError, FileExistsError) as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=1) from exc
+    action = "Created" if created else "Verified existing"
+    typer.echo(
+        f"{action} reconciliation {bundle.reconciliation_id} at {output_directory}; "
+        f"{len(bundle.adjudications)} adjudications, {len(bundle.impacts)} impacts, "
+        f"{bundle.manifest['field_correction_count']} corrected fields"
+    )
 
 
 @app.command("scale-readiness")

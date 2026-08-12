@@ -33,6 +33,10 @@ For each row:
 7. For `needs_discussion`, explain the ambiguity in `reviewer_notes`.
 8. Run `f1stewards review-status` after saving.
 
+After all discussion items are resolved, run `f1stewards reconcile-pilot`. The command will refuse
+an incomplete sheet and will create new reviewed versions rather than modifying either first-pass
+file. See `docs/pilot_reconciliation_workflow.md` for the protected fields and audit outputs.
+
 Do not edit the first-pass adjudication or impact CSV during independent review. Reconciliation is a
 separate, documented step.
 

@@ -12,6 +12,7 @@ Three files have different purposes:
 | `pilot_coded_adjudications.csv` | one provisional analytical row per accused driver |
 | `pilot_impact_assessments.csv` | one tiered assessment per sanction with a possible competitive effect |
 | `pilot_independent_review.csv` | separate review decisions, corrections, notes, and effort |
+| `reconciled/pilot-<digest>/` | immutable reviewed versions, field audit, and checksum manifest |
 
 The current coded files are an AI-assisted first pass by `codex_initial_v1`. They are not described
 as human-reviewed data. `review_status=single_coded_pending_human` blocks publication of substantive
@@ -32,11 +33,17 @@ pilot findings and full-scale collection.
 8. An independent person reviews incident grouping, outcome, contextual fields, guideline
    conformance, and every record used in a highlighted case study. Record disagreements rather than
    silently overwriting the first pass.
-9. Only after reconciliation should `review_status` become `double_coded` or `adjudicated`.
+9. Run `f1stewards review-status`; resolve every `pending` or `needs_discussion` target.
+10. Run `f1stewards reconcile-pilot`. It creates new content-addressed outputs and a field-level audit
+    without editing the first pass.
+11. Validate the reconciled adjudication and impact paths, then rerun scale readiness.
+12. Only the reconciliation process should promote new copies to `double_coded`; a later documented
+    subject-matter adjudication may promote a subsequent version to `adjudicated`.
 
 Detailed reviewer instructions are in `docs/pilot_independent_review_guide.md`. The
 `f1stewards review-status` command validates coverage of all adjudication and impact targets without
 requiring pending rows to be falsely marked complete.
+The immutable output and correction rules are detailed in `docs/pilot_reconciliation_workflow.md`.
 
 Blank cells mean “not yet coded,” not “no.” Boolean fields use `true`, `false`, or `unclear`.
 
