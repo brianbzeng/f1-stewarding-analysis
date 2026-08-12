@@ -2,11 +2,11 @@
 
 ## Run identity
 
-- Source commit: `00b856c`
-- Export ID: `snowflake-pilot-1a4783bbd0f6`
-- Generated UTC: `2026-08-12T20:35:01.361751+00:00`
+- Source commit: `9707b01`
+- Export ID: `snowflake-pilot-6db39a522219`
+- Generated UTC: `2026-08-12T23:05:46.655668+00:00`
 - Export schema: `snowflake_pilot_v3`
-- Release status: `provisional`
+- Release status: `reviewed`
 - Remote Snowflake status: **not executed**
 
 ## Verified artifacts
@@ -36,9 +36,10 @@ the corresponding Snowflake DDL, confirmed one fail-fast load per table, rejecte
 paths, tested content-addressed reruns, and detected a deliberately corrupted Parquet footer.
 
 The repository-wide validation at package completion passed 67 tests and 22 DuckDB quality
-controls. The original 15 review targets are complete and agreed; the 11 extension targets remain
-pending, so the scale-readiness decision is `blocked_pending_review`. The export remains provisional;
-local validation does not convert candidate coding into findings.
+controls. All 26 review targets agree with no corrections or unresolved discussions. The expanded
+reconciliation is `pilot-41f4502411c2`, and scale readiness has advanced to
+`human_go_no_go_required`. The export is reviewed; local validation still does not substitute for a
+remote Snowflake execution or authorize population-level findings from the three-event pilot.
 
 ## What this proves
 
