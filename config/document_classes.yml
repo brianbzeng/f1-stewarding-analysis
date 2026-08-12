@@ -1,0 +1,34 @@
+classes:
+  steward_decision:
+    include:
+      - "decision - car"
+      - "infringement - car"
+      - "offence - car"
+    exclude:
+      - "summons"
+  summons:
+    include:
+      - "summons"
+  final_classification:
+    include:
+      - "final race classification"
+      - "final sprint classification"
+  provisional_classification:
+    include:
+      - "provisional race classification"
+      - "provisional sprint classification"
+  championship_points:
+    include:
+      - "championship points"
+  race_director_notes:
+    include:
+      - "race director's event notes"
+      - "race directors' event notes"
+      - "race director event notes"
+      - "race director's competition notes"
+  circuit_map:
+    include:
+      - "circuit map"
+      - "competition notes - circuit map"
+  other:
+    include: []

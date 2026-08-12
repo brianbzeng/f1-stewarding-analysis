@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.pytest_tmp/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+.ipython/
+.jupyter/*
+!.jupyter/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment and credentials
+.env
+*.pem
+*.key
+
+# Data products: manifests and small fixtures may be committed explicitly
+data/raw/**
+data/interim/**
+data/processed/**
+data/external/**
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+
+# Local databases and FastF1 cache
+*.duckdb
+*.duckdb.wal
+data/cache/
+
+# Generated reports
+reports/generated/**
+!reports/generated/.gitkeep
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,33 @@
+pilot_events:
+  - pilot_id: 2019-aut
+    season: 2019
+    event_name: Austrian Grand Prix
+    event_slug: Austrian%20Grand%20Prix
+    season_slug: season-2019-971
+    archive_url: https://www.fia.com/documents/championships/fia-formula-one-world-championship-14/event/Austrian%20Grand%20Prix/season/season-2019-971
+    regime: pre_driving_guidelines
+    selection_reason: >-
+      Tests older document structure, paired-driver decisions, a no-further-action outcome,
+      and final classification discovery.
+
+  - pilot_id: 2023-abu
+    season: 2023
+    event_name: Abu Dhabi Grand Prix
+    event_slug: Abu%20Dhabi%20Grand%20Prix
+    season_slug: season-2023-2042
+    archive_url: https://www.fia.com/documents/season/season-2023-2042/championships/fia-formula-one-world-championship-14/event/Abu%20Dhabi%20Grand%20Prix
+    regime: internal_driving_guidelines
+    selection_reason: >-
+      Tests modern documents before public guidelines, mixed penalty/no-action outcomes,
+      summons-decision linkage, and race director event notes.
+
+  - pilot_id: 2025-aut
+    season: 2025
+    event_name: Austrian Grand Prix
+    event_slug: Austrian%20Grand%20Prix
+    season_slug: season-2025-2071
+    archive_url: https://www.fia.com/documents/event/Austrian%20Grand%20Prix/championships/fia-formula-one-world-championship-14/season/season-2025-2071
+    regime: public_driving_and_penalty_guidelines
+    selection_reason: >-
+      Tests current structured decisions, recalled documents, several comparable driving
+      incidents, public-guideline mapping, and competitive-impact fields.
