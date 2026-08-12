@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from f1stewards.config import load_regulatory_sources
+from f1stewards.config import load_analysis_thresholds, load_regulatory_sources
 
 
 def test_regulatory_sources_validate_and_cover_each_pilot() -> None:
@@ -33,3 +33,11 @@ regulatory_sources:
 
     with pytest.raises(ValueError, match="Unknown event_ids"):
         load_regulatory_sources(path)
+
+
+def test_analysis_thresholds_cover_all_planned_components() -> None:
+    thresholds = load_analysis_thresholds()
+
+    assert thresholds["consistency"]["validation_group"] == "event_id"
+    assert thresholds["guideline_conformance"]["minimum_mappable_fraction"] == 0.8
+    assert thresholds["competitive_impact"]["mechanical_same_lap_only"] is True

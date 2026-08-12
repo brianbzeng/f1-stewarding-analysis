@@ -5,6 +5,7 @@ import duckdb
 from f1stewards.config import PROJECT_ROOT, load_pilot_events, load_regulatory_sources
 from f1stewards.warehouse import (
     initialize_database,
+    replace_claim_ledger,
     upsert_pilot_events,
     upsert_regulatory_sources,
 )
@@ -18,6 +19,7 @@ def test_schema_and_pilot_upsert(tmp_path: Path) -> None:
         upsert_pilot_events(connection, load_pilot_events())
         upsert_regulatory_sources(connection, load_regulatory_sources())
         upsert_regulatory_sources(connection, load_regulatory_sources())
+        claim_count = replace_claim_ledger(connection)
         count = connection.sql("SELECT count(*) FROM metadata.events").fetchone()[0]
         source_count = connection.sql(
             "SELECT count(*) FROM metadata.regulatory_sources"
@@ -32,5 +34,6 @@ def test_schema_and_pilot_upsert(tmp_path: Path) -> None:
     assert count == 3
     assert source_count == 11
     assert link_count == 11
+    assert claim_count == 12
     assert view_count == 1
     assert (PROJECT_ROOT / "sql" / "quality_checks.sql").exists()

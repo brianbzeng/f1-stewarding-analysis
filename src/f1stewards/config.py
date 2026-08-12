@@ -55,3 +55,31 @@ def load_regulatory_sources(path: Path | None = None) -> list[RegulatorySource]:
     if unknown_events:
         raise ValueError(f"Unknown event_ids in {config_path}: {', '.join(unknown_events)}")
     return records
+
+
+def load_analysis_thresholds(path: Path | None = None) -> dict[str, Any]:
+    config_path = path or PROJECT_ROOT / "config" / "analysis_thresholds.yml"
+    payload = load_yaml(config_path)
+    thresholds = payload.get("analysis_thresholds")
+    if not isinstance(thresholds, dict):
+        raise ValueError(f"Missing analysis_thresholds mapping in {config_path}")
+    required = {
+        "release",
+        "consistency",
+        "guideline_conformance",
+        "nationality",
+        "competitive_impact",
+        "evidence_explorer",
+    }
+    missing = required - set(thresholds)
+    if missing:
+        raise ValueError(f"Missing threshold sections: {', '.join(sorted(missing))}")
+    mappable = thresholds["guideline_conformance"].get("minimum_mappable_fraction")
+    agreement = thresholds["guideline_conformance"].get("minimum_independent_agreement")
+    valid_fractions = all(
+        isinstance(value, float | int) and 0 <= value <= 1
+        for value in [mappable, agreement]
+    )
+    if not valid_fractions:
+        raise ValueError("Guideline threshold fractions must be between zero and one")
+    return thresholds

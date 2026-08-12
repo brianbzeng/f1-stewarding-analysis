@@ -121,6 +121,26 @@ def upsert_regulatory_sources(
     connection.unregister("event_regulatory_source_batch")
 
 
+def replace_claim_ledger(
+    connection: duckdb.DuckDBPyConnection,
+    claim_path: Path | None = None,
+) -> int:
+    path = claim_path or PROJECT_ROOT / "reports" / "claim_ledger.csv"
+    frame = pd.read_csv(path, dtype="string", keep_default_na=False)
+    if frame["claim_id"].duplicated().any():
+        duplicates = ", ".join(frame.loc[frame["claim_id"].duplicated(), "claim_id"])
+        raise ValueError(f"Duplicate claim_id: {duplicates}")
+    if frame.isna().any().any() or frame.eq("").any().any():
+        raise ValueError("Claim ledger fields cannot be empty")
+    connection.register("claim_ledger_batch", frame)
+    connection.execute("DELETE FROM metadata.claim_ledger")
+    connection.execute(
+        "INSERT INTO metadata.claim_ledger BY NAME SELECT * FROM claim_ledger_batch"
+    )
+    connection.unregister("claim_ledger_batch")
+    return len(frame)
+
+
 def upsert_source_documents(
     connection: duckdb.DuckDBPyConnection,
     documents: list[SourceDocument],

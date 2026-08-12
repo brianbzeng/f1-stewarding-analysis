@@ -1,0 +1,56 @@
+analysis_thresholds:
+  release:
+    allowed_claim_statuses:
+      - supported_for_inference
+      - descriptive_only
+      - case_study_only
+      - dropped
+    evidence_grades: [A, B, C, D, U]
+
+  consistency:
+    minimum_effective_outcomes_per_parameter: 10
+    primary_metric: brier_score
+    validation_group: event_id
+    minimum_baseline_improvement: 0.0
+    require_calibration_intercept: true
+    require_calibration_slope: true
+    require_reliability_plot: true
+    require_leave_one_season_out: true
+    anomaly_threshold_freeze_before_case_review: true
+    minimum_comparable_neighbors: 5
+
+  guideline_conformance:
+    eligible_seasons: [2025]
+    minimum_mappable_fraction: 0.80
+    minimum_independent_agreement: 0.90
+    require_targeted_departure_review: true
+
+  nationality:
+    primary_exposure: british_accused_driver
+    secondary_exposures:
+      - british_affected_driver
+      - same_nationality_panel_member
+      - home_race_accused
+    require_overlap_diagnostics: true
+    require_simulation_power: true
+    report_average_marginal_effects: true
+    multiplicity_method: benjamini_hochberg
+    required_sensitivities:
+      - leave_one_british_driver_out
+      - leave_one_season_out
+      - exclude_british_grand_prix
+      - exclude_home_races
+
+  competitive_impact:
+    mechanical_requires_post_race_addition: true
+    mechanical_same_lap_only: true
+    retain_official_order_on_exact_tie: true
+    served_penalty_default_tier: not_estimable
+    next_event_grid_penalty_default_tier: not_estimable
+    require_independent_review: true
+
+  evidence_explorer:
+    require_official_url_per_adjudication: true
+    require_reference_query_filter_tests: true
+    default_nationality_ranking: false
+    minimum_accessibility_target: WCAG_AA

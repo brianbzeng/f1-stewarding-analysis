@@ -60,3 +60,9 @@ WHERE s.applicability_status LIKE 'applicable%'
       (s.effective_from IS NOT NULL AND e.event_date < s.effective_from)
       OR (s.effective_through IS NOT NULL AND e.event_date > s.effective_through)
   );
+
+-- A report claim must not be marked release-ready without a declared evidence grade.
+SELECT claim_id, status, evidence_grade_if_met
+FROM metadata.claim_ledger
+WHERE status IN ('supported_for_inference', 'descriptive_only', 'case_study_only')
+  AND evidence_grade_if_met NOT IN ('A', 'B', 'C', 'D');

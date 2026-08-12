@@ -86,6 +86,7 @@ f1stewards parser-audit
 f1stewards pilot-fastf1
 f1stewards build-coding-queue
 f1stewards regulatory-audit
+f1stewards claim-audit
 f1stewards validate-coding
 f1stewards validate-impact
 f1stewards review-status

@@ -32,6 +32,7 @@ from f1stewards.warehouse import (
     DEFAULT_DB_PATH,
     connect,
     initialize_database,
+    replace_claim_ledger,
     upsert_document_text,
     upsert_pilot_events,
     upsert_regulatory_sources,
@@ -124,10 +125,34 @@ def init_db(
     with connect(db_path) as connection:
         upsert_pilot_events(connection, events)
         upsert_regulatory_sources(connection, regulatory_sources)
+        claim_count = replace_claim_ledger(connection)
     typer.echo(
         f"Initialized {db_path} with {len(events)} pilot events and "
-        f"{len(regulatory_sources)} regulatory sources"
+        f"{len(regulatory_sources)} regulatory sources; loaded {claim_count} report claims"
     )
+
+
+@app.command("claim-audit")
+def claim_audit(
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Display the planned report claims, evidence grades, and release status."""
+
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        claims = connection.sql(
+            """
+            SELECT
+                claim_id,
+                report_section,
+                research_question,
+                evidence_grade_if_met,
+                status,
+                claim_template
+            FROM metadata.claim_ledger
+            ORDER BY claim_id
+            """
+        ).df()
+    typer.echo(claims.to_string(index=False))
 
 
 @app.command("regulatory-audit")
