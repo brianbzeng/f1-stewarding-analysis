@@ -55,10 +55,12 @@ These events test the pipeline. They are not selected as evidence for the final 
 - Eleven event-linked regulatory sources are validated. The 2023 Appendix L event-date binary
   remains unresolved because the archive's current link has drifted to a post-event revision.
 - Nine adjudications, four impact assessments, and two mirrored harm assessments pass structural
-  validation and completed a 15/15 independent review with no disagreements or corrections.
+  validation and completed a 15/15 independent review with no disagreements or corrections. Seven
+  additional harms, one turn-range location, two directed relation edges, and one cross-event
+  sanction effect also pass structural validation and await independent review.
 - Reconciliation `pilot-0681d52afdea` contains the immutable `double_coded` pilot. Full-season
-  collection now requires an explicit human decision on pilot yield, measured review burden, and
-  the accepted second-stage harm and cross-event sanction extensions.
+  collection now requires completion of the 11-target extension review followed by an explicit
+  human decision on pilot yield and measured review burden.
 
 ## Pass criteria
 

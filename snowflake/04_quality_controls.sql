@@ -208,13 +208,62 @@ WITH VIOLATIONS AS (
           OR POSITION_AFTER IS NULL
           OR NET_POSITIONS_LOST_OBSERVED <> POSITION_AFTER - POSITION_BEFORE
       )
+
+    UNION ALL
+
+    SELECT 'SF_QC_19_ORPHAN_LOCATION_INCIDENT', l.LOCATION_ID,
+           'Incident location does not resolve to an adjudication incident'
+    FROM CURATED.INCIDENT_LOCATIONS AS l
+    LEFT JOIN CURATED.ADJUDICATIONS AS a ON l.INCIDENT_ID = a.INCIDENT_ID
+    WHERE a.INCIDENT_ID IS NULL
+
+    UNION ALL
+
+    SELECT 'SF_QC_20_INVALID_LOCATION_RANGE', LOCATION_ID,
+           'Turn range is missing bounds or does not increase'
+    FROM CURATED.INCIDENT_LOCATIONS
+    WHERE LOCATION_TYPE = 'turn_range'
+      AND (TURN_START_NUMBER IS NULL OR TURN_END_NUMBER IS NULL
+           OR TURN_END_NUMBER <= TURN_START_NUMBER)
+
+    UNION ALL
+
+    SELECT 'SF_QC_21_ORPHAN_RELATION_INCIDENT', x.RELATION_ID,
+           'Incident relation does not resolve to an adjudication incident'
+    FROM CURATED.INCIDENT_RELATIONS AS x
+    LEFT JOIN CURATED.ADJUDICATIONS AS a ON x.INCIDENT_ID = a.INCIDENT_ID
+    WHERE a.INCIDENT_ID IS NULL
+
+    UNION ALL
+
+    SELECT 'SF_QC_22_RELATION_SELF_EDGE', RELATION_ID,
+           'Incident relation cannot connect a driver to itself'
+    FROM CURATED.INCIDENT_RELATIONS
+    WHERE SOURCE_DRIVER_NUMBER = TARGET_DRIVER_NUMBER
+
+    UNION ALL
+
+    SELECT 'SF_QC_23_ORPHAN_CROSS_EVENT_ADJUDICATION', x.CROSS_EVENT_EFFECT_ID,
+           'Cross-event sanction origin adjudication does not resolve'
+    FROM CURATED.CROSS_EVENT_SANCTION_EFFECTS AS x
+    LEFT JOIN CURATED.ADJUDICATIONS AS a ON x.ADJUDICATION_ID = a.ADJUDICATION_ID
+    WHERE a.ADJUDICATION_ID IS NULL
+
+    UNION ALL
+
+    SELECT 'SF_QC_24_CROSS_EVENT_GRID_ARITHMETIC', CROSS_EVENT_EFFECT_ID,
+           'Realized grid loss does not match qualifying and start positions'
+    FROM CURATED.CROSS_EVENT_SANCTION_EFFECTS
+    WHERE REALIZED_GRID_PLACES_LOST <> STARTING_GRID_POSITION - QUALIFYING_POSITION
+       OR (GRID_EFFECT_LEVEL = 'mechanical'
+           AND REALIZED_GRID_PLACES_LOST <> NOMINAL_GRID_PLACES)
 )
 SELECT CONTROL_ID, RECORD_ID, DETAIL
 FROM VIOLATIONS
 ORDER BY CONTROL_ID, RECORD_ID;
 
 -- Review is a publication gate, not a load-integrity failure. The current pilot should report
--- PROVISIONAL with 15 unresolved targets and 15 curated rows pending reconciliation.
+-- PROVISIONAL with 11 unresolved targets and 26 curated rows pending reconciliation.
 WITH REVIEW_COUNTS AS (
     SELECT
         COUNT_IF(INDEPENDENT_REVIEW_STATUS IN ('pending', 'needs_discussion'))

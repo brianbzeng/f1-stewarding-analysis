@@ -3,8 +3,11 @@ from pydantic import ValidationError
 
 from f1stewards.manual import (
     CodedAdjudication,
+    CrossEventSanctionEffect,
     HarmAssessment,
     ImpactAssessment,
+    IncidentLocation,
+    IncidentRelation,
     IndependentReviewRecord,
 )
 
@@ -153,6 +156,89 @@ def test_modeled_persistent_loss_requires_complete_arithmetic() -> None:
     payload["persistent_pace_status"] = "modeled_loss"
     with pytest.raises(ValidationError, match="complete modeled estimate"):
         HarmAssessment.model_validate(payload)
+
+
+def test_harm_can_use_an_explicit_multi_lap_position_window() -> None:
+    payload = harm_payload()
+    payload["position_window_start_lap"] = 47
+    payload["position_window_end_lap"] = 48
+    record = HarmAssessment.model_validate(payload)
+    assert record.position_window_end_lap == 48
+
+
+def test_turn_range_requires_increasing_bounds() -> None:
+    payload = {
+        "location_id": "location-test",
+        "incident_id": "inc-test",
+        "event_id": "2025-aut",
+        "source_document_id": "fia-test",
+        "session_type": "Race",
+        "lap_number": 54,
+        "location_type": "turn_range",
+        "turn_start_number": 4,
+        "turn_end_number": 3,
+        "location_text": "between Turns 3 and 4",
+        "evidence_urls": "https://www.fia.com/test.pdf",
+        "coding_notes": "Official turn range.",
+        "coder_id": "test",
+        "review_status": "single_coded_pending_human",
+    }
+    with pytest.raises(ValidationError, match="end after"):
+        IncidentLocation.model_validate(payload)
+
+
+def test_context_edge_can_preserve_mitigation_without_assigning_fault() -> None:
+    record = IncidentRelation.model_validate(
+        {
+            "relation_id": "relation-test",
+            "incident_id": "inc-test",
+            "event_id": "2025-aut",
+            "source_document_id": "fia-test",
+            "sequence": 1,
+            "source_driver_number": 22,
+            "target_driver_number": 43,
+            "relation_type": "visibility_obstruction",
+            "relation_scope": "mitigating_context",
+            "fault_attributed": False,
+            "evidence_level": "official_explicit",
+            "evidence_urls": "https://www.fia.com/test.pdf",
+            "coding_notes": "Mitigation is not blame.",
+            "coder_id": "test",
+            "review_status": "single_coded_pending_human",
+        }
+    )
+    assert record.fault_attributed is False
+
+
+def test_cross_event_grid_effect_requires_exact_position_arithmetic() -> None:
+    payload = {
+        "cross_event_effect_id": "cross-event-test",
+        "adjudication_id": "adj-test",
+        "origin_event_id": "2025-aut",
+        "application_event_id": "2025-gbr",
+        "source_document_id": "fia-test",
+        "driver_number": 12,
+        "sanction_type": "grid_penalty",
+        "nominal_grid_places": 3,
+        "qualifying_position": 7,
+        "starting_grid_position": 9,
+        "realized_grid_places_lost": 3,
+        "grid_effect_level": "mechanical",
+        "official_finish_position": None,
+        "race_status": "retired",
+        "official_points": 0,
+        "finish_effect_level": "not_estimable",
+        "counterfactual_finish_position": None,
+        "counterfactual_points": None,
+        "application_grid_url": "https://www.fia.com/grid.pdf",
+        "application_classification_url": "https://www.fia.com/classification.pdf",
+        "evidence_urls": "https://www.fia.com/test.pdf",
+        "calculation_method": "Grid arithmetic.",
+        "assumptions": "Finish not estimated.",
+        "review_status": "single_coded_pending_human",
+    }
+    with pytest.raises(ValidationError, match="does not match"):
+        CrossEventSanctionEffect.model_validate(payload)
 
 
 def review_payload() -> dict:

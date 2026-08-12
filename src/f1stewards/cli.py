@@ -986,7 +986,12 @@ def validate_harm(
                     raise typer.Exit(code=1)
 
             incident_lap = int(adjudication["lap_number"])
-            if record.net_positions_lost_observed is not None and incident_lap > 1:
+            if record.net_positions_lost_observed is not None:
+                position_start_lap = record.position_window_start_lap or incident_lap - 1
+                position_end_lap = record.position_window_end_lap or incident_lap
+                if position_start_lap < 1:
+                    typer.echo(f"invalid position window: {record.harm_assessment_id}")
+                    raise typer.Exit(code=1)
                 positions = connection.execute(
                     """
                     SELECT CAST(lap_number AS INTEGER) AS lap_number, CAST(position AS INTEGER)
@@ -998,18 +1003,24 @@ def validate_harm(
                     [
                         record.event_id,
                         record.affected_driver_number,
-                        incident_lap - 1,
-                        incident_lap,
+                        position_start_lap,
+                        position_end_lap,
                     ],
                 ).fetchall()
                 if positions != [
-                    (incident_lap - 1, record.position_before),
-                    (incident_lap, record.position_after),
+                    (position_start_lap, record.position_before),
+                    (position_end_lap, record.position_after),
                 ]:
                     typer.echo(f"observed position mismatch: {record.harm_assessment_id}")
                     raise typer.Exit(code=1)
 
             if record.affected_relative_time_loss_seconds is not None:
+                comparator_driver = (
+                    record.relative_time_comparator_driver_number
+                    or record.counterparty_driver_number
+                )
+                time_start_lap = record.relative_time_window_start_lap or incident_lap
+                time_end_lap = record.relative_time_window_end_lap or incident_lap + 1
                 starts = connection.execute(
                     """
                     SELECT driver_number, CAST(lap_number AS INTEGER), lap_start_time_seconds
@@ -1020,9 +1031,9 @@ def validate_harm(
                     [
                         record.event_id,
                         record.affected_driver_number,
-                        record.counterparty_driver_number,
-                        incident_lap,
-                        incident_lap + 1,
+                        comparator_driver,
+                        time_start_lap,
+                        time_end_lap,
                     ],
                 ).fetchall()
                 start_by_driver_lap = {
@@ -1030,16 +1041,16 @@ def validate_harm(
                     for driver_number, lap_number, lap_start in starts
                 }
                 affected_before = start_by_driver_lap[
-                    (record.affected_driver_number, incident_lap)
+                    (record.affected_driver_number, time_start_lap)
                 ]
                 counterparty_before = start_by_driver_lap[
-                    (record.counterparty_driver_number, incident_lap)
+                    (comparator_driver, time_start_lap)
                 ]
                 affected_after = start_by_driver_lap[
-                    (record.affected_driver_number, incident_lap + 1)
+                    (record.affected_driver_number, time_end_lap)
                 ]
                 counterparty_after = start_by_driver_lap[
-                    (record.counterparty_driver_number, incident_lap + 1)
+                    (comparator_driver, time_end_lap)
                 ]
                 reproduced = (counterparty_before - affected_before) - (
                     counterparty_after - affected_after
@@ -1051,6 +1062,54 @@ def validate_harm(
     pending = sum(record.review_status == "single_coded_pending_human" for record in records)
     typer.echo(
         f"Validated {len(records)} harm assessments with observed timing arithmetic; "
+        f"pending independent human review: {pending}"
+    )
+
+
+@app.command("validate-extensions")
+def validate_extensions(
+    coding_path: Annotated[Path, typer.Option(help="Reviewable adjudication CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_coded_adjudications.csv"
+    ),
+    impact_path: Annotated[Path, typer.Option(help="Impact-assessment CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_impact_assessments.csv"
+    ),
+    harm_path: Annotated[Path, typer.Option(help="Affected-driver harm CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_harm_assessments.csv"
+    ),
+    location_path: Annotated[Path, typer.Option(help="Incident-location CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_incident_locations.csv"
+    ),
+    relation_path: Annotated[Path, typer.Option(help="Incident-relation CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_incident_relations.csv"
+    ),
+    cross_event_path: Annotated[Path, typer.Option(help="Cross-event sanction CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_cross_event_sanction_effects.csv"
+    ),
+    review_path: Annotated[Path, typer.Option(help="Independent-review CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_independent_review.csv"
+    ),
+) -> None:
+    """Validate extension contracts, lineage, relation chains, and review coverage."""
+
+    try:
+        records = load_pilot_manual_records(
+            coding_path,
+            impact_path,
+            harm_path,
+            location_path,
+            relation_path,
+            cross_event_path,
+            review_path,
+        )
+    except ValueError as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=1) from exc
+    pending = sum(record.review_status == "pending" for record in records.reviews)
+    typer.echo(
+        f"Validated extensions: {len(records.harms)} harms, "
+        f"{len(records.locations)} locations, {len(records.relations)} relation edges, "
+        f"{len(records.cross_event_effects)} cross-event effects; "
         f"pending independent human review: {pending}"
     )
 
@@ -1068,6 +1127,15 @@ def review_status(
     ),
     harm_path: Annotated[Path, typer.Option(help="Affected-driver harm assessment CSV.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_harm_assessments.csv"
+    ),
+    location_path: Annotated[Path, typer.Option(help="Incident-location CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_incident_locations.csv"
+    ),
+    relation_path: Annotated[Path, typer.Option(help="Incident-relation CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_incident_relations.csv"
+    ),
+    cross_event_path: Annotated[Path, typer.Option(help="Cross-event sanction CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_cross_event_sanction_effects.csv"
     ),
 ) -> None:
     """Validate the independent review file and report completion and effort."""
@@ -1102,6 +1170,18 @@ def review_status(
         *(
             ("harm_assessment", target_id)
             for target_id in pd.read_csv(harm_path)["harm_assessment_id"]
+        ),
+        *(
+            ("incident_location", target_id)
+            for target_id in pd.read_csv(location_path)["location_id"]
+        ),
+        *(
+            ("incident_relation", target_id)
+            for target_id in pd.read_csv(relation_path)["relation_id"]
+        ),
+        *(
+            ("cross_event_sanction_effect", target_id)
+            for target_id in pd.read_csv(cross_event_path)["cross_event_effect_id"]
         ),
     }
     actual = set(target_pairs)
@@ -1138,6 +1218,15 @@ def reconcile_pilot(
     harm_path: Annotated[Path, typer.Option(help="First-pass harm-assessment CSV.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_harm_assessments.csv"
     ),
+    location_path: Annotated[Path, typer.Option(help="First-pass incident-location CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_incident_locations.csv"
+    ),
+    relation_path: Annotated[Path, typer.Option(help="First-pass incident-relation CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_incident_relations.csv"
+    ),
+    cross_event_path: Annotated[
+        Path, typer.Option(help="First-pass cross-event sanction CSV.")
+    ] = PROJECT_ROOT / "data" / "manual" / "pilot_cross_event_sanction_effects.csv",
     output_root: Annotated[
         Path, typer.Option(help="Parent for immutable content-addressed outputs.")
     ] = PROJECT_ROOT / "data" / "manual" / "reconciled",
@@ -1145,7 +1234,15 @@ def reconcile_pilot(
     """Create validated reconciled versions without changing first-pass inputs."""
 
     try:
-        bundle = build_pilot_reconciliation(coding_path, impact_path, harm_path, review_path)
+        bundle = build_pilot_reconciliation(
+            coding_path,
+            impact_path,
+            harm_path,
+            location_path,
+            relation_path,
+            cross_event_path,
+            review_path,
+        )
         output_directory, created = write_reconciliation_bundle(bundle, output_root)
     except (ValueError, FileExistsError) as exc:
         typer.echo(str(exc))
@@ -1154,7 +1251,9 @@ def reconcile_pilot(
     typer.echo(
         f"{action} reconciliation {bundle.reconciliation_id} at {output_directory}; "
         f"{len(bundle.adjudications)} adjudications, {len(bundle.impacts)} impacts, "
-        f"{len(bundle.harms)} harms, "
+        f"{len(bundle.harms)} harms, {len(bundle.locations)} locations, "
+        f"{len(bundle.relations)} relation edges, "
+        f"{len(bundle.cross_event_effects)} cross-event effects, "
         f"{bundle.manifest['field_correction_count']} corrected fields"
     )
 
@@ -1173,6 +1272,15 @@ def export_snowflake_pilot_command(
     harm_path: Annotated[Path, typer.Option(help="Harm-assessment CSV to export.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_harm_assessments.csv"
     ),
+    location_path: Annotated[Path, typer.Option(help="Incident-location CSV to export.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_incident_locations.csv"
+    ),
+    relation_path: Annotated[Path, typer.Option(help="Incident-relation CSV to export.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_incident_relations.csv"
+    ),
+    cross_event_path: Annotated[
+        Path, typer.Option(help="Cross-event sanction CSV to export.")
+    ] = PROJECT_ROOT / "data" / "manual" / "pilot_cross_event_sanction_effects.csv",
     review_path: Annotated[Path, typer.Option(help="Independent-review CSV to export.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_independent_review.csv"
     ),
@@ -1189,6 +1297,9 @@ def export_snowflake_pilot_command(
                 coding_path,
                 impact_path,
                 harm_path,
+                location_path,
+                relation_path,
+                cross_event_path,
                 review_path,
             )
     except (ValueError, FileExistsError) as exc:
@@ -1233,14 +1344,29 @@ def scale_readiness(
     harm_path: Annotated[Path, typer.Option(help="Affected-driver harm assessment CSV.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_harm_assessments.csv"
     ),
+    location_path: Annotated[Path, typer.Option(help="Incident-location CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_incident_locations.csv"
+    ),
+    relation_path: Annotated[Path, typer.Option(help="Incident-relation CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_incident_relations.csv"
+    ),
+    cross_event_path: Annotated[Path, typer.Option(help="Cross-event sanction CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_cross_event_sanction_effects.csv"
+    ),
     output_path: Annotated[Path | None, typer.Option(help="Optional CSV snapshot path.")] = None,
     db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
 ) -> None:
     """Evaluate measured pilot gates without automating the final scope decision."""
 
     try:
-        coded, impacts, harms, reviews = load_pilot_manual_records(
-            coding_path, impact_path, harm_path, review_path
+        records = load_pilot_manual_records(
+            coding_path,
+            impact_path,
+            harm_path,
+            location_path,
+            relation_path,
+            cross_event_path,
+            review_path,
         )
     except ValueError as exc:
         typer.echo(str(exc))
@@ -1248,10 +1374,10 @@ def scale_readiness(
     with duckdb.connect(str(db_path), read_only=True) as connection:
         gates = evaluate_pilot_readiness(
             connection,
-            coded,
-            impacts,
-            harms,
-            reviews,
+            records.adjudications,
+            records.impacts,
+            records.harms,
+            records.reviews,
             load_analysis_thresholds(),
         )
     typer.echo(gates.to_string(index=False))
@@ -1273,6 +1399,15 @@ def build_explorer(
     harm_path: Annotated[Path, typer.Option(help="Affected-driver harm assessment CSV.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_harm_assessments.csv"
     ),
+    location_path: Annotated[Path, typer.Option(help="Incident-location CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_incident_locations.csv"
+    ),
+    relation_path: Annotated[Path, typer.Option(help="Incident-relation CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_incident_relations.csv"
+    ),
+    cross_event_path: Annotated[Path, typer.Option(help="Cross-event sanction CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_cross_event_sanction_effects.csv"
+    ),
     review_path: Annotated[Path, typer.Option(help="Independent-review CSV.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_independent_review.csv"
     ),
@@ -1290,13 +1425,19 @@ def build_explorer(
             coding_path,
             impact_path,
             harm_path,
+            location_path,
+            relation_path,
+            cross_event_path,
             review_path,
         )
     write_explorer(payload, output_path)
     typer.echo(
         f"Wrote {output_path} with {len(payload['adjudications'])} adjudications, "
         f"{len(payload['impacts'])} impact assessments, and "
-        f"{len(payload['harms'])} harm assessments; "
+        f"{len(payload['harms'])} harm assessments, "
+        f"{len(payload['locations'])} locations, "
+        f"{len(payload['relations'])} relation edges, and "
+        f"{len(payload['cross_event_effects'])} cross-event effects; "
         f"status={payload['metadata']['release_status']}"
     )
 

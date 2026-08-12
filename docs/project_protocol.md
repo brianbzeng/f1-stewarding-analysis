@@ -97,6 +97,10 @@ Measure separately:
 - affected-driver position changes, repair stops, punctures, retirement, and confirmed damage;
 - bounded or modeled persistent pace loss when clean-lap support is adequate; and
 - incident-triggered stops with harmful, neutral, possibly beneficial, or beneficial net effects.
+- exact qualifying-to-start displacement for sanctions carried into a later event, with the later
+  finish/points effect assigned its own evidence tier; and
+- directed multi-car relations that distinguish the primary infringement, mitigating/aggravating
+  context, and downstream harm without spreading fault to every participant.
 
 For fault-established incidents, compare victim harm with both the nominal sanction and the sanction's
 realized position/points burden. The comparison is multi-metric; seconds, positions, points, and

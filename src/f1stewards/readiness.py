@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -11,10 +12,40 @@ import pandas as pd
 
 from f1stewards.manual import (
     CodedAdjudication,
+    CrossEventSanctionEffect,
     HarmAssessment,
     ImpactAssessment,
+    IncidentLocation,
+    IncidentRelation,
     IndependentReviewRecord,
 )
+
+
+@dataclass(frozen=True)
+class PilotManualRecords:
+    """Validated linked manual inputs for one pilot analytical version."""
+
+    adjudications: list[CodedAdjudication]
+    impacts: list[ImpactAssessment]
+    harms: list[HarmAssessment]
+    locations: list[IncidentLocation]
+    relations: list[IncidentRelation]
+    cross_event_effects: list[CrossEventSanctionEffect]
+    reviews: list[IndependentReviewRecord]
+
+    @property
+    def review_targets(self) -> set[tuple[str, str]]:
+        return {
+            *(("adjudication", record.adjudication_id) for record in self.adjudications),
+            *(("impact_assessment", record.impact_assessment_id) for record in self.impacts),
+            *(("harm_assessment", record.harm_assessment_id) for record in self.harms),
+            *(("incident_location", record.location_id) for record in self.locations),
+            *(("incident_relation", record.relation_id) for record in self.relations),
+            *(
+                ("cross_event_sanction_effect", record.cross_event_effect_id)
+                for record in self.cross_event_effects
+            ),
+        }
 
 
 def _load_records(path: Path, model: type[Any]) -> list[Any]:
@@ -30,28 +61,33 @@ def load_pilot_manual_records(
     coding_path: Path,
     impact_path: Path,
     harm_path: Path,
+    location_path: Path,
+    relation_path: Path,
+    cross_event_path: Path,
     review_path: Path,
-) -> tuple[
-    list[CodedAdjudication],
-    list[ImpactAssessment],
-    list[HarmAssessment],
-    list[IndependentReviewRecord],
-]:
-    """Load and validate the four linked pilot manual artifacts."""
+) -> PilotManualRecords:
+    """Load and validate all linked pilot manual artifacts."""
 
     coded = _load_records(coding_path, CodedAdjudication)
     impacts = _load_records(impact_path, ImpactAssessment)
     harms = _load_records(harm_path, HarmAssessment)
+    locations = _load_records(location_path, IncidentLocation)
+    relations = _load_records(relation_path, IncidentRelation)
+    cross_event_effects = _load_records(cross_event_path, CrossEventSanctionEffect)
     reviews = _load_records(review_path, IndependentReviewRecord)
-    expected_targets = {
-        *(("adjudication", record.adjudication_id) for record in coded),
-        *(("impact_assessment", record.impact_assessment_id) for record in impacts),
-        *(("harm_assessment", record.harm_assessment_id) for record in harms),
-    }
+    bundle = PilotManualRecords(
+        adjudications=coded,
+        impacts=impacts,
+        harms=harms,
+        locations=locations,
+        relations=relations,
+        cross_event_effects=cross_event_effects,
+        reviews=reviews,
+    )
     actual_targets = {(record.target_type, record.target_id) for record in reviews}
     if len(actual_targets) != len(reviews):
         raise ValueError("Independent review targets must be unique")
-    if actual_targets != expected_targets:
+    if actual_targets != bundle.review_targets:
         raise ValueError("Independent review targets do not match pilot coded artifacts")
     adjudication_ids = {record.adjudication_id for record in coded}
     dangling_harms = sorted(
@@ -61,7 +97,60 @@ def load_pilot_manual_records(
     )
     if dangling_harms:
         raise ValueError(f"Harm assessments have unknown adjudications: {dangling_harms}")
-    return coded, impacts, harms, reviews
+
+    adjudications_by_incident: dict[str, list[CodedAdjudication]] = {}
+    for record in coded:
+        adjudications_by_incident.setdefault(record.incident_id, []).append(record)
+    for location in locations:
+        candidates = adjudications_by_incident.get(location.incident_id, [])
+        if not any(
+            record.event_id == location.event_id
+            and record.source_document_id == location.source_document_id
+            for record in candidates
+        ):
+            raise ValueError(f"Incident location has unknown lineage: {location.location_id}")
+
+    relation_groups: dict[str, list[IncidentRelation]] = {}
+    for relation in relations:
+        candidates = adjudications_by_incident.get(relation.incident_id, [])
+        if not any(
+            record.event_id == relation.event_id
+            and record.source_document_id == relation.source_document_id
+            for record in candidates
+        ):
+            raise ValueError(f"Incident relation has unknown lineage: {relation.relation_id}")
+        relation_groups.setdefault(relation.incident_id, []).append(relation)
+    for incident_id, group in relation_groups.items():
+        sequences = sorted(record.sequence for record in group)
+        if sequences != list(range(1, len(group) + 1)):
+            raise ValueError(f"Incident relation sequence is not contiguous: {incident_id}")
+        participants = {
+            driver_number
+            for record in group
+            for driver_number in (record.source_driver_number, record.target_driver_number)
+        }
+        if len(group) > 1 and len(participants) < 3:
+            raise ValueError(
+                f"Multi-edge incident chain needs at least three drivers: {incident_id}"
+            )
+        if not any(record.relation_scope == "primary_infringement" for record in group):
+            raise ValueError(f"Incident chain lacks a primary infringement: {incident_id}")
+
+    adjudication_by_id = {record.adjudication_id: record for record in coded}
+    for effect in cross_event_effects:
+        adjudication = adjudication_by_id.get(effect.adjudication_id)
+        if adjudication is None or (
+            adjudication.event_id != effect.origin_event_id
+            or adjudication.source_document_id != effect.source_document_id
+            or adjudication.accused_driver_number != effect.driver_number
+            or adjudication.outcome_family != "grid_penalty"
+            or adjudication.grid_places != effect.nominal_grid_places
+        ):
+            raise ValueError(
+                f"Cross-event sanction effect has unknown origin lineage: "
+                f"{effect.cross_event_effect_id}"
+            )
+    return bundle
 
 
 def review_gate(

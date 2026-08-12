@@ -4,9 +4,10 @@ Run date: 2026-08-12
 
 ## Outcome
 
-The archive, parser, coding, timing, and independent-review gates pass. The 15-target review is
-complete and the immutable reconciled pilot is `pilot-0681d52afdea`. Full-season scale-up now
-requires an explicit human go/no-go decision on analytical yield and review burden.
+The archive, parser, coding, timing, and original independent-review gates pass. The 15-target
+review is complete and the immutable reconciled pilot is `pilot-0681d52afdea`. The approved
+second-stage extension is implemented as 11 new pending review targets; it does not alter the
+existing release.
 
 | Metric | Result |
 |---|---:|
@@ -25,9 +26,12 @@ requires an explicit human go/no-go decision on analytical yield and review burd
 | FastF1 race-control messages | 285 |
 | Event-linked regulatory sources | 11 |
 | Reviewed sanction-impact assessments | 4 |
-| Reviewed mirrored driver-outcome assessments | 2 |
+| Affected-driver harm assessments | 9 (2 reviewed; 7 pending extension review) |
+| Source-preserving incident locations | 1 pending |
+| Directed multi-car relation edges | 2 pending |
+| Cross-event sanction effects | 1 pending |
 | Reproduced mechanical impact calculations | 2 |
-| Independent review | 15/15 agree |
+| Independent review | 15/26 complete; 11 extension rows pending |
 | Reconciled release | `pilot-0681d52afdea` (`double_coded`) |
 
 ## What the pilot established
@@ -60,11 +64,26 @@ reconciliation preserves the original first pass and records every review decisi
 Recalled 2025 documents 29 and 39 remain preserved as archive records but were unavailable for
 content review.
 
+## Implemented second-stage extension
+
+The extension adds one affected-driver row for every pilot adjudication, explicit observation
+windows, a turn-range location, directed multi-car context edges, and a cross-event sanction table.
+The pilot now demonstrates several important non-findings as well as severe harm: a lawful pass with
+no fault, alleged damage that cannot be quantified, confirmed but confounded lasting damage, an
+incident-caused retirement, and an exact grid displacement whose race outcome remains uncertain.
+
+Antonelli's Austrian sanction is observed at Silverstone as P7 qualifying to P10 on the grid. His
+wet-race finish/points effect is not estimable because tyre choices, neutralizations, separate
+contact, and retirement break a mechanical counterfactual. The three-car Colapinto/Piastri/Tsunoda
+example is stored as two directed edges so Tsunoda's position remains mitigation rather than an
+invented fault finding.
+
 ## Scale recommendation
 
-The technical and review pilots support continued method and report development. Before collecting
+The technical pilot and original review support continued method and report development. Before collecting
 all 2018–2025 events, implement and test the accepted second-stage extensions: separate affected-
 driver harm records, multi-car harm chains, turn-range locations, and cross-event grid-sanction
-effects. The purposive three-event yield of 2.67 candidate incidents per event is not a power
-estimate, and the recorded 4.1 review minutes should be treated as a workflow measurement rather
-than a full-corpus staffing forecast.
+effects; that implementation is now complete. Independently review and reconcile the 11 extension rows before the
+explicit full-collection go/no-go decision. The purposive three-event yield of 2.67 candidate
+incidents per event is not a power estimate, and the recorded 4.1 minutes cover only the original
+review—not the extension or a full-corpus staffing forecast.

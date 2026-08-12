@@ -53,7 +53,14 @@ analysis_thresholds:
     mechanical_same_lap_only: true
     retain_official_order_on_exact_tie: true
     served_penalty_default_tier: not_estimable
-    next_event_grid_penalty_default_tier: not_estimable
+    next_event_grid_start_effect_tier: mechanical
+    next_event_finish_effect_default_tier: not_estimable
+    require_independent_review: true
+
+  incident_context:
+    turn_range_requires_both_bounds: true
+    relation_sequence_must_be_contiguous: true
+    fault_attribution_is_edge_specific: true
     require_independent_review: true
 
   victim_harm:

@@ -16,8 +16,9 @@ and their event-date selectors are documented in `docs/regulatory_catalog_method
 3. Official final classification and championship-points document.
 4. FIA event-specific Race Director instructions and circuit notes.
 5. FIA review, protest, or International Court of Appeal decision.
-6. Public FIA/F1 timing data accessed through FastF1.
-7. Third-party structured data used only for completeness checking.
+6. Official Formula 1 or team post-race reporting for damage and race narrative.
+7. Public FIA/F1 timing data accessed through FastF1.
+8. Third-party structured data used only for completeness checking.
 
 Third-party summaries cannot overwrite an official source. Conflicts are logged and resolved manually.
 
@@ -37,6 +38,8 @@ Third-party summaries cannot overwrite an official source. Conflicts are logged 
 | [2026 F1 guideline update](https://www.fia.com/news/updated-fia-formula-one-world-championship-stewards-guidelines-driving-standards-penalties) | Future taxonomy and rule-evolution reference | Must not be applied retrospectively to 2018-2025 |
 | [FIA International Court of Appeal judgments](https://www.fia.com/judgments-ica) | Final appellate decisions and case-law index | Appeals are selected, not representative of all decisions |
 | [2021 Abu Dhabi review](https://www.fia.com/sites/default/files/2021_f1_abu_dhabi_grand_prix_-_report_to_the_wmsc_-_19_march_2022.pdf) | Governance case study | Race Control procedure, not an ordinary steward penalty |
+| [2025 British GP provisional starting grid](https://www.fia.com/system/files/decision-document/2025_british_grand_prix_-_provisional_starting_grid.pdf) | Realized application of Antonelli's Austrian grid penalty | Establishes qualifying-to-start displacement, not finish effect |
+| [2025 British GP final classification](https://www.fia.com/system/files/decision-document/2025_british_grand_prix_-_final_race_classification.pdf) | Application-event status, laps, finish, and points | Does not supply a no-penalty counterfactual |
 
 ## Event-specific document families
 
@@ -58,6 +61,7 @@ The collector will identify and retain:
 |---|---|---|
 | [FastF1](https://docs.fastf1.dev/data_reference/index.html) | Timing, laps, pit in/out, tyre age, positions, telemetry, weather, track status, race control, and results from 2018 | Public feed is less complete than FIA/team evidence; individual sessions can be missing and timing alone cannot confirm damage |
 | [OpenF1](https://openf1.org/docs/) | Secondary validation for timing, position, and race control from 2023 | Unofficial; not a primary source |
+| [Formula 1 official race reporting](https://www.formula1.com/en/latest/all) | Race narrative, official interviews, damage reports, and incident sequencing | Secondary to FIA findings; narrative claims require explicit attribution |
 
 ## Completeness-only references
 
@@ -72,6 +76,8 @@ The [F1 Penalties Dashboard](https://github.com/j5t3313/F1_Penalties_Dashboard) 
 - Steward decisions are collective; individual votes are not public.
 - Driver and steward nationality must be sourced and defined consistently rather than inferred from names.
 - Final classifications show official consequences, not the alternate race strategy that would have occurred without a penalty.
+- A carried grid sanction can have an exact qualifying-to-start effect while its finish and points
+  effect remains non-identifiable.
 - Team debriefs can confirm damage or an incident-responsive stop, but teams are interested parties;
   the timing consequence is independently checked where possible.
 - A slow post-incident lap can reflect traffic, tyre condition, fuel, track evolution, damage, or race

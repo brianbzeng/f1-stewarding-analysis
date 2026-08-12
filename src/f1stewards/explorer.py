@@ -238,6 +238,9 @@ def _quality_summary(
     adjudications: pd.DataFrame,
     impacts: pd.DataFrame,
     harms: pd.DataFrame,
+    locations: pd.DataFrame,
+    relations: pd.DataFrame,
+    cross_event_effects: pd.DataFrame,
     review_frame: pd.DataFrame,
 ) -> dict[str, Any]:
     active_failures, recalled, metadata_only, source_as_of, timing_as_of = connection.sql(
@@ -261,7 +264,14 @@ def _quality_summary(
         review_frame.review_status.isin(resolved_review_statuses).sum()
     )
     curated_statuses = pd.concat(
-        [adjudications.review_status, impacts.review_status, harms.review_status],
+        [
+            adjudications.review_status,
+            impacts.review_status,
+            harms.review_status,
+            locations.review_status,
+            relations.review_status,
+            cross_event_effects.review_status,
+        ],
         ignore_index=True,
     )
     return {
@@ -315,13 +325,28 @@ def build_explorer_payload(
     coding_path: Path,
     impact_path: Path,
     harm_path: Path,
+    location_path: Path,
+    relation_path: Path,
+    cross_event_path: Path,
     review_path: Path,
 ) -> dict[str, Any]:
     adjudications = load_explorer_adjudications(connection, coding_path)
     impacts = load_explorer_impacts(connection, impact_path)
     harms = load_explorer_harms(connection, harm_path)
+    locations = pd.read_csv(location_path)
+    relations = pd.read_csv(relation_path)
+    cross_event_effects = pd.read_csv(cross_event_path)
     reviews = pd.read_csv(review_path)
-    quality = _quality_summary(connection, adjudications, impacts, harms, reviews)
+    quality = _quality_summary(
+        connection,
+        adjudications,
+        impacts,
+        harms,
+        locations,
+        relations,
+        cross_event_effects,
+        reviews,
+    )
     release_status = explorer_release_status(quality)
     adjudication_columns = [
         "adjudication_id",
@@ -394,7 +419,12 @@ def build_explorer_payload(
         "position_before",
         "position_after",
         "net_positions_lost_observed",
+        "position_window_start_lap",
+        "position_window_end_lap",
+        "relative_time_comparator_driver_number",
         "affected_relative_time_loss_seconds",
+        "relative_time_window_start_lap",
+        "relative_time_window_end_lap",
         "post_incident_clean_laps",
         "persistent_pace_status",
         "persistent_delta_per_lap_seconds",
@@ -410,6 +440,9 @@ def build_explorer_payload(
         "decision_url",
         "classification_url",
     ]
+    location_columns = list(locations.columns)
+    relation_columns = list(relations.columns)
+    cross_event_columns = list(cross_event_effects.columns)
     return {
         "metadata": {
             "title": "The Cost of Discretion — Evidence Explorer",
@@ -423,6 +456,9 @@ def build_explorer_payload(
         "adjudications": _json_records(adjudications, adjudication_columns),
         "impacts": _json_records(impacts, impact_columns),
         "harms": _json_records(harms, harm_columns),
+        "locations": _json_records(locations, location_columns),
+        "relations": _json_records(relations, relation_columns),
+        "cross_event_effects": _json_records(cross_event_effects, cross_event_columns),
         "quality": quality,
     }
 
@@ -443,6 +479,14 @@ def validate_explorer_payload(payload: dict[str, Any]) -> None:
         ):
             raise ValueError(
                 f"Missing 2025 guideline lineage: {row.get('adjudication_id')}"
+            )
+    for row in payload.get("cross_event_effects", []):
+        if not row.get("application_grid_url") or not row.get(
+            "application_classification_url"
+        ):
+            raise ValueError(
+                "Missing application-event evidence: "
+                f"{row.get('cross_event_effect_id')}"
             )
     if any("nationality" in key.casefold() for row in adjudications for key in row):
         raise ValueError("Default explorer payload cannot contain nationality ranking fields")
@@ -537,6 +581,8 @@ def render_explorer_html(payload: dict[str, Any]) -> str:
   <button role="tab" aria-selected="false" aria-controls="comparables" id="tab-comparables">Comparable cases</button>
   <button role="tab" aria-selected="false" aria-controls="impact" id="tab-impact">Competitive impact</button>
   <button role="tab" aria-selected="false" aria-controls="harm" id="tab-harm">Victim harm</button>
+  <button role="tab" aria-selected="false" aria-controls="context" id="tab-context">Incident context</button>
+  <button role="tab" aria-selected="false" aria-controls="carried" id="tab-carried">Carried sanctions</button>
   <button role="tab" aria-selected="false" aria-controls="quality" id="tab-quality">Data quality</button>
 </div></nav>
 <main>
@@ -566,6 +612,15 @@ def render_explorer_html(payload: dict[str, Any]) -> str:
     <h2>Victim harm and lasting consequences</h2><p>Observed harm, damage evidence, forced stops, and modeled persistent pace loss remain separate from responsibility and sanction burden. The table is a proportionality review input, not an automatic verdict that a penalty was wrong.</p>
     <div class="table-wrap" id="harm-table"></div>
   </section>
+  <section id="context" role="tabpanel" aria-labelledby="tab-context" hidden>
+    <h2>Incident location and causal context</h2><p>Turn ranges and directed multi-car edges preserve official context without assigning blame to every participant.</p>
+    <div class="table-wrap" id="location-table"></div>
+    <div class="table-wrap" id="relation-table"></div>
+  </section>
+  <section id="carried" role="tabpanel" aria-labelledby="tab-carried" hidden>
+    <h2>Carried-over sanction effects</h2><p>Exact starting-grid displacement is separated from uncertain race-finish and points counterfactuals.</p>
+    <div class="table-wrap" id="carried-table"></div>
+  </section>
   <section id="quality" role="tabpanel" aria-labelledby="tab-quality" hidden>
     <h2>Data quality and lineage</h2><div class="cards" id="quality-cards"></div>
     <div class="panel"><h3>Build lineage</h3><dl id="build-lineage"></dl></div>
@@ -587,9 +642,11 @@ function filterRows(){{const values={{}};document.querySelectorAll('[data-filter
 function renderDecisions(){{const host=document.getElementById('decision-table');document.getElementById('filter-status').textContent=`Showing ${{filtered.length}} of ${{DATA.adjudications.length}} adjudications.`;if(!filtered.length){{host.innerHTML='<p class="empty">No adjudications match the selected filters.</p>';return;}}host.innerHTML=`<table><caption>Filtered adjudications — ${{filtered.length}} rows</caption><thead><tr><th scope="col">Event / incident</th><th scope="col">Drivers</th><th scope="col">Outcome</th><th scope="col">Evidence and reasoning</th></tr></thead><tbody>${{filtered.map(r=>`<tr><td><strong>${{esc(r.event_name)}}</strong><br>${{esc(r.session_type)}} · lap ${{esc(r.lap_number)}}${{r.turn_number?' · turn '+esc(r.turn_number):''}}<br><code>${{esc(r.adjudication_id)}}</code></td><td>Car ${{esc(r.accused_driver_number)}} ${{esc(r.accused_driver_name)}}<br><span class="muted">Counterpart: Car ${{esc(r.affected_driver_number)}} ${{esc(r.affected_driver_name)}}</span></td><td>${{esc(r.sanction_label)}}<br><span class="muted">${{esc(label(r.incident_family))}} · ${{esc(label(r.conformance_status))}}</span></td><td><details><summary>Inspect evidence</summary><div class="evidence-block"><strong>Fact</strong>${{esc(r.fact_text||'Not available')}}</div><div class="evidence-block"><strong>Decision</strong>${{esc(r.decision_text||'Not available')}}</div><div class="evidence-block"><strong>Reason</strong>${{esc(r.reason_text||'Not available')}}</div><div class="evidence-block"><strong>Coding note</strong>${{esc(r.coding_notes)}}</div><p><a href="${{esc(r.source_url)}}">Official decision</a>${{r.classification_url?' · <a href="'+esc(r.classification_url)+'">Official classification</a>':''}}${{r.rule_url?' · <a href="'+esc(r.rule_url)+'">Applicable rule/guideline</a>':''}}</p></details></td></tr>`).join('')}}</tbody></table>`;}}
 function renderImpact(){{const rows=DATA.impacts,host=document.getElementById('impact-table');host.innerHTML=`<table><caption>Impact assessments — ${{rows.length}} rows; evidence tiers are not aggregated together</caption><thead><tr><th scope="col">Assessment</th><th scope="col">Tier</th><th scope="col">Observed arithmetic</th><th scope="col">Method and evidence</th></tr></thead><tbody>${{rows.map(r=>`<tr><td><code>${{esc(r.impact_assessment_id)}}</code><br>Car ${{esc(r.driver_number)}} · ${{esc(label(r.sanction_type))}}</td><td><strong>${{esc(label(r.impact_level))}}</strong><br>${{esc(label(r.sanction_application))}}</td><td>${{r.impact_level==='mechanical'?`Position ${{esc(r.official_finish_position)}} → ${{esc(r.counterfactual_finish_position)}}; ${{esc(r.positions_gained_without_penalty)}} positions; ${{esc(r.points_gained_without_penalty)}} points`:'No deterministic alternate classification'}}</td><td>${{esc(r.calculation_method)}}<br><span class="muted">Assumptions: ${{esc(r.assumptions)}}</span><br><a href="${{esc(r.decision_url)}}">Decision</a> · <a href="${{esc(r.classification_url)}}">Classification</a></td></tr>`).join('')}}</tbody></table>`;}}
 function renderHarm(){{const rows=DATA.harms,host=document.getElementById('harm-table');host.innerHTML=`<table><caption>Harm assessments - ${{rows.length}} rows; responsibility, harm, and sanction cost are not collapsed into one score</caption><thead><tr><th scope="col">Assessment</th><th scope="col">Evidence</th><th scope="col">Observed consequence</th><th scope="col">Method and evidence</th></tr></thead><tbody>${{rows.map(r=>`<tr><td><code>${{esc(r.harm_assessment_id)}}</code><br>Affected Car ${{esc(r.affected_driver_number)}} &middot; counterparty Car ${{esc(r.counterparty_driver_number)}}</td><td><strong>${{esc(label(r.harm_evidence_level))}}</strong><br>${{esc(label(r.responsibility_status))}}<br><span class="muted">${{esc(label(r.damage_evidence))}} &middot; ${{esc(label(r.damage_type))}}</span></td><td>${{r.position_before?`Position ${{esc(r.position_before)}} to ${{esc(r.position_after)}}; ${{esc(r.net_positions_lost_observed)}} net lost`:''}}${{r.affected_relative_time_loss_seconds!=null?`<br>${{esc(r.affected_relative_time_loss_seconds)}}s relative swing`:''}}<br>Repair stop: ${{esc(label(r.repair_stop_required))}}<br>Persistent pace: ${{esc(label(r.persistent_pace_status))}}<br>Net effect: ${{esc(label(r.net_effect_direction))}}</td><td>${{esc(r.calculation_method)}}<br><span class="muted">Assumptions: ${{esc(r.assumptions)}}</span><br><a href="${{esc(r.decision_url)}}">Decision</a> &middot; <a href="${{esc(r.classification_url)}}">Classification</a></td></tr>`).join('')}}</tbody></table>`;}}
+function renderContext(){{const locations=DATA.locations,relations=DATA.relations;document.getElementById('location-table').innerHTML=`<table><caption>Supplemental locations - ${{locations.length}} rows</caption><thead><tr><th>Incident</th><th>Location</th><th>Evidence</th></tr></thead><tbody>${{locations.map(r=>`<tr><td><code>${{esc(r.incident_id)}}</code><br>Lap ${{esc(r.lap_number)}}</td><td><strong>${{esc(r.location_text)}}</strong><br>${{esc(label(r.location_type))}}</td><td>${{esc(r.coding_notes)}}<br><a href="${{esc(String(r.evidence_urls).split(';')[0])}}">Official decision</a></td></tr>`).join('')}}</tbody></table>`;document.getElementById('relation-table').innerHTML=`<table><caption>Directed incident relations - ${{relations.length}} edges</caption><thead><tr><th>Sequence</th><th>Driver relation</th><th>Scope and evidence</th></tr></thead><tbody>${{relations.map(r=>`<tr><td>${{esc(r.sequence)}}</td><td>Car ${{esc(r.source_driver_number)}} &rarr; Car ${{esc(r.target_driver_number)}}<br><strong>${{esc(label(r.relation_type))}}</strong></td><td>${{esc(label(r.relation_scope))}} &middot; ${{esc(label(r.evidence_level))}}<br>Fault attributed: ${{esc(r.fault_attributed)}}<br><span class="muted">${{esc(r.coding_notes)}}</span></td></tr>`).join('')}}</tbody></table>`;}}
+function renderCarried(){{const rows=DATA.cross_event_effects,host=document.getElementById('carried-table');host.innerHTML=`<table><caption>Cross-event sanction effects - ${{rows.length}} rows</caption><thead><tr><th>Sanction</th><th>Realized grid effect</th><th>Race-outcome scope</th><th>Evidence</th></tr></thead><tbody>${{rows.map(r=>`<tr><td><code>${{esc(r.cross_event_effect_id)}}</code><br>Car ${{esc(r.driver_number)}} &middot; ${{esc(r.nominal_grid_places)}} places</td><td>Qualified P${{esc(r.qualifying_position)}} &rarr; started P${{esc(r.starting_grid_position)}}<br><strong>${{esc(r.realized_grid_places_lost)}} places lost</strong></td><td>${{esc(label(r.finish_effect_level))}}<br>${{esc(label(r.race_status))}} &middot; ${{esc(r.official_points)}} points<br><span class="muted">${{esc(r.assumptions)}}</span></td><td><a href="${{esc(r.application_grid_url)}}">Starting grid</a> &middot; <a href="${{esc(r.application_classification_url)}}">Classification</a></td></tr>`).join('')}}</tbody></table>`;}}
 function renderQuality(){{const q=DATA.quality,m=DATA.metadata;document.getElementById('quality-cards').innerHTML=`<div class="card"><strong>${{q.active_retrieval_failures}}</strong><span>active retrieval failures</span></div><div class="card"><strong>${{q.recalled_source_records}}</strong><span>recalled source records retained</span></div><div class="card"><strong>${{q.metadata_only_regulatory_sources}}</strong><span>metadata-only regulatory gaps</span></div><div class="card"><strong>${{q.missing_core_text_ids.length}}</strong><span>candidate rows missing core text</span></div><div class="card"><strong>${{q.review_unresolved}}</strong><span>review targets unresolved</span></div><div class="card"><strong>${{q.curated_review_ready}} / ${{q.curated_review_total}}</strong><span>curated rows release-ready</span></div>`;document.getElementById('build-lineage').innerHTML=`<dt>Git commit</dt><dd>${{esc(m.git_commit)}}</dd><dt>Generated UTC</dt><dd>${{esc(m.generated_at_utc)}}</dd><dt>FIA sources as of</dt><dd>${{esc(q.source_data_as_of)}}</dd><dt>FastF1 timing as of</dt><dd>${{esc(q.timing_data_as_of)}}</dd>`;document.getElementById('footer-commit').textContent=m.git_commit;}}
 function csv(){{const keys=['adjudication_id','incident_id','event_id','season','session_type','incident_family','outcome_family','sanction_label','review_status','source_url'];const lines=[keys.join(','),...filtered.map(r=>keys.map(k=>'"'+String(r[k]??'').replaceAll('"','""')+'"').join(','))];const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\\n')],{{type:'text/csv'}}));a.download='filtered_f1_adjudications.csv';a.click();URL.revokeObjectURL(a.href);}}
-document.getElementById('reset-filters').addEventListener('click',()=>{{document.querySelectorAll('[data-filter]').forEach(s=>s.value='');filterRows();}});document.getElementById('download-csv').addEventListener('click',csv);cards();bars();makeFilters();renderDecisions();renderImpact();renderHarm();renderQuality();
+document.getElementById('reset-filters').addEventListener('click',()=>{{document.querySelectorAll('[data-filter]').forEach(s=>s.value='');filterRows();}});document.getElementById('download-csv').addEventListener('click',csv);cards();bars();makeFilters();renderDecisions();renderImpact();renderHarm();renderContext();renderCarried();renderQuality();
 </script>
 </body></html>"""
 

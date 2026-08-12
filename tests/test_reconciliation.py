@@ -21,8 +21,11 @@ from f1stewards.reconciliation import (
 FIXED_REVIEW_TIME = datetime(2026, 8, 12, 12, 0, tzinfo=UTC)
 INPUT_HASHES = {
     "coded_adjudications": "a" * 64,
+    "cross_event_sanction_effects": "0" * 64,
     "harm_assessments": "d" * 64,
     "impact_assessments": "b" * 64,
+    "incident_locations": "e" * 64,
+    "incident_relations": "f" * 64,
     "independent_review": "c" * 64,
 }
 
@@ -172,7 +175,8 @@ def complete_reviews(
 
 def test_agreement_creates_new_double_coded_versions_and_status_audit() -> None:
     bundle = reconcile_pilot_records(
-        [coded_record()], [impact_record()], [harm_record()], complete_reviews(), INPUT_HASHES
+        [coded_record()], [impact_record()], [harm_record()], [], [], [],
+        complete_reviews(), INPUT_HASHES
     )
 
     assert bundle.adjudications.loc[0, "review_status"] == "double_coded"
@@ -188,6 +192,9 @@ def test_correction_is_validated_and_preserved_in_field_level_audit() -> None:
         [coded_record()],
         [impact_record()],
         [harm_record()],
+        [],
+        [],
+        [],
         complete_reviews("correct", {"lap_number": 32, "coding_notes": "Reviewed."}),
         INPUT_HASHES,
     )
@@ -209,10 +216,13 @@ def test_correction_is_validated_and_preserved_in_field_level_audit() -> None:
 def test_invalid_correction_patch_is_rejected(corrections: dict, message: str) -> None:
     with pytest.raises(ValueError, match=message):
         reconcile_pilot_records(
-            [coded_record()],
-            [impact_record()],
-            [harm_record()],
-            complete_reviews("correct", corrections),
+                [coded_record()],
+                [impact_record()],
+                [harm_record()],
+                [],
+                [],
+                [],
+                complete_reviews("correct", corrections),
             INPUT_HASHES,
         )
 
@@ -226,13 +236,15 @@ def test_unresolved_review_cannot_be_reconciled() -> None:
 
     with pytest.raises(ValueError, match="unresolved review"):
         reconcile_pilot_records(
-            [coded_record()], [impact_record()], [harm_record()], reviews, INPUT_HASHES
+            [coded_record()], [impact_record()], [harm_record()], [], [], [],
+            reviews, INPUT_HASHES
         )
 
 
 def test_content_addressed_writer_is_idempotent_and_detects_tampering(tmp_path) -> None:
     bundle = reconcile_pilot_records(
-        [coded_record()], [impact_record()], [harm_record()], complete_reviews(), INPUT_HASHES
+        [coded_record()], [impact_record()], [harm_record()], [], [], [],
+        complete_reviews(), INPUT_HASHES
     )
     directory, created = write_reconciliation_bundle(bundle, tmp_path)
     second_directory, second_created = write_reconciliation_bundle(bundle, tmp_path)
@@ -253,10 +265,13 @@ def test_content_addressed_writer_is_idempotent_and_detects_tampering(tmp_path) 
 
 def test_actual_pilot_shapes_reconcile_after_synthetic_completed_reviews() -> None:
     manual_root = PROJECT_ROOT / "data" / "manual"
-    coded, impacts, harms, pending_reviews = load_pilot_manual_records(
+    records = load_pilot_manual_records(
         manual_root / "pilot_coded_adjudications.csv",
         manual_root / "pilot_impact_assessments.csv",
         manual_root / "pilot_harm_assessments.csv",
+        manual_root / "pilot_incident_locations.csv",
+        manual_root / "pilot_incident_relations.csv",
+        manual_root / "pilot_cross_event_sanction_effects.csv",
         manual_root / "pilot_independent_review.csv",
     )
     completed_reviews = [
@@ -269,13 +284,25 @@ def test_actual_pilot_shapes_reconcile_after_synthetic_completed_reviews() -> No
                 "review_minutes": 1.0,
             }
         )
-        for record in pending_reviews
+        for record in records.reviews
     ]
 
-    bundle = reconcile_pilot_records(coded, impacts, harms, completed_reviews, INPUT_HASHES)
+    bundle = reconcile_pilot_records(
+        records.adjudications,
+        records.impacts,
+        records.harms,
+        records.locations,
+        records.relations,
+        records.cross_event_effects,
+        completed_reviews,
+        INPUT_HASHES,
+    )
 
     assert len(bundle.adjudications) == 9
     assert len(bundle.impacts) == 4
-    assert len(bundle.harms) == 2
-    assert len(bundle.audit) == 15
-    assert bundle.manifest["review_target_count"] == 15
+    assert len(bundle.harms) == 9
+    assert len(bundle.locations) == 1
+    assert len(bundle.relations) == 2
+    assert len(bundle.cross_event_effects) == 1
+    assert len(bundle.audit) == 26
+    assert bundle.manifest["review_target_count"] == 26

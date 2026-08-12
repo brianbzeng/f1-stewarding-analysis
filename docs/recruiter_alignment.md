@@ -24,9 +24,11 @@ The project is an F1 domain analysis, but its delivery is tailored to the HHS OI
 
 - The command-line workflow is restartable and distinguishes acquisition, parsing, enrichment,
   validation, and audit operations.
-- Pydantic contracts reject invalid adjudication and impact combinations at the analytical boundary.
-- Fourteen zero-row SQL controls compensate for DuckDB's cross-schema foreign-key limitation and catch
-  missing lineage, impossible values, incomplete mechanical arithmetic, and invalid rule windows.
+- Pydantic contracts reject invalid adjudication, harm, turn-range, directed-relation, and
+  cross-event sanction combinations at the analytical boundary.
+- Twenty-two zero-row SQL controls compensate for DuckDB's cross-schema foreign-key limitation and
+  catch missing lineage, impossible values, incomplete arithmetic, invalid rule windows, malformed
+  relation chains, and cross-event grid mismatches.
 - Event-date rule versions are data, not prose-only citations; an archive-link drift is represented as
   a controlled source exception.
 - Versioned Sporting Regulation and International Sporting Code catalogs, event-date SQL selectors,
@@ -34,12 +36,15 @@ The project is an F1 domain analysis, but its delivery is tailored to the HHS OI
   research governance into reproducible application behavior.
 - Content-addressed reconciliation preserves the initial coding and human review, applies only
   validated correction patches, emits a field-level audit, and verifies input/output checksums.
-- The optional Snowsight package maps 12 typed Parquet tables into six schemas, supplies fail-fast
-  loads and 15 quality controls, and distinguishes local package validation from an unexecuted remote
+- The optional Snowsight package maps 16 typed Parquet tables into six schemas, supplies fail-fast
+  loads and 24 quality controls, and distinguishes local package validation from an unexecuted remote
   deployment claim.
 - The executed notebooks lead with scope, evidence status, and interpretation instead of presenting
   charts without decision context.
 - Competitive impact separates exact arithmetic from strategy-dependent speculation.
+- A normalized harm/context layer records non-findings as well as severe outcomes, prevents
+  multi-car context from inheriting fault, and separates delayed grid displacement from uncertain
+  race results.
 
 ## Honest qualification boundary
 

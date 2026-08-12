@@ -91,6 +91,11 @@ counterfactual.
 The affected driver's relative gap deterioration across the incident lap. It includes the attempted
 pass, altered lines, contact, and race dynamics, so it is never described as pure damage cost.
 
+`position_window_start_lap` / `position_window_end_lap` and the parallel relative-time window fields
+make the observation window explicit. This matters when contact occurs on one lap but the completed
+pass appears in the next lap's position field. `relative_time_comparator_driver_number` may differ
+from the adjudicated counterparty only when the method explains why that comparator is appropriate.
+
 ### `persistent_pace_status`
 
 One of `confirmed_loss`, `modeled_loss`, `no_detectable_loss`, `insufficient_data`, or
@@ -102,6 +107,28 @@ interval. One normal post-incident lap is `insufficient_data`, not proof of no d
 One of `harmed`, `neutral`, `possible_benefit`, `benefit`, or `unclear`. `possible_benefit` and
 `benefit` require a documented mechanism such as a Safety Car/VSC pit discount, planned-stop overlap,
 useful tyre offset, or undercut. A generic forced-stop time assumption is prohibited.
+
+## Incident context extensions
+
+### `location_type`
+
+One of `single_turn`, `turn_range`, `straight`, `pit_lane`, `other`, or `unknown`. A turn range
+requires increasing start/end bounds. Non-turn locations cannot carry turn numbers.
+
+### `relation_type` and `relation_scope`
+
+A directed incident edge records what one driver's presence or action did to another. Types include
+direct/secondary contact, forcing off track, visibility obstruction, avoidance, debris effect, and
+sporting benefit. Scope distinguishes the `primary_infringement` from `mitigating_context`,
+`aggravating_context`, `downstream_harm`, and neutral observed context. `fault_attributed` applies to
+the edge, not automatically to every participant in the chain.
+
+### Cross-event sanction effects
+
+`realized_grid_places_lost` is signed arithmetic equal to starting-grid position minus qualifying
+position. A mechanical grid effect does not imply a mechanical finish or points effect. Those
+counterfactual fields remain null when weather, strategy, neutralizations, later contact, or a
+retirement prevent defensible estimation.
 
 ### `fault_language`
 

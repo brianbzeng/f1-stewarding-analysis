@@ -17,23 +17,32 @@ import pandas as pd
 
 from f1stewards.manual import (
     CodedAdjudication,
+    CrossEventSanctionEffect,
     HarmAssessment,
     ImpactAssessment,
+    IncidentLocation,
+    IncidentRelation,
     IndependentReviewRecord,
 )
 from f1stewards.readiness import load_pilot_manual_records
 
-METHOD_VERSION = "pilot_reconciliation_v2"
+METHOD_VERSION = "pilot_reconciliation_v3"
 INPUT_LABELS = (
     "coded_adjudications",
+    "cross_event_sanction_effects",
     "harm_assessments",
     "impact_assessments",
+    "incident_locations",
+    "incident_relations",
     "independent_review",
 )
 OUTPUT_FILENAMES = (
     "adjudications.csv",
     "impact_assessments.csv",
     "harm_assessments.csv",
+    "incident_locations.csv",
+    "incident_relations.csv",
+    "cross_event_sanction_effects.csv",
     "reconciliation_audit.csv",
     "manifest.json",
 )
@@ -69,6 +78,37 @@ PROTECTED_FIELDS = {
             "review_status",
         }
     ),
+    "incident_location": frozenset(
+        {
+            "location_id",
+            "incident_id",
+            "event_id",
+            "source_document_id",
+            "coder_id",
+            "review_status",
+        }
+    ),
+    "incident_relation": frozenset(
+        {
+            "relation_id",
+            "incident_id",
+            "event_id",
+            "source_document_id",
+            "coder_id",
+            "review_status",
+        }
+    ),
+    "cross_event_sanction_effect": frozenset(
+        {
+            "cross_event_effect_id",
+            "adjudication_id",
+            "origin_event_id",
+            "application_event_id",
+            "source_document_id",
+            "driver_number",
+            "review_status",
+        }
+    ),
 }
 
 
@@ -80,6 +120,9 @@ class ReconciliationBundle:
     adjudications: pd.DataFrame
     impacts: pd.DataFrame
     harms: pd.DataFrame
+    locations: pd.DataFrame
+    relations: pd.DataFrame
+    cross_event_effects: pd.DataFrame
     audit: pd.DataFrame
     manifest: dict[str, Any]
 
@@ -137,9 +180,24 @@ def _audit_row(
 
 
 def _reconcile_record(
-    record: CodedAdjudication | ImpactAssessment | HarmAssessment,
+    record: (
+        CodedAdjudication
+        | ImpactAssessment
+        | HarmAssessment
+        | IncidentLocation
+        | IncidentRelation
+        | CrossEventSanctionEffect
+    ),
     review: IndependentReviewRecord,
-) -> tuple[CodedAdjudication | ImpactAssessment | HarmAssessment, list[dict[str, Any]]]:
+) -> tuple[
+    CodedAdjudication
+    | ImpactAssessment
+    | HarmAssessment
+    | IncidentLocation
+    | IncidentRelation
+    | CrossEventSanctionEffect,
+    list[dict[str, Any]],
+]:
     initial = record.model_dump(mode="json")
     corrections: dict[str, Any] = {}
     if review.review_status == "correct":
@@ -183,6 +241,9 @@ def reconcile_pilot_records(
     coded: list[CodedAdjudication],
     impacts: list[ImpactAssessment],
     harms: list[HarmAssessment],
+    locations: list[IncidentLocation],
+    relations: list[IncidentRelation],
+    cross_event_effects: list[CrossEventSanctionEffect],
     reviews: list[IndependentReviewRecord],
     input_sha256: Mapping[str, str],
 ) -> ReconciliationBundle:
@@ -204,6 +265,12 @@ def reconcile_pilot_records(
         *(("adjudication", record.adjudication_id) for record in coded),
         *(("impact_assessment", record.impact_assessment_id) for record in impacts),
         *(("harm_assessment", record.harm_assessment_id) for record in harms),
+        *(("incident_location", record.location_id) for record in locations),
+        *(("incident_relation", record.relation_id) for record in relations),
+        *(
+            ("cross_event_sanction_effect", record.cross_event_effect_id)
+            for record in cross_event_effects
+        ),
     }
     if set(review_by_target) != expected_targets:
         raise ValueError("Independent review targets do not match pilot coded artifacts")
@@ -211,6 +278,9 @@ def reconcile_pilot_records(
     reconciled_adjudications: list[CodedAdjudication] = []
     reconciled_impacts: list[ImpactAssessment] = []
     reconciled_harms: list[HarmAssessment] = []
+    reconciled_locations: list[IncidentLocation] = []
+    reconciled_relations: list[IncidentRelation] = []
+    reconciled_cross_event_effects: list[CrossEventSanctionEffect] = []
     audit_rows: list[dict[str, Any]] = []
     for record in coded:
         reconciled, audit = _reconcile_record(
@@ -233,6 +303,27 @@ def reconcile_pilot_records(
         )
         reconciled_harms.append(reconciled)  # type: ignore[arg-type]
         audit_rows.extend(audit)
+    for record in locations:
+        reconciled, audit = _reconcile_record(
+            record,
+            review_by_target[("incident_location", record.location_id)],
+        )
+        reconciled_locations.append(reconciled)  # type: ignore[arg-type]
+        audit_rows.extend(audit)
+    for record in relations:
+        reconciled, audit = _reconcile_record(
+            record,
+            review_by_target[("incident_relation", record.relation_id)],
+        )
+        reconciled_relations.append(reconciled)  # type: ignore[arg-type]
+        audit_rows.extend(audit)
+    for record in cross_event_effects:
+        reconciled, audit = _reconcile_record(
+            record,
+            review_by_target[("cross_event_sanction_effect", record.cross_event_effect_id)],
+        )
+        reconciled_cross_event_effects.append(reconciled)  # type: ignore[arg-type]
+        audit_rows.extend(audit)
 
     adjudication_ids = {record.adjudication_id for record in reconciled_adjudications}
     dangling_impacts = sorted(
@@ -250,6 +341,32 @@ def reconcile_pilot_records(
     if dangling_harms:
         raise ValueError(f"Reconciled harms have unknown adjudications: {dangling_harms}")
 
+    incident_ids = {record.incident_id for record in reconciled_adjudications}
+    dangling_locations = sorted(
+        record.location_id
+        for record in reconciled_locations
+        if record.incident_id not in incident_ids
+    )
+    if dangling_locations:
+        raise ValueError(f"Reconciled locations have unknown incidents: {dangling_locations}")
+    dangling_relations = sorted(
+        record.relation_id
+        for record in reconciled_relations
+        if record.incident_id not in incident_ids
+    )
+    if dangling_relations:
+        raise ValueError(f"Reconciled relations have unknown incidents: {dangling_relations}")
+    dangling_cross_event_effects = sorted(
+        record.cross_event_effect_id
+        for record in reconciled_cross_event_effects
+        if record.adjudication_id not in adjudication_ids
+    )
+    if dangling_cross_event_effects:
+        raise ValueError(
+            "Reconciled cross-event effects have unknown adjudications: "
+            f"{dangling_cross_event_effects}"
+        )
+
     adjudication_frame = pd.DataFrame(
         [record.model_dump(mode="json") for record in reconciled_adjudications],
         columns=list(CodedAdjudication.model_fields),
@@ -262,13 +379,25 @@ def reconcile_pilot_records(
         [record.model_dump(mode="json") for record in reconciled_harms],
         columns=list(HarmAssessment.model_fields),
     )
+    location_frame = pd.DataFrame(
+        [record.model_dump(mode="json") for record in reconciled_locations],
+        columns=list(IncidentLocation.model_fields),
+    )
+    relation_frame = pd.DataFrame(
+        [record.model_dump(mode="json") for record in reconciled_relations],
+        columns=list(IncidentRelation.model_fields),
+    )
+    cross_event_frame = pd.DataFrame(
+        [record.model_dump(mode="json") for record in reconciled_cross_event_effects],
+        columns=list(CrossEventSanctionEffect.model_fields),
+    )
     audit_frame = pd.DataFrame(audit_rows)
     decision_counts = Counter(review.review_status for review in reviews)
     reviewed_at = max(review.reviewed_at_utc for review in reviews)
     correction_rows = int(audit_frame.field_name.ne("review_status").sum())
     reconciliation_id = _reconciliation_id(hashes)
     manifest = {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "method_version": METHOD_VERSION,
         "reconciliation_id": reconciliation_id,
         "reconciled_at_utc": reviewed_at.astimezone(UTC).isoformat(),
@@ -276,6 +405,9 @@ def reconcile_pilot_records(
         "adjudication_count": len(reconciled_adjudications),
         "impact_assessment_count": len(reconciled_impacts),
         "harm_assessment_count": len(reconciled_harms),
+        "incident_location_count": len(reconciled_locations),
+        "incident_relation_count": len(reconciled_relations),
+        "cross_event_sanction_effect_count": len(reconciled_cross_event_effects),
         "review_target_count": len(reviews),
         "review_decision_counts": dict(sorted(decision_counts.items())),
         "field_correction_count": correction_rows,
@@ -287,6 +419,9 @@ def reconcile_pilot_records(
         adjudications=adjudication_frame,
         impacts=impact_frame,
         harms=harm_frame,
+        locations=location_frame,
+        relations=relation_frame,
+        cross_event_effects=cross_event_frame,
         audit=audit_frame,
         manifest=manifest,
     )
@@ -296,22 +431,37 @@ def build_pilot_reconciliation(
     coding_path: Path,
     impact_path: Path,
     harm_path: Path,
+    location_path: Path,
+    relation_path: Path,
+    cross_event_path: Path,
     review_path: Path,
 ) -> ReconciliationBundle:
     """Load linked CSVs, validate them, and build a reconciled in-memory bundle."""
 
-    coded, impacts, harms, reviews = load_pilot_manual_records(
-        coding_path, impact_path, harm_path, review_path
+    records = load_pilot_manual_records(
+        coding_path,
+        impact_path,
+        harm_path,
+        location_path,
+        relation_path,
+        cross_event_path,
+        review_path,
     )
     return reconcile_pilot_records(
-        coded,
-        impacts,
-        harms,
-        reviews,
+        records.adjudications,
+        records.impacts,
+        records.harms,
+        records.locations,
+        records.relations,
+        records.cross_event_effects,
+        records.reviews,
         {
             "coded_adjudications": file_sha256(coding_path),
             "impact_assessments": file_sha256(impact_path),
             "harm_assessments": file_sha256(harm_path),
+            "incident_locations": file_sha256(location_path),
+            "incident_relations": file_sha256(relation_path),
+            "cross_event_sanction_effects": file_sha256(cross_event_path),
             "independent_review": file_sha256(review_path),
         },
     )
@@ -330,6 +480,15 @@ def serialize_reconciliation_bundle(bundle: ReconciliationBundle) -> dict[str, b
         "harm_assessments.csv": bundle.harms.to_csv(index=False, lineterminator="\n").encode(
             "utf-8"
         ),
+        "incident_locations.csv": bundle.locations.to_csv(
+            index=False, lineterminator="\n"
+        ).encode("utf-8"),
+        "incident_relations.csv": bundle.relations.to_csv(
+            index=False, lineterminator="\n"
+        ).encode("utf-8"),
+        "cross_event_sanction_effects.csv": bundle.cross_event_effects.to_csv(
+            index=False, lineterminator="\n"
+        ).encode("utf-8"),
         "reconciliation_audit.csv": bundle.audit.to_csv(index=False, lineterminator="\n").encode(
             "utf-8"
         ),

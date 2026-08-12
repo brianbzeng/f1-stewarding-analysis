@@ -199,7 +199,12 @@ class HarmAssessment(BaseModel):
     position_before: int | None = Field(default=None, ge=1)
     position_after: int | None = Field(default=None, ge=1)
     net_positions_lost_observed: int | None = Field(default=None, ge=-19, le=19)
+    position_window_start_lap: int | None = Field(default=None, ge=1)
+    position_window_end_lap: int | None = Field(default=None, ge=1)
+    relative_time_comparator_driver_number: int | None = Field(default=None, ge=1, le=99)
     affected_relative_time_loss_seconds: float | None = None
+    relative_time_window_start_lap: int | None = Field(default=None, ge=1)
+    relative_time_window_end_lap: int | None = Field(default=None, ge=1)
     post_incident_clean_laps: int = Field(ge=0)
     persistent_pace_status: Literal[
         "confirmed_loss",
@@ -237,6 +242,31 @@ class HarmAssessment(BaseModel):
                 raise ValueError("observed position harm requires complete before/after arithmetic")
             if self.net_positions_lost_observed != self.position_after - self.position_before:
                 raise ValueError("net_positions_lost_observed does not match positions")
+        position_laps = (self.position_window_start_lap, self.position_window_end_lap)
+        if any(value is not None for value in position_laps):
+            if any(value is None for value in position_laps) or any(
+                value is None for value in position_fields
+            ):
+                raise ValueError("position windows require complete lap and position arithmetic")
+            if self.position_window_end_lap <= self.position_window_start_lap:
+                raise ValueError("position window must end after it starts")
+
+        relative_time_fields = (
+            self.relative_time_comparator_driver_number,
+            self.relative_time_window_start_lap,
+            self.relative_time_window_end_lap,
+        )
+        if self.affected_relative_time_loss_seconds is None and any(
+            value is not None for value in relative_time_fields
+        ):
+            raise ValueError("relative-time context requires a relative-time observation")
+        if self.relative_time_window_start_lap is not None:
+            if self.relative_time_window_end_lap is None:
+                raise ValueError("relative-time windows require both lap bounds")
+            if self.relative_time_window_end_lap <= self.relative_time_window_start_lap:
+                raise ValueError("relative-time window must end after it starts")
+        elif self.relative_time_window_end_lap is not None:
+            raise ValueError("relative-time windows require both lap bounds")
 
         pit_fields = (self.pit_lap, self.pit_lane_loss_seconds, self.repair_stationary_seconds)
         if self.repair_stop_required == "yes" and (
@@ -297,13 +327,167 @@ class HarmAssessment(BaseModel):
         return self
 
 
+class IncidentLocation(BaseModel):
+    """Supplemental incident location when one scalar turn cannot preserve the source."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    location_id: str
+    incident_id: str
+    event_id: str
+    source_document_id: str
+    session_type: Literal["Race", "Sprint"]
+    lap_number: int = Field(ge=1)
+    location_type: Literal[
+        "single_turn", "turn_range", "straight", "pit_lane", "other", "unknown"
+    ]
+    turn_start_number: int | None = Field(default=None, ge=1)
+    turn_end_number: int | None = Field(default=None, ge=1)
+    location_text: str
+    evidence_urls: str
+    coding_notes: str
+    coder_id: str
+    review_status: Literal["single_coded_pending_human", "double_coded", "adjudicated"]
+
+    @model_validator(mode="after")
+    def validate_location(self) -> IncidentLocation:
+        if self.location_type == "single_turn":
+            if self.turn_start_number is None or self.turn_end_number is not None:
+                raise ValueError("single-turn locations require only turn_start_number")
+        elif self.location_type == "turn_range":
+            if self.turn_start_number is None or self.turn_end_number is None:
+                raise ValueError("turn ranges require both turn bounds")
+            if self.turn_end_number <= self.turn_start_number:
+                raise ValueError("turn ranges must end after they start")
+        elif self.turn_start_number is not None or self.turn_end_number is not None:
+            raise ValueError("non-turn locations cannot contain turn bounds")
+        return self
+
+
+class IncidentRelation(BaseModel):
+    """One directed, evidence-tiered edge in a potentially multi-car incident chain."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    relation_id: str
+    incident_id: str
+    event_id: str
+    source_document_id: str
+    sequence: int = Field(ge=1)
+    source_driver_number: int = Field(ge=1, le=99)
+    target_driver_number: int = Field(ge=1, le=99)
+    relation_type: Literal[
+        "direct_contact",
+        "secondary_contact",
+        "forced_off_track",
+        "visibility_obstruction",
+        "avoidance",
+        "debris_effect",
+        "sporting_benefit",
+        "other",
+    ]
+    relation_scope: Literal[
+        "primary_infringement",
+        "mitigating_context",
+        "aggravating_context",
+        "downstream_harm",
+        "observed_context",
+        "unresolved",
+    ]
+    fault_attributed: bool
+    evidence_level: Literal[
+        "official_explicit", "official_implied", "manual_observed", "unresolved"
+    ]
+    evidence_urls: str
+    coding_notes: str
+    coder_id: str
+    review_status: Literal["single_coded_pending_human", "double_coded", "adjudicated"]
+
+    @model_validator(mode="after")
+    def validate_relation(self) -> IncidentRelation:
+        if self.source_driver_number == self.target_driver_number:
+            raise ValueError("incident relations require distinct drivers")
+        if self.fault_attributed and self.relation_scope not in {
+            "primary_infringement",
+            "downstream_harm",
+        }:
+            raise ValueError("fault attribution requires an infringement or downstream-harm edge")
+        return self
+
+
+class CrossEventSanctionEffect(BaseModel):
+    """Realized application of a sanction carried from one event into another."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    cross_event_effect_id: str
+    adjudication_id: str
+    origin_event_id: str
+    application_event_id: str
+    source_document_id: str
+    driver_number: int = Field(ge=1, le=99)
+    sanction_type: Literal["grid_penalty"]
+    nominal_grid_places: int = Field(gt=0)
+    qualifying_position: int = Field(ge=1, le=20)
+    starting_grid_position: int = Field(ge=1, le=20)
+    realized_grid_places_lost: int = Field(ge=-19, le=19)
+    grid_effect_level: Literal["mechanical", "bounded", "not_estimable"]
+    official_finish_position: int | None = Field(default=None, ge=1, le=20)
+    race_status: Literal[
+        "finished", "classified_lapped", "retired", "did_not_start", "disqualified", "unknown"
+    ]
+    official_points: float = Field(ge=0)
+    finish_effect_level: Literal["mechanical", "bounded", "modeled", "not_estimable"]
+    counterfactual_finish_position: int | None = Field(default=None, ge=1, le=20)
+    counterfactual_points: float | None = Field(default=None, ge=0)
+    application_grid_url: HttpUrl
+    application_classification_url: HttpUrl
+    evidence_urls: str
+    calculation_method: str
+    assumptions: str
+    review_status: Literal["single_coded_pending_human", "double_coded", "adjudicated"]
+
+    @model_validator(mode="after")
+    def validate_cross_event_effect(self) -> CrossEventSanctionEffect:
+        if self.origin_event_id == self.application_event_id:
+            raise ValueError("cross-event sanctions require distinct origin and application events")
+        if self.realized_grid_places_lost != (
+            self.starting_grid_position - self.qualifying_position
+        ):
+            raise ValueError("realized grid loss does not match qualifying and starting positions")
+        if self.grid_effect_level == "mechanical" and self.realized_grid_places_lost < 0:
+            raise ValueError("mechanical grid effects cannot report a position gain")
+        if (
+            self.grid_effect_level == "mechanical"
+            and self.realized_grid_places_lost != self.nominal_grid_places
+        ):
+            raise ValueError("mechanical grid loss must equal the nominal sanction")
+        if self.race_status in {"finished", "classified_lapped"} and (
+            self.official_finish_position is None
+        ):
+            raise ValueError("classified race statuses require an official finish position")
+        if self.finish_effect_level == "not_estimable" and (
+            self.counterfactual_finish_position is not None
+            or self.counterfactual_points is not None
+        ):
+            raise ValueError("not-estimable finish effects cannot contain counterfactual outcomes")
+        return self
+
+
 class IndependentReviewRecord(BaseModel):
     """Human review record that preserves the initial coding rather than overwriting it."""
 
     model_config = ConfigDict(extra="forbid")
 
     review_id: str
-    target_type: Literal["adjudication", "impact_assessment", "harm_assessment"]
+    target_type: Literal[
+        "adjudication",
+        "impact_assessment",
+        "harm_assessment",
+        "incident_location",
+        "incident_relation",
+        "cross_event_sanction_effect",
+    ]
     target_id: str
     evidence_urls: str
     initial_summary: str

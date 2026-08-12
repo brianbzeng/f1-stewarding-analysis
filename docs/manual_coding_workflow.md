@@ -12,6 +12,9 @@ Three files have different purposes:
 | `pilot_coded_adjudications.csv` | one provisional analytical row per accused driver |
 | `pilot_impact_assessments.csv` | one tiered assessment per sanction with a possible competitive effect |
 | `pilot_harm_assessments.csv` | one affected-driver assessment of damage, stops, position/time change, and persistent harm |
+| `pilot_incident_locations.csv` | source-preserving turn ranges and non-turn locations |
+| `pilot_incident_relations.csv` | directed multi-car context and infringement edges |
+| `pilot_cross_event_sanction_effects.csv` | realized application of delayed grid sanctions |
 | `pilot_independent_review.csv` | separate review decisions, corrections, notes, and effort |
 | `reconciled/pilot-<digest>/` | immutable reviewed versions, field audit, and checksum manifest |
 
@@ -29,21 +32,21 @@ pilot findings and full-scale collection.
 5. Record context only when supported by the official decision, timing data, or a documented
    manual evidence review. Do not infer missing facts from the sanction.
 6. Complete `include_primary` and provide an exclusion reason for every excluded row.
-7. Run `f1stewards validate-coding`, `f1stewards validate-impact`, and `f1stewards validate-harm`; validation is necessary but
-   does not replace judgment review.
+7. Run `f1stewards validate-coding`, `f1stewards validate-impact`, `f1stewards validate-harm`, and
+   `f1stewards validate-extensions`; validation is necessary but does not replace judgment review.
 8. An independent person reviews incident grouping, outcome, contextual fields, guideline
    conformance, and every record used in a highlighted case study. Record disagreements rather than
    silently overwriting the first pass.
 9. Run `f1stewards review-status`; resolve every `pending` or `needs_discussion` target.
 10. Run `f1stewards reconcile-pilot`. It creates new content-addressed outputs and a field-level audit
     without editing the first pass.
-11. Validate the reconciled adjudication, impact, and harm paths, then rerun scale readiness.
+11. Validate every reconciled table, then rerun scale readiness and rebuild downstream products.
 12. Only the reconciliation process should promote new copies to `double_coded`; a later documented
     subject-matter adjudication may promote a subsequent version to `adjudicated`.
 
 Detailed reviewer instructions are in `docs/pilot_independent_review_guide.md`. The
-`f1stewards review-status` command validates coverage of all adjudication, impact, and harm targets without
-requiring pending rows to be falsely marked complete.
+`f1stewards review-status` validates coverage of adjudication, impact, harm, location, relation, and
+cross-event targets without requiring pending rows to be falsely marked complete.
 The immutable output and correction rules are detailed in `docs/pilot_reconciliation_workflow.md`.
 
 Blank cells mean “not yet coded,” not “no.” Boolean fields use `true`, `false`, or `unclear`.
@@ -62,6 +65,13 @@ separate fields. Do not infer damage from a slow lap. Do not assign a generic pi
 stop may be neutral or beneficial if a documented planned-window, Safety Car/VSC, tyre-offset, or
 undercut mechanism supports that direction. Proportionality review requires an independently reviewed
 fault finding and keeps time, positions, points, repair, and retirement as separate dimensions.
+
+## Multi-car and delayed-sanction review rule
+
+Code one directed relation per supported link. A mitigating visibility obstruction does not inherit
+the fault status of the primary infringement. For delayed grid sanctions, report qualifying-to-start
+displacement mechanically, then assess finish and points under their own evidence tier. Retirement,
+weather, strategy, or later collisions usually make the race counterfactual `not_estimable`.
 
 ## Version control policy
 

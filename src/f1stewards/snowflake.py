@@ -18,13 +18,16 @@ from pyarrow import ArrowInvalid
 
 from f1stewards.manual import (
     CodedAdjudication,
+    CrossEventSanctionEffect,
     HarmAssessment,
     ImpactAssessment,
+    IncidentLocation,
+    IncidentRelation,
     IndependentReviewRecord,
 )
 from f1stewards.readiness import load_pilot_manual_records
 
-EXPORT_SCHEMA_VERSION = "snowflake_pilot_v2"
+EXPORT_SCHEMA_VERSION = "snowflake_pilot_v3"
 
 DUCKDB_EXPORTS = {
     "metadata_events": """
@@ -103,6 +106,9 @@ TABLE_NAMES = {
     "curated_adjudications": "CURATED.ADJUDICATIONS",
     "curated_impact_assessments": "CURATED.IMPACT_ASSESSMENTS",
     "curated_harm_assessments": "CURATED.HARM_ASSESSMENTS",
+    "curated_incident_locations": "CURATED.INCIDENT_LOCATIONS",
+    "curated_incident_relations": "CURATED.INCIDENT_RELATIONS",
+    "curated_cross_event_sanction_effects": "CURATED.CROSS_EVENT_SANCTION_EFFECTS",
     "audit_independent_review": "AUDIT.INDEPENDENT_REVIEW",
 }
 
@@ -134,6 +140,9 @@ def _manual_frame(
     records: list[CodedAdjudication]
     | list[ImpactAssessment]
     | list[HarmAssessment]
+    | list[IncidentLocation]
+    | list[IncidentRelation]
+    | list[CrossEventSanctionEffect]
     | list[IndependentReviewRecord],
 ) -> pd.DataFrame:
     frame = pd.DataFrame([record.model_dump(mode="json") for record in records])
@@ -147,6 +156,9 @@ def build_snowflake_frames(
     coding_path: Path,
     impact_path: Path,
     harm_path: Path,
+    location_path: Path,
+    relation_path: Path,
+    cross_event_path: Path,
     review_path: Path,
 ) -> dict[str, pd.DataFrame]:
     """Assemble the bounded pilot tables with deterministic row ordering."""
@@ -155,15 +167,26 @@ def build_snowflake_frames(
         export_name: connection.sql(query).df()
         for export_name, query in DUCKDB_EXPORTS.items()
     }
-    coded, impacts, harms, reviews = load_pilot_manual_records(
-        coding_path, impact_path, harm_path, review_path
+    records = load_pilot_manual_records(
+        coding_path,
+        impact_path,
+        harm_path,
+        location_path,
+        relation_path,
+        cross_event_path,
+        review_path,
     )
     frames.update(
         {
-            "curated_adjudications": _manual_frame(coded),
-            "curated_impact_assessments": _manual_frame(impacts),
-            "curated_harm_assessments": _manual_frame(harms),
-            "audit_independent_review": _manual_frame(reviews),
+            "curated_adjudications": _manual_frame(records.adjudications),
+            "curated_impact_assessments": _manual_frame(records.impacts),
+            "curated_harm_assessments": _manual_frame(records.harms),
+            "curated_incident_locations": _manual_frame(records.locations),
+            "curated_incident_relations": _manual_frame(records.relations),
+            "curated_cross_event_sanction_effects": _manual_frame(
+                records.cross_event_effects
+            ),
+            "audit_independent_review": _manual_frame(records.reviews),
         }
     )
     if set(frames) != set(TABLE_NAMES):
@@ -178,6 +201,9 @@ def _release_status(frames: dict[str, pd.DataFrame]) -> str:
             frames["curated_adjudications"],
             frames["curated_impact_assessments"],
             frames["curated_harm_assessments"],
+            frames["curated_incident_locations"],
+            frames["curated_incident_relations"],
+            frames["curated_cross_event_sanction_effects"],
         )
     )
     reviews_resolved = frames["audit_independent_review"]["review_status"].isin(
@@ -193,12 +219,22 @@ def export_snowflake_pilot(
     coding_path: Path,
     impact_path: Path,
     harm_path: Path,
+    location_path: Path,
+    relation_path: Path,
+    cross_event_path: Path,
     review_path: Path,
 ) -> SnowflakeExportResult:
     """Write a content-addressed set of Snowsight-uploadable Parquet files."""
 
     frames = build_snowflake_frames(
-        connection, coding_path, impact_path, harm_path, review_path
+        connection,
+        coding_path,
+        impact_path,
+        harm_path,
+        location_path,
+        relation_path,
+        cross_event_path,
+        review_path,
     )
     output_root.mkdir(parents=True, exist_ok=True)
     temporary_directory = Path(tempfile.mkdtemp(prefix=".snowflake-pilot-", dir=output_root))

@@ -23,6 +23,9 @@ The warehouse separates source documents, incidents, adjudications, people, rule
 | `classifications` | one driver result in one session and classification version |
 | `impact_estimates` | one counterfactual method for one adjudication |
 | `harm_assessments` | one affected driver and counterparty pairing for one incident/adjudication |
+| `incident_locations` | one source-preserving location description for an incident |
+| `incident_relations` | one directed driver-to-driver relation within an incident chain |
+| `cross_event_sanction_effects` | one realized application of a sanction at a later event |
 
 The implemented pilot enrichment also keeps `fastf1_results`, `fastf1_laps`, and
 `fastf1_race_control_messages` in the raw schema. `result_time_seconds` preserves FastF1's source
@@ -91,9 +94,15 @@ burden of the sanction on the penalized driver. `analysis.v_harm_sanction_balanc
 for side-by-side review and explicitly excludes shared/racing-incident findings from an automatic
 proportionality conclusion. No cross-unit composite fairness score is stored.
 
+`incident_locations` prevents a source phrase such as “between Turns 3 and 4” from being forced into
+a single integer. `incident_relations` represents multi-car context as directed evidence-tiered
+edges, so a driver who obstructed visibility can be retained as mitigation without being mislabeled
+as at fault. `cross_event_sanction_effects` separates the exact qualifying-to-start displacement of
+a carried grid penalty from the strategy- and incident-dependent finish/points counterfactual.
+
 ## Snowflake portability boundary
 
-The optional pilot export maps 12 bounded metadata, raw, curated, and audit tables to Snowflake. It
+The optional pilot export maps 16 bounded metadata, raw, curated, and audit tables to Snowflake. It
 uses explicit projections rather than `SELECT *`, so migration-history column order cannot change
 the manifest. Parquet files are loaded by case-insensitive column name, and the Snowflake worksheet
 repeats cross-schema lineage, sanction, review, and event-date rule controls. Machine-specific local

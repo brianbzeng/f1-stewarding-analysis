@@ -96,6 +96,7 @@ f1stewards claim-audit
 f1stewards validate-coding
 f1stewards validate-impact
 f1stewards validate-harm
+f1stewards validate-extensions
 f1stewards review-status
 f1stewards reconcile-pilot
 f1stewards scale-readiness
@@ -132,22 +133,29 @@ registered and validated. A separate 65-issue Sporting Regulation catalog covers
 the exact PDFs for all three pilot selections are resolved. A nine-issue International Sporting Code
 catalog separately models effective windows, including the April 2020 revision and unresolved
 publication metadata for older binaries. The nine candidate adjudications, four impact assessments,
-and two mirrored harm assessments retain their protected AI-assisted first pass. The separate 15-row
-independent review is complete with 15 agreements, no corrections, and no unresolved discussions.
+and two mirrored harm assessments retain their protected AI-assisted first pass. The separate
+original 15-row independent review is complete with 15 agreements, no corrections, and no
+unresolved discussions.
 Reconciliation `pilot-0681d52afdea` promotes immutable copies to `double_coded` while preserving the
 first pass, review notes, protected lineage fields, a field-level audit, and SHA-256 input/output
 manifests.
 
-A dependency-free pilot evidence explorer is also generated from the same DuckDB and curated manual
-inputs. It exposes nine candidate adjudications, four sanction-impact assessments, and two mirrored
-victim-harm assessments with exact filters,
-official evidence links, data-quality state, build lineage, and a downloadable filtered extract.
-The explorer uses the reconciled pilot records. Comparable-case and model views remain unavailable
-until the full corpus is collected and model validation passes its gates.
+The approved second-stage extension is implemented without altering that release. The staging layer
+now contains nine affected-driver harm rows (one per adjudication), one source-preserving turn range,
+two directed edges for a three-car interaction, and one cross-event sanction record. Eleven new
+review targets remain pending, so `review-status` reports 15/26 complete and a new v3 reconciliation
+is blocked until those records receive independent review.
 
-The optional Snowflake/Snowsight package exports 13 content-addressed Parquet tables, excludes
+A dependency-free pilot evidence explorer is also generated from the same DuckDB and curated manual
+inputs. The current provisional build exposes nine candidate adjudications, four sanction-impact
+assessments, nine victim-harm rows, source-preserving incident context, and the exact P7-to-P10
+application of Antonelli's carried grid penalty. Official evidence links, data-quality state, build
+lineage, and a downloadable filtered extract remain visible. Comparable-case and model views remain
+unavailable until the full corpus is collected and model validation passes its gates.
+
+The optional Snowflake/Snowsight package exports 16 content-addressed Parquet tables, excludes
 machine-specific cache paths, verifies every file hash/schema/count locally, and supplies worksheet
-SQL for setup, fail-fast loads, evidence-linked views, 18 integrity controls, review gating, and
+SQL for setup, fail-fast loads, evidence-linked views, 24 integrity controls, review gating, and
 DuckDB/Snowflake parity checks. It is accurately labeled a validated deployment package until a real
 account run records query IDs and load results.
 

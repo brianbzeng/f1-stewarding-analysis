@@ -87,6 +87,7 @@ Otherwise use `not_estimable`.
   only as observed/alleged.
 - A repair stop is causally linked to the incident rather than inferred from proximity alone.
 - Observed change is not described as a no-incident counterfactual.
+- The exact position and relative-time lap windows are stored when the effect crosses a lap boundary.
 
 ### Victim harm - bounded
 
@@ -107,6 +108,16 @@ Otherwise use `not_estimable`.
 
 Otherwise use `insufficient_data` or `not_estimable`; one clean lap cannot establish no lasting
 damage.
+
+### Multi-car context and cross-event sanctions
+
+- Each multi-car claim is a directed edge with source, target, relation type, scope, and evidence
+  level; only explicitly supported edges receive fault attribution.
+- Relation sequences are unique and contiguous within an incident.
+- Source wording such as a turn range is preserved rather than collapsed to a scalar.
+- Carried grid displacement reproduces as `starting position - qualifying position`.
+- A later-event finish/points claim requires a separate validated counterfactual; otherwise it is
+  `not_estimable` even when the grid displacement is exact.
 
 ### Harm-sanction proportionality
 

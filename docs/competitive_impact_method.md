@@ -122,7 +122,7 @@ explicitly says that panel did not consider the consequences of the crash. The r
 identify a large competitive asymmetry without claiming that the stewards misapplied the governing
 rule or guideline.
 
-## Pilot examples, pending review
+## Pilot examples and release state
 
 - Sergio Perez, 2023 Abu Dhabi: removing a five-second post-race addition changes the calculated
   classification from P4 to P2 and standard finishing points from 12 to 18.
@@ -132,13 +132,21 @@ rule or guideline.
 - Kimi Antonelli, 2025 Austria: the three-place drop applies at the next event, so no Austrian-race
   counterfactual is reported.
 
-All four rows are `single_coded_pending_human`. These are pipeline demonstrations, not final study
-findings.
+All four impact rows completed independent review in reconciliation `pilot-0681d52afdea`. They are
+pipeline demonstrations from a purposive three-event pilot, not population-level study findings.
 
-The first two mirrored victim-harm pilot rows are also pending review. In 2019 Austria,
+The first two mirrored victim-harm pilot rows also completed that review. In 2019 Austria,
 official/timing evidence shows Leclerc moving from P1 to P2 and Verstappen from P2 to P1, with a
 1.683-second relative swing across lap 69. Neither car made a repair stop. Leclerc's one clean
 post-incident lap was not slower than his short pre-incident baseline, but one lap is insufficient for
 a persistent-damage estimate; the mirrored Verstappen row is similarly insufficient. The FIA found
 neither driver wholly or predominantly responsible, so these rows demonstrate observed harm/gain
 without a reportable harm-sanction proportionality verdict.
+
+The second-stage extension adds seven pending harm records. It preserves confirmed but confounded
+Gasly diffuser damage; Norris's explicit contact-lap timing and following-lap position window;
+Colapinto's alleged damage without a false two-car gap estimate; a neutral Bearman no-fault row;
+non-estimable but potentially race-material Piastri obstruction; Verstappen's incident-caused
+retirement; and Stroll's lawful-pass outcome excluded from proportionality. The carried Antonelli
+sanction is separately mechanical for P7-to-P10 grid displacement and not estimable for Silverstone
+finish or points.

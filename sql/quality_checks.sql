@@ -117,3 +117,61 @@ WHERE event_id IN ('2019-aut', '2023-abu', '2025-aut')
       OR resolution_status NOT LIKE 'verified_official_binary%'
       OR selection_status <> 'effective_date_verified'
   );
+
+-- Supplemental locations must resolve to both an incident and their cited source document.
+SELECT l.location_id
+FROM curated.incident_locations AS l
+LEFT JOIN curated.adjudications AS a USING (incident_id)
+LEFT JOIN raw.source_documents AS d ON l.source_document_id = d.document_id
+WHERE a.incident_id IS NULL OR d.document_id IS NULL;
+
+-- A turn range preserves source wording only when both increasing bounds are present.
+SELECT location_id
+FROM curated.incident_locations
+WHERE location_type = 'turn_range'
+  AND (
+      turn_start_number IS NULL
+      OR turn_end_number IS NULL
+      OR turn_end_number <= turn_start_number
+  );
+
+-- Directed incident edges must resolve and cannot connect a driver to itself.
+SELECT r.relation_id
+FROM curated.incident_relations AS r
+LEFT JOIN curated.adjudications AS a USING (incident_id)
+LEFT JOIN raw.source_documents AS d ON r.source_document_id = d.document_id
+WHERE a.incident_id IS NULL
+   OR d.document_id IS NULL
+   OR r.source_driver_number = r.target_driver_number;
+
+-- Each incident chain uses a contiguous, unique sequence beginning at one.
+WITH ordered AS (
+    SELECT
+        relation_id,
+        incident_id,
+        sequence,
+        row_number() OVER (PARTITION BY incident_id ORDER BY sequence) AS expected_sequence
+    FROM curated.incident_relations
+)
+SELECT relation_id
+FROM ordered
+WHERE sequence <> expected_sequence;
+
+-- A cross-event sanction effect must resolve to the originating adjudication and sanction source.
+SELECT x.cross_event_effect_id
+FROM curated.cross_event_sanction_effects AS x
+LEFT JOIN curated.adjudications AS a USING (adjudication_id)
+LEFT JOIN curated.incidents AS i USING (incident_id)
+LEFT JOIN raw.source_documents AS d ON x.source_document_id = d.document_id
+WHERE a.adjudication_id IS NULL
+   OR d.document_id IS NULL
+   OR x.origin_event_id <> i.event_id;
+
+-- Realized grid displacement is deterministic qualifying-to-start arithmetic.
+SELECT cross_event_effect_id
+FROM curated.cross_event_sanction_effects
+WHERE realized_grid_places_lost <> starting_grid_position - qualifying_position
+   OR (
+       grid_effect_level = 'mechanical'
+       AND realized_grid_places_lost <> nominal_grid_places
+   );

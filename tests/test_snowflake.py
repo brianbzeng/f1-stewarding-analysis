@@ -18,6 +18,9 @@ def manual_paths() -> tuple:
         root / "pilot_coded_adjudications.csv",
         root / "pilot_impact_assessments.csv",
         root / "pilot_harm_assessments.csv",
+        root / "pilot_incident_locations.csv",
+        root / "pilot_incident_relations.csv",
+        root / "pilot_cross_event_sanction_effects.csv",
         root / "pilot_independent_review.csv",
     )
 
@@ -25,26 +28,20 @@ def manual_paths() -> tuple:
 def test_snowflake_export_is_content_addressed_and_locally_validated(tmp_path) -> None:
     db_path = tmp_path / "pilot.duckdb"
     initialize_database(db_path)
-    coding_path, impact_path, harm_path, review_path = manual_paths()
+    manual_inputs = manual_paths()
 
     with duckdb.connect(str(db_path), read_only=True) as connection:
         first = export_snowflake_pilot(
             connection,
             PROJECT_ROOT,
             tmp_path / "exports",
-            coding_path,
-            impact_path,
-            harm_path,
-            review_path,
+            *manual_inputs,
         )
         second = export_snowflake_pilot(
             connection,
             PROJECT_ROOT,
             tmp_path / "exports",
-            coding_path,
-            impact_path,
-            harm_path,
-            review_path,
+            *manual_inputs,
         )
 
     validation = validate_snowflake_export(first.output_directory)
@@ -52,23 +49,24 @@ def test_snowflake_export_is_content_addressed_and_locally_validated(tmp_path) -
     assert second.created is False
     assert second.export_id == first.export_id
     assert first.manifest["release_status"] == "provisional"
-    assert first.manifest["table_count"] == len(TABLE_NAMES) == 13
+    assert first.manifest["table_count"] == len(TABLE_NAMES) == 16
     assert validation.status.eq("pass").all()
     assert first.manifest["tables"]["curated_adjudications"]["row_count"] == 9
     assert first.manifest["tables"]["curated_impact_assessments"]["row_count"] == 4
-    assert first.manifest["tables"]["curated_harm_assessments"]["row_count"] == 2
-    assert first.manifest["tables"]["audit_independent_review"]["row_count"] == 15
+    assert first.manifest["tables"]["curated_harm_assessments"]["row_count"] == 9
+    assert first.manifest["tables"]["curated_incident_locations"]["row_count"] == 1
+    assert first.manifest["tables"]["curated_incident_relations"]["row_count"] == 2
+    assert first.manifest["tables"]["curated_cross_event_sanction_effects"]["row_count"] == 1
+    assert first.manifest["tables"]["audit_independent_review"]["row_count"] == 26
 
 
 def test_export_omits_machine_specific_source_path(tmp_path) -> None:
     db_path = tmp_path / "pilot.duckdb"
     initialize_database(db_path)
-    coding_path, impact_path, harm_path, review_path = manual_paths()
+    manual_inputs = manual_paths()
 
     with duckdb.connect(str(db_path), read_only=True) as connection:
-        frames = build_snowflake_frames(
-            connection, coding_path, impact_path, harm_path, review_path
-        )
+        frames = build_snowflake_frames(connection, *manual_inputs)
 
     assert "local_path" not in frames["raw_source_documents"].columns
 
@@ -91,16 +89,13 @@ def test_export_omits_machine_specific_source_path(tmp_path) -> None:
 def test_validation_detects_tampered_parquet(tmp_path) -> None:
     db_path = tmp_path / "pilot.duckdb"
     initialize_database(db_path)
-    coding_path, impact_path, harm_path, review_path = manual_paths()
+    manual_inputs = manual_paths()
     with duckdb.connect(str(db_path), read_only=True) as connection:
         result = export_snowflake_pilot(
             connection,
             PROJECT_ROOT,
             tmp_path / "exports",
-            coding_path,
-            impact_path,
-            harm_path,
-            review_path,
+            *manual_inputs,
         )
 
     target = result.output_directory / "curated_adjudications.parquet"
