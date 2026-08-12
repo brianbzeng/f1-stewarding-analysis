@@ -52,6 +52,15 @@ def test_analysis_thresholds_cover_all_planned_components() -> None:
     assert thresholds["competitive_impact"]["mechanical_same_lap_only"] is True
     assert thresholds["victim_harm"]["minimum_clean_laps_each_side"] == 5
     assert thresholds["victim_harm"]["prohibit_cross_unit_composite_score"] is True
+    assert (
+        thresholds["competitive_impact"]["next_event_grid_start_effect_tier"]
+        == "mechanical"
+    )
+    assert (
+        thresholds["competitive_impact"]["next_event_finish_effect_default_tier"]
+        == "not_estimable"
+    )
+    assert thresholds["incident_context"]["fault_attribution_is_edge_specific"] is True
 
 
 def test_sporting_regulation_catalog_covers_2018_through_2025() -> None:

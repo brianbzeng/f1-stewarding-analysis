@@ -2,10 +2,10 @@
 
 ## Run identity
 
-- Source commit: `d0c83bd`
-- Export ID: `snowflake-pilot-0bd6c113eb3b`
-- Generated UTC: `2026-08-12T17:38:15.125448+00:00`
-- Export schema: `snowflake_pilot_v2`
+- Source commit: `00b856c`
+- Export ID: `snowflake-pilot-1a4783bbd0f6`
+- Generated UTC: `2026-08-12T20:35:01.361751+00:00`
+- Export schema: `snowflake_pilot_v3`
 - Release status: `provisional`
 - Remote Snowflake status: **not executed**
 
@@ -24,18 +24,21 @@
 | `METADATA.CLAIM_LEDGER` | 14 | pass |
 | `CURATED.ADJUDICATIONS` | 9 | pass |
 | `CURATED.IMPACT_ASSESSMENTS` | 4 | pass |
-| `CURATED.HARM_ASSESSMENTS` | 2 | pass |
-| `AUDIT.INDEPENDENT_REVIEW` | 15 | pass |
+| `CURATED.HARM_ASSESSMENTS` | 9 | pass |
+| `CURATED.INCIDENT_LOCATIONS` | 1 | pass |
+| `CURATED.INCIDENT_RELATIONS` | 2 | pass |
+| `CURATED.CROSS_EVENT_SANCTION_EFFECTS` | 1 | pass |
+| `AUDIT.INDEPENDENT_REVIEW` | 26 | pass |
 
 `f1stewards validate-snowflake-export` reopened every Parquet file and matched its SHA-256,
 manifest row count, and ordered columns. Automated tests also compared every Parquet projection with
 the corresponding Snowflake DDL, confirmed one fail-fast load per table, rejected machine-local PDF
 paths, tested content-addressed reruns, and detected a deliberately corrupted Parquet footer.
 
-The repository-wide validation at package completion passed 63 tests and 16 DuckDB quality
-controls. The scale-readiness gate remains blocked pending review: 1/15 targets has been reviewed,
-that item requires discussion, and all 15 targets remain unresolved. The export remains
-provisional; local validation does not convert candidate coding into findings.
+The repository-wide validation at package completion passed 67 tests and 22 DuckDB quality
+controls. The original 15 review targets are complete and agreed; the 11 extension targets remain
+pending, so the scale-readiness decision is `blocked_pending_review`. The export remains provisional;
+local validation does not convert candidate coding into findings.
 
 ## What this proves
 
@@ -47,7 +50,7 @@ provisional; local validation does not convert candidate coding into findings.
 
 ## What remains to prove remotely
 
-A real Snowsight run must still capture query IDs for setup, all 13 `COPY INTO` statements, the 18
+A real Snowsight run must still capture query IDs for setup, all 16 `COPY INTO` statements, the 24
 integrity controls, the release gate, and parity checks. Warehouse name/size, elapsed time, load
 history, and credit use should be recorded. Until then, this is a locally validated deployment
 package rather than a claimed live Snowflake environment.
