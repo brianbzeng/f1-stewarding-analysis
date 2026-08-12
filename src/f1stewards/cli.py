@@ -25,7 +25,7 @@ from f1stewards.config import (
 )
 from f1stewards.enrichment.fastf1 import fetch_pilot_race, replace_event_enrichment
 from f1stewards.impact import remove_post_race_time_penalty
-from f1stewards.manual import CodedAdjudication, ImpactAssessment
+from f1stewards.manual import CodedAdjudication, ImpactAssessment, IndependentReviewRecord
 from f1stewards.models import DocumentClass
 from f1stewards.parsing.decision import parse_decision_pdf
 from f1stewards.warehouse import (
@@ -798,6 +798,68 @@ def validate_impact(
         f"Validated {len(records)} impact assessments; reproduced {len(mechanical)} mechanical "
         f"calculations; pending independent human review: {pending}"
     )
+
+
+@app.command("review-status")
+def review_status(
+    review_path: Annotated[Path, typer.Option(help="Independent-review CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_independent_review.csv"
+    ),
+    coding_path: Annotated[Path, typer.Option(help="Reviewable adjudication CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_coded_adjudications.csv"
+    ),
+    impact_path: Annotated[Path, typer.Option(help="Competitive-impact assessment CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_impact_assessments.csv"
+    ),
+) -> None:
+    """Validate the independent review file and report completion and effort."""
+
+    frame = pd.read_csv(review_path)
+    records = []
+    for row_number, row in frame.iterrows():
+        payload = {key: None if pd.isna(value) else value for key, value in row.to_dict().items()}
+        try:
+            records.append(IndependentReviewRecord.model_validate(payload))
+        except ValueError as exc:
+            typer.echo(f"row {row_number + 2}: {exc}")
+            raise typer.Exit(code=1) from exc
+    review_ids = [record.review_id for record in records]
+    if len(review_ids) != len(set(review_ids)):
+        typer.echo("duplicate review_id detected")
+        raise typer.Exit(code=1)
+    target_pairs = [(record.target_type, record.target_id) for record in records]
+    if len(target_pairs) != len(set(target_pairs)):
+        typer.echo("duplicate review target detected")
+        raise typer.Exit(code=1)
+
+    expected = {
+        *(
+            ("adjudication", target_id)
+            for target_id in pd.read_csv(coding_path)["adjudication_id"]
+        ),
+        *(
+            ("impact_assessment", target_id)
+            for target_id in pd.read_csv(impact_path)["impact_assessment_id"]
+        ),
+    }
+    actual = set(target_pairs)
+    if actual != expected:
+        missing = sorted(expected - actual)
+        extra = sorted(actual - expected)
+        typer.echo(f"review target mismatch; missing={missing}; extra={extra}")
+        raise typer.Exit(code=1)
+
+    completed = [record for record in records if record.review_status != "pending"]
+    minutes = sum(record.review_minutes or 0 for record in completed)
+    decisions = pd.Series(
+        [record.review_status for record in completed], dtype="string"
+    ).value_counts()
+    typer.echo(
+        f"Independent review: {len(completed)}/{len(records)} complete; "
+        f"recorded effort: {minutes:.1f} minutes"
+    )
+    if not decisions.empty:
+        typer.echo(decisions.to_string())
 
 
 if __name__ == "__main__":

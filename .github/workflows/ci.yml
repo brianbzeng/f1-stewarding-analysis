@@ -19,4 +19,5 @@ jobs:
       - run: pytest
       - run: f1stewards init-db
       - run: f1stewards validate-coding
+      - run: f1stewards review-status
       - run: f1stewards quality-check

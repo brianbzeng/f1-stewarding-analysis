@@ -11,6 +11,7 @@ Three files have different purposes:
 | `pilot_coding_queue.csv` | machine-generated document-version review queue |
 | `pilot_coded_adjudications.csv` | one provisional analytical row per accused driver |
 | `pilot_impact_assessments.csv` | one tiered assessment per sanction with a possible competitive effect |
+| `pilot_independent_review.csv` | separate review decisions, corrections, notes, and effort |
 
 The current coded files are an AI-assisted first pass by `codex_initial_v1`. They are not described
 as human-reviewed data. `review_status=single_coded_pending_human` blocks publication of substantive
@@ -32,6 +33,10 @@ pilot findings and full-scale collection.
    conformance, and every record used in a highlighted case study. Record disagreements rather than
    silently overwriting the first pass.
 9. Only after reconciliation should `review_status` become `double_coded` or `adjudicated`.
+
+Detailed reviewer instructions are in `docs/pilot_independent_review_guide.md`. The
+`f1stewards review-status` command validates coverage of all adjudication and impact targets without
+requiring pending rows to be falsely marked complete.
 
 Blank cells mean “not yet coded,” not “no.” Boolean fields use `true`, `false`, or `unclear`.
 

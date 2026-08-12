@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
@@ -145,4 +147,45 @@ class ImpactAssessment(BaseModel):
             value is not None for value in arithmetic
         ):
             raise ValueError("not-estimable impact cannot contain counterfactual arithmetic")
+        return self
+
+
+class IndependentReviewRecord(BaseModel):
+    """Human review record that preserves the initial coding rather than overwriting it."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    review_id: str
+    target_type: Literal["adjudication", "impact_assessment"]
+    target_id: str
+    evidence_urls: str
+    initial_summary: str
+    review_status: Literal["pending", "agree", "correct", "needs_discussion"]
+    reviewer_id: str | None = None
+    reviewed_at_utc: datetime | None = None
+    review_minutes: float | None = Field(default=None, gt=0)
+    corrected_fields_json: str | None = None
+    reviewer_notes: str | None = None
+
+    @model_validator(mode="after")
+    def validate_review_completion(self) -> IndependentReviewRecord:
+        if self.review_status == "pending":
+            return self
+        if not self.reviewer_id or self.reviewed_at_utc is None or self.review_minutes is None:
+            raise ValueError(
+                "completed review requires reviewer_id, reviewed_at_utc, and review_minutes"
+            )
+        if self.review_status == "agree" and self.corrected_fields_json:
+            raise ValueError("agree review cannot contain corrected_fields_json")
+        if self.review_status == "correct":
+            if not self.corrected_fields_json or not self.reviewer_notes:
+                raise ValueError("correct review requires corrected fields and reviewer notes")
+            try:
+                corrected = json.loads(self.corrected_fields_json)
+            except json.JSONDecodeError as exc:
+                raise ValueError("corrected_fields_json must be valid JSON") from exc
+            if not isinstance(corrected, dict) or not corrected:
+                raise ValueError("corrected_fields_json must be a non-empty object")
+        if self.review_status == "needs_discussion" and not self.reviewer_notes:
+            raise ValueError("needs-discussion review requires reviewer notes")
         return self

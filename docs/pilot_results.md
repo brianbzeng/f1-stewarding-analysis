@@ -61,3 +61,6 @@ records but were unavailable for content review.
 The technical pilot supports continued method and report development. Do not collect all 2018–2025
 events until independent review estimates minutes per record, tests the controlled vocabulary, and
 confirms that recalled/corrected lineage can be resolved with an acceptable unresolved rate.
+
+The independent-review packet contains 13 targets and is currently 0/13 complete. Pending status is
+an expected gate condition, not a validation failure.

@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from f1stewards.manual import CodedAdjudication, ImpactAssessment
+from f1stewards.manual import CodedAdjudication, ImpactAssessment, IndependentReviewRecord
 
 
 def base_payload() -> dict:
@@ -88,3 +88,31 @@ def test_served_penalty_cannot_be_labeled_mechanical() -> None:
     payload["sanction_application"] = "served_during_race"
     with pytest.raises(ValidationError, match="post-race-added"):
         ImpactAssessment.model_validate(payload)
+
+
+def review_payload() -> dict:
+    return {
+        "review_id": "review-adj-test",
+        "target_type": "adjudication",
+        "target_id": "adj-test",
+        "evidence_urls": "https://www.fia.com/test.pdf",
+        "initial_summary": "Test initial code.",
+        "review_status": "pending",
+        "reviewer_id": None,
+        "reviewed_at_utc": None,
+        "review_minutes": None,
+        "corrected_fields_json": None,
+        "reviewer_notes": None,
+    }
+
+
+def test_pending_review_is_valid() -> None:
+    record = IndependentReviewRecord.model_validate(review_payload())
+    assert record.review_status == "pending"
+
+
+def test_correction_requires_audit_fields() -> None:
+    payload = review_payload()
+    payload["review_status"] = "correct"
+    with pytest.raises(ValidationError, match="completed review requires"):
+        IndependentReviewRecord.model_validate(payload)

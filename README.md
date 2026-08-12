@@ -88,6 +88,7 @@ f1stewards build-coding-queue
 f1stewards regulatory-audit
 f1stewards validate-coding
 f1stewards validate-impact
+f1stewards review-status
 f1stewards quality-check
 pytest
 ```
@@ -115,6 +116,8 @@ full standard Fact/Infringement/Decision/Reason structure. FastF1 enrichment add
 3,684 driver laps, and 285 race-control messages. Eleven event-date FIA regulatory sources are
 registered and validated. The nine candidate adjudications and four impact assessments have an
 AI-assisted first coding pass, but every row remains explicitly pending independent human review.
+The separate 13-row review packet preserves corrections and measured review effort without
+overwriting the first pass.
 
 The project is published at
 [brianbzeng/f1-stewarding-analysis](https://github.com/brianbzeng/f1-stewarding-analysis).
