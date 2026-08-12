@@ -1,0 +1,119 @@
+# The 2020-2025 publication dates and titles are transcribed from the official FIA archive.
+# Earlier clean/marked-up binaries are retained even where the current archive no longer exposes a
+# publication date. Effective dates come from the official document or its stated annual scope.
+international_sporting_code_issues:
+  - source_id: fia-isc-2018-01
+    season: 2018
+    precedence: 1
+    publication_date:
+    effective_from: 2018-01-01
+    effective_through: 2018-12-31
+    title: 2018 FIA International Sporting Code, clean edition
+    archive_url: https://www.fia.com/regulation/category/123
+    document_url: https://www.fia.com/sites/default/files/2018_international_sporting_code_fr-en_clean_1.pdf
+    resolution_status: verified_official_binary_publication_date_unresolved
+    selection_status: effective_date_verified
+    notes: Official binary resolved; current archive does not expose its original publication date.
+
+  - source_id: fia-isc-2019-01
+    season: 2019
+    precedence: 1
+    publication_date:
+    effective_from: 2019-01-01
+    effective_through: 2019-12-31
+    title: 2019 FIA International Sporting Code, marked-up edition
+    archive_url: https://www.fia.com/regulation/category/123
+    document_url: https://www.fia.com/sites/default/files/2019_international_sporting_code_fr-en_marked-up_0.pdf
+    resolution_status: verified_official_binary_publication_date_unresolved
+    selection_status: effective_date_verified
+    notes: Official binary resolved; current archive does not expose its original publication date.
+
+  - source_id: fia-isc-2020-01
+    season: 2020
+    precedence: 1
+    publication_date: 2019-12-16
+    effective_from: 2020-01-01
+    effective_through: 2020-04-23
+    title: 2020 FIA International Sporting Code, initial clean edition
+    archive_url: https://www.fia.com/regulation/category/123
+    document_url: https://www.fia.com/sites/default/files/2020_international_sporting_code_fr-en_clean.v2_2.pdf
+    resolution_status: verified_official_binary
+    selection_status: effective_date_verified
+    notes: Initial clean issue published before the 2020 season.
+
+  - source_id: fia-isc-2020-02
+    season: 2020
+    precedence: 2
+    publication_date: 2020-04-24
+    effective_from: 2020-04-24
+    effective_through: 2020-12-31
+    title: 2020 FIA International Sporting Code, clean version dated 24 April 2020
+    archive_url: https://www.fia.com/regulation/category/123
+    resolution_status: archive_metadata_verified
+    selection_status: provisional_by_effective_date
+    notes: Exact clean binary URL and stated amendment applicability require resolution before use.
+
+  - source_id: fia-isc-2021-01
+    season: 2021
+    precedence: 1
+    publication_date: 2021-01-18
+    effective_from: 2021-01-01
+    effective_through: 2021-12-31
+    title: 2021 FIA International Sporting Code, clean edition
+    archive_url: https://www.fia.com/regulation/category/123
+    document_url: https://www.fia.com/sites/default/files/2021_international_sporting_code_fr-en_clean._18.01.2021_0.pdf
+    resolution_status: verified_official_binary
+    selection_status: effective_date_verified
+    notes: Official clean annual edition.
+
+  - source_id: fia-isc-2022-01
+    season: 2022
+    precedence: 1
+    publication_date: 2022-01-04
+    effective_from: 2022-01-01
+    effective_through: 2022-12-31
+    title: 2022 FIA International Sporting Code, clean edition
+    archive_url: https://www.fia.com/regulation/category/123
+    document_url: https://www.fia.com/sites/default/files/2022_international_sporting_code_fr-en_clean_version__0.pdf
+    resolution_status: verified_official_binary
+    selection_status: effective_date_verified
+    notes: Official clean annual edition.
+
+  - source_id: fia-isc-2023-01
+    season: 2023
+    precedence: 1
+    publication_date: 2023-01-09
+    effective_from: 2023-01-01
+    effective_through: 2023-12-31
+    title: 2023 FIA International Sporting Code, clean edition
+    archive_url: https://www.fia.com/regulation/category/123
+    document_url: https://www.fia.com/sites/default/files/2023_international_sporting_code_fr-en_clean_9.01.2023.pdf
+    resolution_status: verified_official_binary
+    selection_status: effective_date_verified
+    notes: Exact binary used for the 2023 Abu Dhabi pilot.
+
+  - source_id: fia-isc-2024-01
+    season: 2024
+    precedence: 1
+    publication_date: 2023-12-14
+    effective_from: 2024-01-01
+    effective_through: 2024-12-31
+    title: 2024 FIA International Sporting Code, clean edition
+    archive_url: https://www.fia.com/regulation/category/123
+    document_url: https://www.fia.com/sites/default/files/2024_international_sporting_code_fr-en_clean_version-_14.12.2023.pdf
+    resolution_status: verified_official_binary
+    selection_status: effective_date_verified
+    notes: Official clean annual edition.
+
+  - source_id: fia-isc-2025-01
+    season: 2025
+    precedence: 1
+    publication_date: 2025-01-22
+    effective_from: 2025-01-01
+    effective_through: 2025-12-31
+    title: 2025 FIA International Sporting Code, clean edition
+    archive_url: https://www.fia.com/regulation/category/123
+    document_url: https://www.fia.com/sites/default/files/2025_international_sporting_code_fr-en_0.pdf
+    resolution_status: verified_official_binary
+    selection_status: effective_date_verified
+    notes: Exact binary used for the 2025 Austrian pilot.

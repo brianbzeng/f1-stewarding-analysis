@@ -87,6 +87,7 @@ f1stewards pilot-fastf1
 f1stewards build-coding-queue
 f1stewards regulatory-audit
 f1stewards sporting-regulation-audit
+f1stewards international-sporting-code-audit
 f1stewards claim-audit
 f1stewards validate-coding
 f1stewards validate-impact
@@ -119,7 +120,9 @@ full standard Fact/Infringement/Decision/Reason structure. FastF1 enrichment add
 3,684 driver laps, and 285 race-control messages. Eleven pilot event-date FIA regulatory sources are
 registered and validated. A separate 65-issue Sporting Regulation catalog covers every season from
 2018 through 2025 and deterministically selects the candidate issue published by each event date;
-the exact PDFs for all three pilot selections are resolved. The nine candidate adjudications and
+the exact PDFs for all three pilot selections are resolved. A nine-issue International Sporting Code
+catalog separately models effective windows, including the April 2020 revision and unresolved
+publication metadata for older binaries. The nine candidate adjudications and
 four impact assessments have an
 AI-assisted first coding pass, but every row remains explicitly pending independent human review.
 The separate 13-row review packet preserves corrections and measured review effort without

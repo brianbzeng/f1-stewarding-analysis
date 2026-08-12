@@ -54,10 +54,22 @@ require every dated event to have a selection and every pilot selection to be ev
 
 ## Related instruments
 
-The Sporting Regulations are only one layer. The International Sporting Code, Appendix L, event
-Race Director notes, and any public driving or penalty guidelines must be assigned separately because
-their publication histories and legal roles differ. The current gaps are tracked in
-`reports/regulatory_source_gap_register.csv` rather than being filled with later or unofficial text.
+The Sporting Regulations are only one layer. A separate nine-record International Sporting Code
+catalog covers 2018–2025 in `config/international_sporting_code_issues.yml`. Its effective windows
+load to `metadata.international_sporting_code_issues`, and
+`analysis.v_event_international_sporting_code_selection` maps each event to the issue whose effective
+window contains the event date. This matters in 2020, when the archive lists both the initial annual
+edition and a clean version dated 24 April.
+
+The current FIA archive exposes clean annual Code binaries for 2020–2025. The official 2018 clean and
+2019 marked-up binaries are also resolved, but their original publication dates are no longer exposed
+in the current category view; that limitation is a field in the catalog. The revised April 2020 clean
+binary still requires direct-URL resolution, so 2020 events after 23 April remain provisional for
+clause-level use.
+
+Appendix L, event Race Director notes, and any public driving or penalty guidelines must be assigned
+separately because their publication histories and legal roles differ. The current gaps are tracked
+in `reports/regulatory_source_gap_register.csv` rather than being filled with later or unofficial text.
 
 Key official indexes and explanations are maintained in `docs/source_register.md`:
 

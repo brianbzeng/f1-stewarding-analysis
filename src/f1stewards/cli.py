@@ -21,6 +21,7 @@ from f1stewards.config import (
     PROJECT_ROOT,
     load_analysis_thresholds,
     load_document_classes,
+    load_international_sporting_code_issues,
     load_pilot_events,
     load_regulatory_sources,
     load_sporting_regulation_issues,
@@ -40,6 +41,7 @@ from f1stewards.warehouse import (
     connect,
     initialize_database,
     replace_claim_ledger,
+    replace_international_sporting_code_issues,
     replace_sporting_regulation_issues,
     upsert_document_text,
     upsert_pilot_events,
@@ -131,17 +133,22 @@ def init_db(
     events = load_pilot_events()
     regulatory_sources = load_regulatory_sources()
     sporting_regulation_issues = load_sporting_regulation_issues()
+    international_sporting_code_issues = load_international_sporting_code_issues()
     with connect(db_path) as connection:
         upsert_pilot_events(connection, events)
         upsert_regulatory_sources(connection, regulatory_sources)
         issue_count = replace_sporting_regulation_issues(
             connection, sporting_regulation_issues
         )
+        code_issue_count = replace_international_sporting_code_issues(
+            connection, international_sporting_code_issues
+        )
         claim_count = replace_claim_ledger(connection)
     typer.echo(
         f"Initialized {db_path} with {len(events)} pilot events and "
         f"{len(regulatory_sources)} event-linked regulatory sources; loaded "
-        f"{issue_count} Sporting Regulation issues and {claim_count} report claims"
+        f"{issue_count} Sporting Regulation issues, {code_issue_count} International "
+        f"Sporting Code issues, and {claim_count} report claims"
     )
 
 
@@ -224,6 +231,44 @@ def sporting_regulation_audit(
                 resolution_status,
                 selection_status
             FROM analysis.v_event_sporting_regulation_selection
+            ORDER BY event_date
+            """
+        ).df()
+    typer.echo("Catalog coverage:\n" + coverage.to_string(index=False))
+    typer.echo("\nEvent-date selections:\n" + selected.to_string(index=False))
+
+
+@app.command("international-sporting-code-audit")
+def international_sporting_code_audit(
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Show Code catalog coverage and the issue selected for each loaded event."""
+
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        coverage = connection.sql(
+            """
+            SELECT
+                season,
+                count(*) AS issue_count,
+                count(document_url) AS resolved_binary_count,
+                min(effective_from) AS first_effective,
+                max(effective_through) AS last_effective
+            FROM metadata.international_sporting_code_issues
+            GROUP BY season
+            ORDER BY season
+            """
+        ).df()
+        selected = connection.sql(
+            """
+            SELECT
+                event_id,
+                event_date,
+                source_id,
+                effective_from,
+                effective_through,
+                resolution_status,
+                selection_status
+            FROM analysis.v_event_international_sporting_code_selection
             ORDER BY event_date
             """
         ).df()

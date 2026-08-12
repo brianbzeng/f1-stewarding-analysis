@@ -82,3 +82,20 @@ WHERE event_id IN ('2019-aut', '2023-abu', '2025-aut')
       resolution_status <> 'verified_official_binary'
       OR selection_status <> 'event_verified'
   );
+
+-- Every dated event must map to a season-effective International Sporting Code issue.
+SELECT e.event_id, e.season, e.event_date
+FROM metadata.events AS e
+LEFT JOIN analysis.v_event_international_sporting_code_selection AS r USING (event_id)
+WHERE e.event_date IS NOT NULL
+  AND r.source_id IS NULL;
+
+-- Pilot Code selections require a resolved official binary and verified effective date.
+SELECT event_id, source_id, resolution_status, selection_status
+FROM analysis.v_event_international_sporting_code_selection
+WHERE event_id IN ('2019-aut', '2023-abu', '2025-aut')
+  AND (
+      document_url IS NULL
+      OR resolution_status NOT LIKE 'verified_official_binary%'
+      OR selection_status <> 'effective_date_verified'
+  );

@@ -12,6 +12,7 @@ import pandas as pd
 from f1stewards.config import PROJECT_ROOT
 from f1stewards.models import (
     DecisionSections,
+    InternationalSportingCodeIssue,
     PilotEvent,
     RegulatorySource,
     SourceDocument,
@@ -145,6 +146,27 @@ def replace_sporting_regulation_issues(
         """
     )
     connection.unregister("sporting_regulation_issue_batch")
+    return len(frame)
+
+
+def replace_international_sporting_code_issues(
+    connection: duckdb.DuckDBPyConnection,
+    issues: list[InternationalSportingCodeIssue],
+) -> int:
+    """Replace the season-effective International Sporting Code catalog."""
+
+    if not issues:
+        raise ValueError("International Sporting Code issue catalog cannot be empty")
+    frame = pd.DataFrame([issue.model_dump(mode="json") for issue in issues])
+    connection.register("international_sporting_code_issue_batch", frame)
+    connection.execute("DELETE FROM metadata.international_sporting_code_issues")
+    connection.execute(
+        """
+        INSERT INTO metadata.international_sporting_code_issues BY NAME
+        SELECT * FROM international_sporting_code_issue_batch
+        """
+    )
+    connection.unregister("international_sporting_code_issue_batch")
     return len(frame)
 
 

@@ -108,6 +108,47 @@ class SportingRegulationIssue(BaseModel):
         return self
 
 
+class InternationalSportingCodeIssue(BaseModel):
+    """One season-effective FIA International Sporting Code issue."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    source_id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]+$")
+    season: int = Field(ge=2018, le=2025)
+    precedence: int = Field(ge=1)
+    publication_date: date | None = None
+    effective_from: date
+    effective_through: date
+    title: str
+    archive_url: HttpUrl
+    document_url: HttpUrl | None = None
+    resolution_status: Literal[
+        "archive_metadata_verified",
+        "verified_official_binary",
+        "verified_official_binary_publication_date_unresolved",
+    ]
+    selection_status: Literal[
+        "provisional_by_effective_date", "effective_date_verified"
+    ] = "provisional_by_effective_date"
+    notes: str = ""
+
+    @model_validator(mode="after")
+    def validate_code_issue(self) -> InternationalSportingCodeIssue:
+        if self.effective_through < self.effective_from:
+            raise ValueError("effective_through cannot precede effective_from")
+        if (
+            self.resolution_status.startswith("verified_official_binary")
+            and self.document_url is None
+        ):
+            raise ValueError("verified official binary requires document_url")
+        if (
+            self.selection_status == "effective_date_verified"
+            and self.resolution_status == "archive_metadata_verified"
+        ):
+            raise ValueError("effective_date_verified requires a verified binary")
+        return self
+
+
 class SourceDocument(BaseModel):
     """Lineage record for one document advertised by an official archive."""
 

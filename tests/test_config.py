@@ -5,8 +5,10 @@ import pytest
 
 from f1stewards.config import (
     load_analysis_thresholds,
+    load_international_sporting_code_issues,
     load_regulatory_sources,
     load_sporting_regulation_issues,
+    select_international_sporting_code,
     select_sporting_regulation,
 )
 
@@ -84,3 +86,33 @@ def test_sporting_regulation_selection_rejects_date_before_catalog() -> None:
         select_sporting_regulation(
             load_sporting_regulation_issues(), 2018, date(2017, 1, 1)
         )
+
+
+def test_international_sporting_code_catalog_covers_study_period() -> None:
+    issues = load_international_sporting_code_issues()
+
+    assert len(issues) == 9
+    assert {issue.season for issue in issues} == set(range(2018, 2026))
+    assert sum(issue.document_url is not None for issue in issues) == 8
+
+
+@pytest.mark.parametrize(
+    ("season", "event_date", "expected_source_id"),
+    [
+        (2019, date(2019, 6, 30), "fia-isc-2019-01"),
+        (2020, date(2020, 3, 1), "fia-isc-2020-01"),
+        (2020, date(2020, 7, 5), "fia-isc-2020-02"),
+        (2023, date(2023, 11, 26), "fia-isc-2023-01"),
+        (2025, date(2025, 6, 29), "fia-isc-2025-01"),
+    ],
+)
+def test_international_sporting_code_selection_uses_effective_window(
+    season: int,
+    event_date: date,
+    expected_source_id: str,
+) -> None:
+    selected = select_international_sporting_code(
+        load_international_sporting_code_issues(), season, event_date
+    )
+
+    assert selected.source_id == expected_source_id

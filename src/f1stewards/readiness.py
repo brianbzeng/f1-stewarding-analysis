@@ -113,16 +113,22 @@ def evaluate_pilot_readiness(
         complete_core_sections / decision_documents if decision_documents else 0.0
     )
 
-    pilot_events, verified_sporting = connection.sql(
+    pilot_events, verified_sporting, verified_code = connection.sql(
         """
         SELECT
             count(*) AS pilot_events,
             count(r.source_id) FILTER (
                 WHERE r.resolution_status = 'verified_official_binary'
                   AND r.selection_status = 'event_verified'
-            ) AS verified_sporting_selections
+            ) AS verified_sporting_selections,
+            count(c.source_id) FILTER (
+                WHERE c.document_url IS NOT NULL
+                  AND c.resolution_status LIKE 'verified_official_binary%'
+                  AND c.selection_status = 'effective_date_verified'
+            ) AS verified_code_selections
         FROM metadata.events AS e
         LEFT JOIN analysis.v_event_sporting_regulation_selection AS r USING (event_id)
+        LEFT JOIN analysis.v_event_international_sporting_code_selection AS c USING (event_id)
         WHERE e.is_pilot
         """
     ).fetchone()
@@ -193,13 +199,16 @@ def evaluate_pilot_readiness(
             "gate": "event_date_law_and_guidance",
             "status": (
                 "conditional_pass"
-                if verified_sporting == pilot_events and metadata_only_sources
-                else "pass"
                 if verified_sporting == pilot_events
+                and verified_code == pilot_events
+                and metadata_only_sources
+                else "pass"
+                if verified_sporting == pilot_events and verified_code == pilot_events
                 else "fail"
             ),
             "metric": (
                 f"{verified_sporting}/{pilot_events} Sporting Regulation selections verified; "
+                f"{verified_code}/{pilot_events} Code selections verified; "
                 f"{metadata_only_sources} metadata-only linked sources"
             ),
             "note": "A later binary is never substituted for an unresolved historical source.",

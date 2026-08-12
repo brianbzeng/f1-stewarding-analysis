@@ -8,7 +8,12 @@ from typing import Any
 
 import yaml
 
-from f1stewards.models import PilotEvent, RegulatorySource, SportingRegulationIssue
+from f1stewards.models import (
+    InternationalSportingCodeIssue,
+    PilotEvent,
+    RegulatorySource,
+    SportingRegulationIssue,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -129,3 +134,39 @@ def select_sporting_regulation(
     if not candidates:
         raise ValueError(f"No {season} Sporting Regulation issue available by {event_date}")
     return max(candidates, key=lambda issue: (issue.publication_date, issue.precedence))
+
+
+def load_international_sporting_code_issues(
+    path: Path | None = None,
+) -> list[InternationalSportingCodeIssue]:
+    config_path = path or PROJECT_ROOT / "config" / "international_sporting_code_issues.yml"
+    payload = load_yaml(config_path)
+    issues = payload.get("international_sporting_code_issues")
+    if not isinstance(issues, list):
+        raise ValueError(f"Missing international_sporting_code_issues list in {config_path}")
+    records = [InternationalSportingCodeIssue.model_validate(issue) for issue in issues]
+    ids = [record.source_id for record in records]
+    keys = [(record.season, record.precedence) for record in records]
+    if len(ids) != len(set(ids)):
+        raise ValueError(f"Duplicate source_id in {config_path}")
+    if len(keys) != len(set(keys)):
+        raise ValueError(f"Duplicate season/precedence in {config_path}")
+    if {record.season for record in records} != set(range(2018, 2026)):
+        raise ValueError("International Sporting Code catalog must cover 2018 through 2025")
+    return records
+
+
+def select_international_sporting_code(
+    issues: list[InternationalSportingCodeIssue],
+    season: int,
+    event_date: date,
+) -> InternationalSportingCodeIssue:
+    candidates = [
+        issue
+        for issue in issues
+        if issue.season == season
+        and issue.effective_from <= event_date <= issue.effective_through
+    ]
+    if not candidates:
+        raise ValueError(f"No {season} International Sporting Code issue covers {event_date}")
+    return max(candidates, key=lambda issue: (issue.effective_from, issue.precedence))
