@@ -41,6 +41,7 @@ from f1stewards.reconciliation import (
     build_pilot_reconciliation,
     write_reconciliation_bundle,
 )
+from f1stewards.snowflake import export_snowflake_pilot, validate_snowflake_export
 from f1stewards.warehouse import (
     DEFAULT_DB_PATH,
     connect,
@@ -1017,6 +1018,62 @@ def reconcile_pilot(
         f"{len(bundle.adjudications)} adjudications, {len(bundle.impacts)} impacts, "
         f"{bundle.manifest['field_correction_count']} corrected fields"
     )
+
+
+@app.command("export-snowflake-pilot")
+def export_snowflake_pilot_command(
+    output_root: Annotated[
+        Path, typer.Option(help="Parent for content-addressed Parquet exports.")
+    ] = PROJECT_ROOT / "data" / "processed" / "snowflake_pilot",
+    coding_path: Annotated[Path, typer.Option(help="Adjudication CSV to export.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_coded_adjudications.csv"
+    ),
+    impact_path: Annotated[Path, typer.Option(help="Impact-assessment CSV to export.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_impact_assessments.csv"
+    ),
+    review_path: Annotated[Path, typer.Option(help="Independent-review CSV to export.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_independent_review.csv"
+    ),
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Export a validated pilot package for upload through Snowsight."""
+
+    try:
+        with duckdb.connect(str(db_path), read_only=True) as connection:
+            result = export_snowflake_pilot(
+                connection,
+                PROJECT_ROOT,
+                output_root,
+                coding_path,
+                impact_path,
+                review_path,
+            )
+    except (ValueError, FileExistsError) as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=1) from exc
+    action = "Created" if result.created else "Verified existing"
+    typer.echo(
+        f"{action} {result.export_id} at {result.output_directory}; "
+        f"{result.manifest['table_count']} Parquet tables; "
+        f"status={result.manifest['release_status']}"
+    )
+
+
+@app.command("validate-snowflake-export")
+def validate_snowflake_export_command(
+    export_directory: Annotated[Path, typer.Argument(help="Export directory to verify.")],
+) -> None:
+    """Verify a local Snowflake export's hashes, row counts, and columns."""
+
+    try:
+        validation = validate_snowflake_export(export_directory)
+    except ValueError as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=1) from exc
+    typer.echo(validation.to_string(index=False))
+    if not validation.status.eq("pass").all():
+        raise typer.Exit(code=1)
+    typer.echo(f"Validated {len(validation)} Snowflake export tables")
 
 
 @app.command("scale-readiness")

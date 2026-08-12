@@ -1,0 +1,198 @@
+USE DATABASE F1_STEWARDS_PORTFOLIO;
+
+-- Release integrity controls. The first result set must contain zero rows.
+WITH VIOLATIONS AS (
+    SELECT
+        'SF_QC_01_ORPHAN_SOURCE_EVENT' AS CONTROL_ID,
+        d.DOCUMENT_ID AS RECORD_ID,
+        'Source document event_id does not resolve' AS DETAIL
+    FROM RAW.SOURCE_DOCUMENTS AS d
+    LEFT JOIN METADATA.EVENTS AS e
+      ON d.EVENT_ID = e.EVENT_ID
+    WHERE e.EVENT_ID IS NULL
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_02_RETRIEVED_WITHOUT_HASH',
+        DOCUMENT_ID,
+        'Successful retrieval lacks SHA-256'
+    FROM RAW.SOURCE_DOCUMENTS
+    WHERE RETRIEVED_AT IS NOT NULL
+      AND RETRIEVAL_ERROR IS NULL
+      AND CONTENT_SHA256 IS NULL
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_03_ORPHAN_ADJUDICATION_EVENT',
+        a.ADJUDICATION_ID,
+        'Adjudication event_id does not resolve'
+    FROM CURATED.ADJUDICATIONS AS a
+    LEFT JOIN METADATA.EVENTS AS e
+      ON a.EVENT_ID = e.EVENT_ID
+    WHERE e.EVENT_ID IS NULL
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_04_ORPHAN_ADJUDICATION_SOURCE',
+        a.ADJUDICATION_ID,
+        'Adjudication source document does not resolve'
+    FROM CURATED.ADJUDICATIONS AS a
+    LEFT JOIN RAW.SOURCE_DOCUMENTS AS d
+      ON a.SOURCE_DOCUMENT_ID = d.DOCUMENT_ID
+    WHERE d.DOCUMENT_ID IS NULL
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_05_NEGATIVE_SANCTION',
+        ADJUDICATION_ID,
+        'Sanction magnitude cannot be negative'
+    FROM CURATED.ADJUDICATIONS
+    WHERE COALESCE(PENALTY_SECONDS, 0) < 0
+       OR COALESCE(PENALTY_POINTS, 0) < 0
+       OR COALESCE(GRID_PLACES, 0) < 0
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_06_NO_ACTION_WITH_SANCTION',
+        ADJUDICATION_ID,
+        'No-further-action row contains a sanction'
+    FROM CURATED.ADJUDICATIONS
+    WHERE OUTCOME_FAMILY = 'no_further_action'
+      AND (
+          COALESCE(PENALTY_SECONDS, 0) <> 0
+          OR COALESCE(PENALTY_POINTS, 0) <> 0
+          OR COALESCE(GRID_PLACES, 0) <> 0
+      )
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_07_TIME_PENALTY_WITHOUT_SECONDS',
+        ADJUDICATION_ID,
+        'Time penalty lacks positive penalty_seconds'
+    FROM CURATED.ADJUDICATIONS
+    WHERE OUTCOME_FAMILY = 'time_penalty'
+      AND COALESCE(PENALTY_SECONDS, 0) <= 0
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_08_ORPHAN_IMPACT_ADJUDICATION',
+        i.IMPACT_ASSESSMENT_ID,
+        'Impact adjudication_id does not resolve'
+    FROM CURATED.IMPACT_ASSESSMENTS AS i
+    LEFT JOIN CURATED.ADJUDICATIONS AS a
+      ON i.ADJUDICATION_ID = a.ADJUDICATION_ID
+    WHERE a.ADJUDICATION_ID IS NULL
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_09_ORPHAN_IMPACT_CLASSIFICATION',
+        i.IMPACT_ASSESSMENT_ID,
+        'Impact classification source document does not resolve'
+    FROM CURATED.IMPACT_ASSESSMENTS AS i
+    LEFT JOIN RAW.SOURCE_DOCUMENTS AS d
+      ON i.CLASSIFICATION_SOURCE_DOCUMENT_ID = d.DOCUMENT_ID
+    WHERE d.DOCUMENT_ID IS NULL
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_10_INCOMPLETE_MECHANICAL_IMPACT',
+        IMPACT_ASSESSMENT_ID,
+        'Mechanical impact lacks complete deterministic arithmetic'
+    FROM CURATED.IMPACT_ASSESSMENTS
+    WHERE IMPACT_LEVEL = 'mechanical'
+      AND (
+          OFFICIAL_FINISH_POSITION IS NULL
+          OR COUNTERFACTUAL_FINISH_POSITION IS NULL
+          OR POSITIONS_GAINED_WITHOUT_PENALTY IS NULL
+          OR COUNTERFACTUAL_POINTS IS NULL
+          OR POINTS_GAINED_WITHOUT_PENALTY IS NULL
+          OR PODIUM_CHANGED IS NULL
+          OR WIN_CHANGED IS NULL
+      )
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_11_MISSING_REVIEW_TARGET',
+        v.TARGET_ID,
+        CONCAT('Missing independent review for ', v.TARGET_TYPE)
+    FROM ANALYSIS.V_REVIEW_STATUS AS v
+    WHERE v.INDEPENDENT_REVIEW_STATUS IS NULL
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_12_EXTRA_REVIEW_TARGET',
+        r.TARGET_ID,
+        CONCAT('Review target does not resolve: ', r.TARGET_TYPE)
+    FROM AUDIT.INDEPENDENT_REVIEW AS r
+    LEFT JOIN ANALYSIS.V_REVIEW_STATUS AS v
+      ON r.TARGET_TYPE = v.TARGET_TYPE
+     AND r.TARGET_ID = v.TARGET_ID
+    WHERE v.TARGET_ID IS NULL
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_13_2025_GUIDELINE_LINEAGE',
+        ADJUDICATION_ID,
+        'Applicable 2025 conformance label lacks a guideline clause'
+    FROM ANALYSIS.V_EVIDENCE_LINKED_ADJUDICATIONS
+    WHERE SEASON = 2025
+      AND CONFORMANCE_STATUS NOT IN ('unclear', 'not_applicable')
+      AND (GUIDELINE_CLAUSE IS NULL OR TRIM(GUIDELINE_CLAUSE) = '')
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_14_MISSING_SPORTING_REGULATION',
+        e.EVENT_ID,
+        'Event has no event-date Sporting Regulation selection'
+    FROM METADATA.EVENTS AS e
+    LEFT JOIN ANALYSIS.V_EVENT_SPORTING_REGULATION_SELECTION AS r
+      ON e.EVENT_ID = r.EVENT_ID
+    WHERE r.SOURCE_ID IS NULL
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_15_MISSING_INTERNATIONAL_CODE',
+        e.EVENT_ID,
+        'Event has no effective-date International Sporting Code selection'
+    FROM METADATA.EVENTS AS e
+    LEFT JOIN ANALYSIS.V_EVENT_INTERNATIONAL_CODE_SELECTION AS c
+      ON e.EVENT_ID = c.EVENT_ID
+    WHERE c.SOURCE_ID IS NULL
+)
+SELECT CONTROL_ID, RECORD_ID, DETAIL
+FROM VIOLATIONS
+ORDER BY CONTROL_ID, RECORD_ID;
+
+-- Review is a publication gate, not a load-integrity failure. The current pilot should report
+-- PROVISIONAL with 13 unresolved targets and 13 curated rows pending reconciliation.
+WITH REVIEW_COUNTS AS (
+    SELECT
+        COUNT_IF(INDEPENDENT_REVIEW_STATUS IN ('pending', 'needs_discussion'))
+            AS UNRESOLVED_REVIEW_TARGETS,
+        COUNT_IF(CURATED_REVIEW_STATUS NOT IN ('double_coded', 'adjudicated'))
+            AS CURATED_ROWS_NOT_RELEASE_READY
+    FROM ANALYSIS.V_REVIEW_STATUS
+)
+SELECT
+    IFF(
+        UNRESOLVED_REVIEW_TARGETS = 0 AND CURATED_ROWS_NOT_RELEASE_READY = 0,
+        'reviewed',
+        'provisional'
+    ) AS RELEASE_STATUS,
+    UNRESOLVED_REVIEW_TARGETS,
+    CURATED_ROWS_NOT_RELEASE_READY
+FROM REVIEW_COUNTS;

@@ -83,3 +83,12 @@ All principal tables include:
 - manual-review status where relevant.
 
 Large timing tables remain partitioned Parquet and are queried through DuckDB views rather than copied unnecessarily into the database file.
+
+## Snowflake portability boundary
+
+The optional pilot export maps 12 bounded metadata, raw, curated, and audit tables to Snowflake. It
+uses explicit projections rather than `SELECT *`, so migration-history column order cannot change
+the manifest. Parquet files are loaded by case-insensitive column name, and the Snowflake worksheet
+repeats cross-schema lineage, sanction, review, and event-date rule controls. Machine-specific local
+cache paths are not exported. Full lap telemetry remains local until a real warehouse use case and
+cost decision justify moving it.

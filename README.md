@@ -46,7 +46,9 @@ FIA HTML/PDF + regulations + FastF1
  executive brief + final report + technical appendix
 ```
 
-The canonical local workflow uses Python, Jupyter, DuckDB, Parquet, and Git. A focused Snowflake/Snowsight deployment demonstration is planned after the curated data model and representative SQL are stable.
+The canonical local workflow uses Python, Jupyter, DuckDB, Parquet, and Git. A focused,
+credential-free Snowflake/Snowsight deployment package demonstrates portability after the curated
+pilot model, while DuckDB remains the reproducible source of truth.
 
 ## Repository layout
 
@@ -57,6 +59,7 @@ docs/         protocol, source register, codebook, lineage, and recruiter mappin
 explorer/     generated, evidence-linked static review application
 notebooks/    numbered analysis notebooks
 reports/      executive and technical deliverables
+snowflake/    optional Snowsight DDL, loading, views, quality, and parity worksheets
 sql/          portable schema and analytical queries
 src/          reusable Python package
 tests/        parser, schema, and transformation tests
@@ -96,6 +99,8 @@ f1stewards review-status
 f1stewards reconcile-pilot
 f1stewards scale-readiness
 f1stewards build-explorer
+f1stewards export-snowflake-pilot
+f1stewards validate-snowflake-export <export-directory>
 f1stewards quality-check
 pytest
 ```
@@ -139,6 +144,12 @@ inputs. It exposes nine candidate adjudications and four impact assessments with
 official evidence links, data-quality state, build lineage, and a downloadable filtered extract.
 The explorer remains visibly provisional, and comparable-case/model views remain unavailable until
 independent review, reconciliation, full-corpus collection, and model validation pass their gates.
+
+The optional Snowflake/Snowsight package exports 12 content-addressed Parquet tables, excludes
+machine-specific cache paths, verifies every file hash/schema/count locally, and supplies worksheet
+SQL for setup, fail-fast loads, evidence-linked views, 15 integrity controls, review gating, and
+DuckDB/Snowflake parity checks. It is accurately labeled a validated deployment package until a real
+account run records query IDs and load results.
 
 The project is published at
 [brianbzeng/f1-stewarding-analysis](https://github.com/brianbzeng/f1-stewarding-analysis).

@@ -9,7 +9,7 @@ The project is an F1 domain analysis, but its delivery is tailored to the HHS OI
 | Customer Service | Planned user stories, evidence-explorer acceptance criteria, plain-language guide, and documented usability feedback |
 | Data Analysis | Implemented pilot EDA and tiered impact arithmetic; planned calibrated models, adjusted associations, and sensitivity analysis |
 | Data Extraction and Transformation | Implemented versioned FIA PDF/web ingestion, FastF1 enrichment, normalized DuckDB model, and SQL quality checks |
-| Technology Application | Implemented Python package, executed Jupyter notebooks, DuckDB, Parquet, Git, tests, and CI; optional Snowflake deployment follows model freeze |
+| Technology Application | Implemented Python package, executed Jupyter notebooks, DuckDB, Parquet, Git, tests, CI, and a locally validated Snowflake/Snowsight deployment package |
 
 ## Duty alignment
 
@@ -34,6 +34,9 @@ The project is an F1 domain analysis, but its delivery is tailored to the HHS OI
   research governance into reproducible application behavior.
 - Content-addressed reconciliation preserves the initial coding and human review, applies only
   validated correction patches, emits a field-level audit, and verifies input/output checksums.
+- The optional Snowsight package maps 12 typed Parquet tables into six schemas, supplies fail-fast
+  loads and 15 quality controls, and distinguishes local package validation from an unexecuted remote
+  deployment claim.
 - The executed notebooks lead with scope, evidence status, and interpretation instead of presenting
   charts without decision context.
 - Competitive impact separates exact arithmetic from strategy-dependent speculation.
