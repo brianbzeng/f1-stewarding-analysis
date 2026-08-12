@@ -39,13 +39,13 @@ def test_analysis_and_quality_scripts_keep_release_limits_explicit() -> None:
     assert analysis.count("QUALIFY ROW_NUMBER()") == 2
     assert "DESCRIPTIVE ONLY WHILE PROVISIONAL" in analysis
     assert "V_EVIDENCE_LINKED_ADJUDICATIONS" in analysis
-    assert quality.count("SF_QC_") == 15
+    assert quality.count("SF_QC_") == 18
     assert "UNRESOLVED_REVIEW_TARGETS" in quality
     assert "CURATED_ROWS_NOT_RELEASE_READY" in quality
     assert "'PROVISIONAL'" in quality
 
 
-def test_parity_script_freezes_all_twelve_pilot_counts() -> None:
+def test_parity_script_freezes_all_thirteen_pilot_counts() -> None:
     parity = sql("05_parity_checks.sql").upper()
     expected = {
         "METADATA.EVENTS": 3,
@@ -56,10 +56,11 @@ def test_parity_script_freezes_all_twelve_pilot_counts() -> None:
         "METADATA.EVENT_REGULATORY_SOURCES": 11,
         "METADATA.SPORTING_REGULATION_ISSUES": 65,
         "METADATA.INTERNATIONAL_SPORTING_CODE_ISSUES": 9,
-        "METADATA.CLAIM_LEDGER": 12,
+        "METADATA.CLAIM_LEDGER": 14,
         "CURATED.ADJUDICATIONS": 9,
         "CURATED.IMPACT_ASSESSMENTS": 4,
-        "AUDIT.INDEPENDENT_REVIEW": 13,
+        "CURATED.HARM_ASSESSMENTS": 2,
+        "AUDIT.INDEPENDENT_REVIEW": 15,
     }
 
     for table_name, row_count in expected.items():

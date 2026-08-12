@@ -35,6 +35,10 @@ def test_normalize_laps_and_messages_convert_timedeltas_to_seconds() -> None:
                 "LapNumber": [3.0],
                 "LapTime": [pd.to_timedelta(67.5, unit="s")],
                 "LapStartTime": [pd.to_timedelta(140.0, unit="s")],
+                "PitInTime": [pd.to_timedelta(204.0, unit="s")],
+                "PitOutTime": [pd.to_timedelta(232.5, unit="s")],
+                "TyreLife": [18.0],
+                "FreshTyre": [False],
             }
         ),
         "2025-aut",
@@ -47,6 +51,10 @@ def test_normalize_laps_and_messages_convert_timedeltas_to_seconds() -> None:
     )
     assert laps.loc[0, "lap_time_seconds"] == 67.5
     assert laps.loc[0, "lap_start_time_seconds"] == 140.0
+    assert laps.loc[0, "pit_in_time_seconds"] == 204.0
+    assert laps.loc[0, "pit_out_time_seconds"] == 232.5
+    assert laps.loc[0, "tyre_life"] == 18.0
+    assert laps.loc[0, "fresh_tyre"] is False or not laps.loc[0, "fresh_tyre"]
     assert messages.loc[0, "message_time_seconds"] == 151.0
 
 

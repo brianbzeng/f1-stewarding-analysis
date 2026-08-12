@@ -16,7 +16,7 @@ f1stewards export-snowflake-pilot
 f1stewards validate-snowflake-export <printed export directory>
 ```
 
-The export is content-addressed and contains 12 Snappy-compressed Parquet files plus a manifest with
+The export is content-addressed and contains 13 Snappy-compressed Parquet files plus a manifest with
 row counts, ordered columns, SHA-256 hashes, Git commit, and release status. The machine-specific
 PDF cache path is deliberately excluded. The current first-pass package remains `provisional`.
 The latest reproducible local run is recorded in `snowflake/local_validation.md`.
@@ -28,7 +28,7 @@ Use an existing warehouse that you are authorized to run. Execute `00_setup.sql`
 Parquet file format, a named internal stage, and bounded pilot tables; they do not create a warehouse
 or contain credentials.
 
-Upload the 12 Parquet files to `LANDING.F1_STEWARDS_STAGE` through **Ingestion → Add Data → Load
+Upload the 13 Parquet files to `LANDING.F1_STEWARDS_STAGE` through **Ingestion → Add Data → Load
 files into a Stage**. Snowsight supports uploading multiple files to a named internal stage; the
 official instructions and privilege requirements are in [Staging files using
 Snowsight](https://docs.snowflake.com/en/user-guide/data-load-local-file-system-stage-ui).

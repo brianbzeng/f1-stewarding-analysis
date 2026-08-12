@@ -67,6 +67,24 @@ FROM metadata.claim_ledger
 WHERE status IN ('supported_for_inference', 'descriptive_only', 'case_study_only')
   AND evidence_grade_if_met NOT IN ('A', 'B', 'C', 'D');
 
+-- Harm assessments must resolve to adjudications and official classification evidence.
+SELECT h.harm_assessment_id
+FROM curated.harm_assessments AS h
+LEFT JOIN curated.adjudications AS a USING (adjudication_id)
+LEFT JOIN raw.source_documents AS d
+  ON h.classification_source_document_id = d.document_id
+WHERE a.adjudication_id IS NULL OR d.document_id IS NULL;
+
+-- Observed position harm must preserve complete arithmetic.
+SELECT harm_assessment_id
+FROM curated.harm_assessments
+WHERE net_positions_lost_observed IS NOT NULL
+  AND (
+      position_before IS NULL
+      OR position_after IS NULL
+      OR net_positions_lost_observed <> position_after - position_before
+  );
+
 -- Every dated event must map to the latest Sporting Regulation issue published by that date.
 SELECT e.event_id, e.season, e.event_date
 FROM metadata.events AS e

@@ -73,9 +73,9 @@ intervals. Report accused and affected-driver roles separately. Include leave-on
 leave-one-season, home-race, and British-Grand-Prix exclusions. Use `inconclusive` when power or
 overlap is inadequate.
 
-### 7. The competitive cost of sanctions
+### 7. Who actually paid the competitive cost?
 
-Report evidence tiers separately:
+First report sanction burden by evidence tier:
 
 - exact mechanical position, points, podium, and win changes;
 - bounded in-race effects;
@@ -83,6 +83,24 @@ Report evidence tiers separately:
 - non-estimable cases.
 
 Never sum modeled and mechanical impacts without labeling the mixture.
+
+Then report victim harm separately:
+
+- immediate position and relative-time changes;
+- confirmed damage, punctures, repair stops, and incident-caused retirements;
+- bounded pit-lane and repair cost;
+- validated persistent per-lap loss multiplied over exposed laps with uncertainty; and
+- harmful, neutral, possibly beneficial, or beneficial incident-triggered pit responses.
+
+The lead visual is a multi-column harm-sanction matrix, not a single fairness ranking. It shows
+responsibility status, victim time/position/points/retirement evidence, nominal sanction, and realized
+sanction position/points burden. Formal proportionality findings are limited to fault-established,
+independently reviewed incidents. Racing incidents and shared-fault cases remain visible but are not
+called under-penalized merely because their consequences were severe.
+
+Explain that this is an external distributive-fairness question. A large competitive asymmetry may be
+important to fans, teams, and policy discussion even when the stewards correctly applied a conduct-
+based penalty framework that did not seek to compensate the affected driver.
 
 ### 8. Formal corrections and governance boundary cases
 
@@ -105,6 +123,9 @@ steward judgment by a model.
 - calibration, discrimination, residual, and overlap diagnostics;
 - multiplicity and sensitivity analyses;
 - impact formulas and point schedules;
+- victim-harm evidence rules, clean-lap exclusions, forced-stop counterfactuals, and persistent-pace
+  model diagnostics;
+- nominal-versus-realized sanction-burden definitions and proportionality eligibility rules;
 - reproducibility environment and commands;
 - disclosure of AI-assisted initial coding and independent human review.
 

@@ -172,13 +172,49 @@ WITH VIOLATIONS AS (
     LEFT JOIN ANALYSIS.V_EVENT_INTERNATIONAL_CODE_SELECTION AS c
       ON e.EVENT_ID = c.EVENT_ID
     WHERE c.SOURCE_ID IS NULL
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_16_ORPHAN_HARM_ADJUDICATION',
+        h.HARM_ASSESSMENT_ID,
+        'Harm adjudication_id does not resolve'
+    FROM CURATED.HARM_ASSESSMENTS AS h
+    LEFT JOIN CURATED.ADJUDICATIONS AS a
+      ON h.ADJUDICATION_ID = a.ADJUDICATION_ID
+    WHERE a.ADJUDICATION_ID IS NULL
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_17_ORPHAN_HARM_CLASSIFICATION',
+        h.HARM_ASSESSMENT_ID,
+        'Harm classification source document does not resolve'
+    FROM CURATED.HARM_ASSESSMENTS AS h
+    LEFT JOIN RAW.SOURCE_DOCUMENTS AS d
+      ON h.CLASSIFICATION_SOURCE_DOCUMENT_ID = d.DOCUMENT_ID
+    WHERE d.DOCUMENT_ID IS NULL
+
+    UNION ALL
+
+    SELECT
+        'SF_QC_18_HARM_POSITION_ARITHMETIC',
+        HARM_ASSESSMENT_ID,
+        'Observed harm position arithmetic is incomplete or inconsistent'
+    FROM CURATED.HARM_ASSESSMENTS
+    WHERE NET_POSITIONS_LOST_OBSERVED IS NOT NULL
+      AND (
+          POSITION_BEFORE IS NULL
+          OR POSITION_AFTER IS NULL
+          OR NET_POSITIONS_LOST_OBSERVED <> POSITION_AFTER - POSITION_BEFORE
+      )
 )
 SELECT CONTROL_ID, RECORD_ID, DETAIL
 FROM VIOLATIONS
 ORDER BY CONTROL_ID, RECORD_ID;
 
 -- Review is a publication gate, not a load-integrity failure. The current pilot should report
--- PROVISIONAL with 13 unresolved targets and 13 curated rows pending reconciliation.
+-- PROVISIONAL with 15 unresolved targets and 15 curated rows pending reconciliation.
 WITH REVIEW_COUNTS AS (
     SELECT
         COUNT_IF(INDEPENDENT_REVIEW_STATUS IN ('pending', 'needs_discussion'))

@@ -185,6 +185,7 @@ def valid_payload() -> dict:
             }
         ],
         "impacts": [],
+        "harms": [],
         "quality": {
             "active_retrieval_failures": 0,
             "recalled_source_records": 0,
@@ -212,6 +213,7 @@ def test_rendered_explorer_has_accessible_views_and_embedded_data() -> None:
     assert 'role="tablist"' in output
     assert 'aria-live="polite"' in output
     assert "Comparable cases" in output
+    assert "Victim harm" in output
     assert "Download filtered CSV" in output
     assert "lines.join('\\n')" in output
     assert "lines.join('\n')" not in output

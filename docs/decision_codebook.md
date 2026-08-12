@@ -60,6 +60,49 @@ True only when the final decision explicitly identifies a circumstance that redu
 
 True only when the final decision explicitly identifies a circumstance that increased the sanction or affected the finding. The text excerpt is retained.
 
+## Victim-harm fields
+
+### `responsibility_status`
+
+The responsibility condition under which harm may be compared with sanction burden:
+`fault_established`, `shared_or_racing_incident`, `no_fault_finding`, or `unresolved`. Large harm does
+not change this field and is not evidence of fault by itself.
+
+### `damage_evidence`
+
+One of `confirmed`, `repair_observed`, `alleged`, `no_confirmed_damage`, or `unknown`. `confirmed`
+requires an official decision, official team debrief, or similarly direct source. Slow laps or a pit
+stop alone do not confirm damage.
+
+### `repair_stop_required` and `pit_response_status`
+
+`repair_stop_required` records `yes`, `no`, or `unclear`. The response link is separately coded as
+`confirmed`, `plausible`, `no`, or `unclear`. A stop can be real without its causal link to the
+incident being confirmed.
+
+### `net_positions_lost_observed`
+
+Signed arithmetic equal to `position_after - position_before`. Positive values are positions lost;
+negative values are positions gained. It is an observed before/after change, not a no-incident
+counterfactual.
+
+### `affected_relative_time_loss_seconds`
+
+The affected driver's relative gap deterioration across the incident lap. It includes the attempted
+pass, altered lines, contact, and race dynamics, so it is never described as pure damage cost.
+
+### `persistent_pace_status`
+
+One of `confirmed_loss`, `modeled_loss`, `no_detectable_loss`, `insufficient_data`, or
+`not_applicable`. A modeled loss requires the frozen clean-lap minimum and a complete uncertainty
+interval. One normal post-incident lap is `insufficient_data`, not proof of no damage.
+
+### `net_effect_direction`
+
+One of `harmed`, `neutral`, `possible_benefit`, `benefit`, or `unclear`. `possible_benefit` and
+`benefit` require a documented mechanism such as a Safety Car/VSC pit discount, planned-stop overlap,
+useful tyre offset, or undercut. A generic forced-stop time assumption is prohibited.
+
 ### `fault_language`
 
 Controlled values include `wholly_to_blame`, `predominantly_to_blame`, `mainly_at_fault`, `shared_fault`, `racing_incident`, `no_conclusion`, and `not_applicable`. This field comes from the decision narrative and cannot independently validate the stewards' fault finding.

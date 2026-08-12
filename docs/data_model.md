@@ -22,6 +22,7 @@ The warehouse separates source documents, incidents, adjudications, people, rule
 | `guideline_sanctions` | one offence-session-guideline recommendation |
 | `classifications` | one driver result in one session and classification version |
 | `impact_estimates` | one counterfactual method for one adjudication |
+| `harm_assessments` | one affected driver and counterparty pairing for one incident/adjudication |
 
 The implemented pilot enrichment also keeps `fastf1_results`, `fastf1_laps`, and
 `fastf1_race_control_messages` in the raw schema. `result_time_seconds` preserves FastF1's source
@@ -83,6 +84,12 @@ All principal tables include:
 - manual-review status where relevant.
 
 Large timing tables remain partitioned Parquet and are queried through DuckDB views rather than copied unnecessarily into the database file.
+
+`harm_assessments` keeps responsibility, observed victim harm, lasting-damage evidence, repair-stop
+response, and persistent-pace estimates separate from `classification_impact`, which measures the
+burden of the sanction on the penalized driver. `analysis.v_harm_sanction_balance` joins the two only
+for side-by-side review and explicitly excludes shared/racing-incident findings from an automatic
+proportionality conclusion. No cross-unit composite fairness score is stored.
 
 ## Snowflake portability boundary
 

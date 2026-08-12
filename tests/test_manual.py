@@ -1,7 +1,12 @@
 import pytest
 from pydantic import ValidationError
 
-from f1stewards.manual import CodedAdjudication, ImpactAssessment, IndependentReviewRecord
+from f1stewards.manual import (
+    CodedAdjudication,
+    HarmAssessment,
+    ImpactAssessment,
+    IndependentReviewRecord,
+)
 
 
 def base_payload() -> dict:
@@ -88,6 +93,66 @@ def test_served_penalty_cannot_be_labeled_mechanical() -> None:
     payload["sanction_application"] = "served_during_race"
     with pytest.raises(ValidationError, match="post-race-added"):
         ImpactAssessment.model_validate(payload)
+
+
+def harm_payload() -> dict:
+    return {
+        "harm_assessment_id": "harm-test",
+        "adjudication_id": "adj-test",
+        "incident_id": "inc-test",
+        "event_id": "2019-aut",
+        "source_document_id": "fia-decision",
+        "classification_source_document_id": "fia-classification",
+        "affected_driver_number": 16,
+        "counterparty_driver_number": 33,
+        "responsibility_status": "shared_or_racing_incident",
+        "harm_evidence_level": "observed",
+        "damage_evidence": "no_confirmed_damage",
+        "damage_type": "none_identified",
+        "repair_stop_required": "no",
+        "pit_lap": None,
+        "pit_response_status": "no",
+        "pit_lane_loss_seconds": None,
+        "repair_stationary_seconds": None,
+        "retirement_status": "no_retirement",
+        "position_before": 1,
+        "position_after": 2,
+        "net_positions_lost_observed": 1,
+        "affected_relative_time_loss_seconds": 1.683,
+        "post_incident_clean_laps": 1,
+        "persistent_pace_status": "no_detectable_loss",
+        "persistent_delta_per_lap_seconds": None,
+        "persistent_laps_exposed": None,
+        "persistent_loss_seconds_lower": None,
+        "persistent_loss_seconds_estimate": None,
+        "persistent_loss_seconds_upper": None,
+        "net_effect_direction": "harmed",
+        "benefit_mechanism": None,
+        "evidence_urls": "https://www.fia.com/test.pdf",
+        "calculation_method": "official decision plus lap timing",
+        "assumptions": "Observed effects are not a no-contact counterfactual.",
+        "review_status": "single_coded_pending_human",
+    }
+
+
+def test_valid_observed_harm_without_confirmed_damage() -> None:
+    record = HarmAssessment.model_validate(harm_payload())
+    assert record.net_positions_lost_observed == 1
+
+
+def test_repair_stop_requires_pit_evidence() -> None:
+    payload = harm_payload()
+    payload["repair_stop_required"] = "yes"
+    with pytest.raises(ValidationError, match="require a pit lap"):
+        HarmAssessment.model_validate(payload)
+
+
+def test_modeled_persistent_loss_requires_complete_arithmetic() -> None:
+    payload = harm_payload()
+    payload["harm_evidence_level"] = "modeled"
+    payload["persistent_pace_status"] = "modeled_loss"
+    with pytest.raises(ValidationError, match="complete modeled estimate"):
+        HarmAssessment.model_validate(payload)
 
 
 def review_payload() -> dict:

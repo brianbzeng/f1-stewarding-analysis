@@ -29,7 +29,12 @@ from f1stewards.config import (
 from f1stewards.enrichment.fastf1 import fetch_pilot_race, replace_event_enrichment
 from f1stewards.explorer import build_explorer_payload, write_explorer
 from f1stewards.impact import remove_post_race_time_penalty
-from f1stewards.manual import CodedAdjudication, ImpactAssessment, IndependentReviewRecord
+from f1stewards.manual import (
+    CodedAdjudication,
+    HarmAssessment,
+    ImpactAssessment,
+    IndependentReviewRecord,
+)
 from f1stewards.models import DocumentClass
 from f1stewards.parsing.decision import parse_decision_pdf
 from f1stewards.readiness import (
@@ -927,6 +932,129 @@ def validate_impact(
     )
 
 
+@app.command("validate-harm")
+def validate_harm(
+    harm_path: Annotated[Path, typer.Option(help="Affected-driver harm assessment CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_harm_assessments.csv"
+    ),
+    coding_path: Annotated[Path, typer.Option(help="Coded adjudication CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_coded_adjudications.csv"
+    ),
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Validate harm evidence and reproduce observed position and relative-time changes."""
+
+    frame = pd.read_csv(harm_path)
+    records = []
+    for row_number, row in frame.iterrows():
+        payload = {key: None if pd.isna(value) else value for key, value in row.to_dict().items()}
+        try:
+            records.append(HarmAssessment.model_validate(payload))
+        except ValueError as exc:
+            typer.echo(f"row {row_number + 2}: {exc}")
+            raise typer.Exit(code=1) from exc
+    ids = [record.harm_assessment_id for record in records]
+    if len(ids) != len(set(ids)):
+        typer.echo("duplicate harm_assessment_id detected")
+        raise typer.Exit(code=1)
+
+    coded = pd.read_csv(coding_path).set_index("adjudication_id")
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        known_documents = {
+            row[0]
+            for row in connection.sql(
+                "SELECT document_id FROM raw.source_documents"
+            ).fetchall()
+        }
+        for record in records:
+            if record.adjudication_id not in coded.index:
+                typer.echo(f"unknown adjudication id: {record.adjudication_id}")
+                raise typer.Exit(code=1)
+            adjudication = coded.loc[record.adjudication_id]
+            if (
+                int(adjudication["accused_driver_number"]) != record.counterparty_driver_number
+                or int(adjudication["affected_driver_number"]) != record.affected_driver_number
+            ):
+                typer.echo(f"driver-role mismatch: {record.harm_assessment_id}")
+                raise typer.Exit(code=1)
+            for document_id in (
+                record.source_document_id,
+                record.classification_source_document_id,
+            ):
+                if document_id not in known_documents:
+                    typer.echo(f"unknown source document id: {document_id}")
+                    raise typer.Exit(code=1)
+
+            incident_lap = int(adjudication["lap_number"])
+            if record.net_positions_lost_observed is not None and incident_lap > 1:
+                positions = connection.execute(
+                    """
+                    SELECT CAST(lap_number AS INTEGER) AS lap_number, CAST(position AS INTEGER)
+                    FROM raw.fastf1_laps
+                    WHERE event_id = ? AND driver_number = ?
+                      AND lap_number IN (?, ?)
+                    ORDER BY lap_number
+                    """,
+                    [
+                        record.event_id,
+                        record.affected_driver_number,
+                        incident_lap - 1,
+                        incident_lap,
+                    ],
+                ).fetchall()
+                if positions != [
+                    (incident_lap - 1, record.position_before),
+                    (incident_lap, record.position_after),
+                ]:
+                    typer.echo(f"observed position mismatch: {record.harm_assessment_id}")
+                    raise typer.Exit(code=1)
+
+            if record.affected_relative_time_loss_seconds is not None:
+                starts = connection.execute(
+                    """
+                    SELECT driver_number, CAST(lap_number AS INTEGER), lap_start_time_seconds
+                    FROM raw.fastf1_laps
+                    WHERE event_id = ? AND driver_number IN (?, ?)
+                      AND lap_number IN (?, ?)
+                    """,
+                    [
+                        record.event_id,
+                        record.affected_driver_number,
+                        record.counterparty_driver_number,
+                        incident_lap,
+                        incident_lap + 1,
+                    ],
+                ).fetchall()
+                start_by_driver_lap = {
+                    (driver_number, lap_number): lap_start
+                    for driver_number, lap_number, lap_start in starts
+                }
+                affected_before = start_by_driver_lap[
+                    (record.affected_driver_number, incident_lap)
+                ]
+                counterparty_before = start_by_driver_lap[
+                    (record.counterparty_driver_number, incident_lap)
+                ]
+                affected_after = start_by_driver_lap[
+                    (record.affected_driver_number, incident_lap + 1)
+                ]
+                counterparty_after = start_by_driver_lap[
+                    (record.counterparty_driver_number, incident_lap + 1)
+                ]
+                reproduced = (counterparty_before - affected_before) - (
+                    counterparty_after - affected_after
+                )
+                if abs(reproduced - record.affected_relative_time_loss_seconds) > 0.001:
+                    typer.echo(f"relative-time mismatch: {record.harm_assessment_id}")
+                    raise typer.Exit(code=1)
+
+    pending = sum(record.review_status == "single_coded_pending_human" for record in records)
+    typer.echo(
+        f"Validated {len(records)} harm assessments with observed timing arithmetic; "
+        f"pending independent human review: {pending}"
+    )
+
+
 @app.command("review-status")
 def review_status(
     review_path: Annotated[Path, typer.Option(help="Independent-review CSV.")] = (
@@ -937,6 +1065,9 @@ def review_status(
     ),
     impact_path: Annotated[Path, typer.Option(help="Competitive-impact assessment CSV.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_impact_assessments.csv"
+    ),
+    harm_path: Annotated[Path, typer.Option(help="Affected-driver harm assessment CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_harm_assessments.csv"
     ),
 ) -> None:
     """Validate the independent review file and report completion and effort."""
@@ -967,6 +1098,10 @@ def review_status(
         *(
             ("impact_assessment", target_id)
             for target_id in pd.read_csv(impact_path)["impact_assessment_id"]
+        ),
+        *(
+            ("harm_assessment", target_id)
+            for target_id in pd.read_csv(harm_path)["harm_assessment_id"]
         ),
     }
     actual = set(target_pairs)
@@ -1000,6 +1135,9 @@ def reconcile_pilot(
     impact_path: Annotated[Path, typer.Option(help="First-pass impact-assessment CSV.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_impact_assessments.csv"
     ),
+    harm_path: Annotated[Path, typer.Option(help="First-pass harm-assessment CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_harm_assessments.csv"
+    ),
     output_root: Annotated[
         Path, typer.Option(help="Parent for immutable content-addressed outputs.")
     ] = PROJECT_ROOT / "data" / "manual" / "reconciled",
@@ -1007,7 +1145,7 @@ def reconcile_pilot(
     """Create validated reconciled versions without changing first-pass inputs."""
 
     try:
-        bundle = build_pilot_reconciliation(coding_path, impact_path, review_path)
+        bundle = build_pilot_reconciliation(coding_path, impact_path, harm_path, review_path)
         output_directory, created = write_reconciliation_bundle(bundle, output_root)
     except (ValueError, FileExistsError) as exc:
         typer.echo(str(exc))
@@ -1016,6 +1154,7 @@ def reconcile_pilot(
     typer.echo(
         f"{action} reconciliation {bundle.reconciliation_id} at {output_directory}; "
         f"{len(bundle.adjudications)} adjudications, {len(bundle.impacts)} impacts, "
+        f"{len(bundle.harms)} harms, "
         f"{bundle.manifest['field_correction_count']} corrected fields"
     )
 
@@ -1030,6 +1169,9 @@ def export_snowflake_pilot_command(
     ),
     impact_path: Annotated[Path, typer.Option(help="Impact-assessment CSV to export.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_impact_assessments.csv"
+    ),
+    harm_path: Annotated[Path, typer.Option(help="Harm-assessment CSV to export.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_harm_assessments.csv"
     ),
     review_path: Annotated[Path, typer.Option(help="Independent-review CSV to export.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_independent_review.csv"
@@ -1046,6 +1188,7 @@ def export_snowflake_pilot_command(
                 output_root,
                 coding_path,
                 impact_path,
+                harm_path,
                 review_path,
             )
     except (ValueError, FileExistsError) as exc:
@@ -1087,14 +1230,17 @@ def scale_readiness(
     impact_path: Annotated[Path, typer.Option(help="Competitive-impact assessment CSV.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_impact_assessments.csv"
     ),
+    harm_path: Annotated[Path, typer.Option(help="Affected-driver harm assessment CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_harm_assessments.csv"
+    ),
     output_path: Annotated[Path | None, typer.Option(help="Optional CSV snapshot path.")] = None,
     db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
 ) -> None:
     """Evaluate measured pilot gates without automating the final scope decision."""
 
     try:
-        coded, impacts, reviews = load_pilot_manual_records(
-            coding_path, impact_path, review_path
+        coded, impacts, harms, reviews = load_pilot_manual_records(
+            coding_path, impact_path, harm_path, review_path
         )
     except ValueError as exc:
         typer.echo(str(exc))
@@ -1104,6 +1250,7 @@ def scale_readiness(
             connection,
             coded,
             impacts,
+            harms,
             reviews,
             load_analysis_thresholds(),
         )
@@ -1123,6 +1270,9 @@ def build_explorer(
     impact_path: Annotated[Path, typer.Option(help="Competitive-impact assessment CSV.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_impact_assessments.csv"
     ),
+    harm_path: Annotated[Path, typer.Option(help="Affected-driver harm assessment CSV.")] = (
+        PROJECT_ROOT / "data" / "manual" / "pilot_harm_assessments.csv"
+    ),
     review_path: Annotated[Path, typer.Option(help="Independent-review CSV.")] = (
         PROJECT_ROOT / "data" / "manual" / "pilot_independent_review.csv"
     ),
@@ -1139,12 +1289,14 @@ def build_explorer(
             PROJECT_ROOT,
             coding_path,
             impact_path,
+            harm_path,
             review_path,
         )
     write_explorer(payload, output_path)
     typer.echo(
         f"Wrote {output_path} with {len(payload['adjudications'])} adjudications, "
         f"{len(payload['impacts'])} impact assessments, and "
+        f"{len(payload['harms'])} harm assessments; "
         f"status={payload['metadata']['release_status']}"
     )
 

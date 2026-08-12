@@ -9,7 +9,12 @@ from typing import Any
 import duckdb
 import pandas as pd
 
-from f1stewards.manual import CodedAdjudication, ImpactAssessment, IndependentReviewRecord
+from f1stewards.manual import (
+    CodedAdjudication,
+    HarmAssessment,
+    ImpactAssessment,
+    IndependentReviewRecord,
+)
 
 
 def _load_records(path: Path, model: type[Any]) -> list[Any]:
@@ -24,23 +29,39 @@ def _load_records(path: Path, model: type[Any]) -> list[Any]:
 def load_pilot_manual_records(
     coding_path: Path,
     impact_path: Path,
+    harm_path: Path,
     review_path: Path,
-) -> tuple[list[CodedAdjudication], list[ImpactAssessment], list[IndependentReviewRecord]]:
-    """Load and validate the three linked pilot manual artifacts."""
+) -> tuple[
+    list[CodedAdjudication],
+    list[ImpactAssessment],
+    list[HarmAssessment],
+    list[IndependentReviewRecord],
+]:
+    """Load and validate the four linked pilot manual artifacts."""
 
     coded = _load_records(coding_path, CodedAdjudication)
     impacts = _load_records(impact_path, ImpactAssessment)
+    harms = _load_records(harm_path, HarmAssessment)
     reviews = _load_records(review_path, IndependentReviewRecord)
     expected_targets = {
         *(("adjudication", record.adjudication_id) for record in coded),
         *(("impact_assessment", record.impact_assessment_id) for record in impacts),
+        *(("harm_assessment", record.harm_assessment_id) for record in harms),
     }
     actual_targets = {(record.target_type, record.target_id) for record in reviews}
     if len(actual_targets) != len(reviews):
         raise ValueError("Independent review targets must be unique")
     if actual_targets != expected_targets:
         raise ValueError("Independent review targets do not match pilot coded artifacts")
-    return coded, impacts, reviews
+    adjudication_ids = {record.adjudication_id for record in coded}
+    dangling_harms = sorted(
+        record.harm_assessment_id
+        for record in harms
+        if record.adjudication_id not in adjudication_ids
+    )
+    if dangling_harms:
+        raise ValueError(f"Harm assessments have unknown adjudications: {dangling_harms}")
+    return coded, impacts, harms, reviews
 
 
 def review_gate(
@@ -72,6 +93,7 @@ def evaluate_pilot_readiness(
     connection: duckdb.DuckDBPyConnection,
     coded: list[CodedAdjudication],
     impacts: list[ImpactAssessment],
+    harms: list[HarmAssessment],
     reviews: list[IndependentReviewRecord],
     thresholds: dict[str, Any],
 ) -> pd.DataFrame:
@@ -228,10 +250,11 @@ def evaluate_pilot_readiness(
         },
         {
             "gate": "coding_validity",
-            "status": "pass" if coded and impacts else "fail",
+            "status": "pass" if coded and impacts and harms else "fail",
             "metric": (
                 f"{len(coded)} adjudications / {incident_count} incidents; "
-                f"{len(impacts)} impact records / {mechanical_count} mechanical"
+                f"{len(impacts)} sanction-impact records / {mechanical_count} mechanical; "
+                f"{len(harms)} victim-harm records"
             ),
             "note": "All rows passed controlled-field and impossible-combination contracts.",
         },

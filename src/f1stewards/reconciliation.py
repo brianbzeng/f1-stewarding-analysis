@@ -15,14 +15,25 @@ from typing import Any
 
 import pandas as pd
 
-from f1stewards.manual import CodedAdjudication, ImpactAssessment, IndependentReviewRecord
+from f1stewards.manual import (
+    CodedAdjudication,
+    HarmAssessment,
+    ImpactAssessment,
+    IndependentReviewRecord,
+)
 from f1stewards.readiness import load_pilot_manual_records
 
-METHOD_VERSION = "pilot_reconciliation_v1"
-INPUT_LABELS = ("coded_adjudications", "impact_assessments", "independent_review")
+METHOD_VERSION = "pilot_reconciliation_v2"
+INPUT_LABELS = (
+    "coded_adjudications",
+    "harm_assessments",
+    "impact_assessments",
+    "independent_review",
+)
 OUTPUT_FILENAMES = (
     "adjudications.csv",
     "impact_assessments.csv",
+    "harm_assessments.csv",
     "reconciliation_audit.csv",
     "manifest.json",
 )
@@ -47,6 +58,17 @@ PROTECTED_FIELDS = {
             "review_status",
         }
     ),
+    "harm_assessment": frozenset(
+        {
+            "harm_assessment_id",
+            "adjudication_id",
+            "incident_id",
+            "event_id",
+            "source_document_id",
+            "classification_source_document_id",
+            "review_status",
+        }
+    ),
 }
 
 
@@ -57,6 +79,7 @@ class ReconciliationBundle:
     reconciliation_id: str
     adjudications: pd.DataFrame
     impacts: pd.DataFrame
+    harms: pd.DataFrame
     audit: pd.DataFrame
     manifest: dict[str, Any]
 
@@ -114,9 +137,9 @@ def _audit_row(
 
 
 def _reconcile_record(
-    record: CodedAdjudication | ImpactAssessment,
+    record: CodedAdjudication | ImpactAssessment | HarmAssessment,
     review: IndependentReviewRecord,
-) -> tuple[CodedAdjudication | ImpactAssessment, list[dict[str, Any]]]:
+) -> tuple[CodedAdjudication | ImpactAssessment | HarmAssessment, list[dict[str, Any]]]:
     initial = record.model_dump(mode="json")
     corrections: dict[str, Any] = {}
     if review.review_status == "correct":
@@ -159,6 +182,7 @@ def _reconcile_record(
 def reconcile_pilot_records(
     coded: list[CodedAdjudication],
     impacts: list[ImpactAssessment],
+    harms: list[HarmAssessment],
     reviews: list[IndependentReviewRecord],
     input_sha256: Mapping[str, str],
 ) -> ReconciliationBundle:
@@ -177,14 +201,16 @@ def reconcile_pilot_records(
     if len(review_by_target) != len(reviews):
         raise ValueError("Independent review targets must be unique")
     expected_targets = {
-        *(('adjudication', record.adjudication_id) for record in coded),
-        *(('impact_assessment', record.impact_assessment_id) for record in impacts),
+        *(("adjudication", record.adjudication_id) for record in coded),
+        *(("impact_assessment", record.impact_assessment_id) for record in impacts),
+        *(("harm_assessment", record.harm_assessment_id) for record in harms),
     }
     if set(review_by_target) != expected_targets:
         raise ValueError("Independent review targets do not match pilot coded artifacts")
 
     reconciled_adjudications: list[CodedAdjudication] = []
     reconciled_impacts: list[ImpactAssessment] = []
+    reconciled_harms: list[HarmAssessment] = []
     audit_rows: list[dict[str, Any]] = []
     for record in coded:
         reconciled, audit = _reconcile_record(
@@ -200,6 +226,13 @@ def reconcile_pilot_records(
         )
         reconciled_impacts.append(reconciled)  # type: ignore[arg-type]
         audit_rows.extend(audit)
+    for record in harms:
+        reconciled, audit = _reconcile_record(
+            record,
+            review_by_target[("harm_assessment", record.harm_assessment_id)],
+        )
+        reconciled_harms.append(reconciled)  # type: ignore[arg-type]
+        audit_rows.extend(audit)
 
     adjudication_ids = {record.adjudication_id for record in reconciled_adjudications}
     dangling_impacts = sorted(
@@ -209,6 +242,13 @@ def reconcile_pilot_records(
     )
     if dangling_impacts:
         raise ValueError(f"Reconciled impacts have unknown adjudications: {dangling_impacts}")
+    dangling_harms = sorted(
+        record.harm_assessment_id
+        for record in reconciled_harms
+        if record.adjudication_id not in adjudication_ids
+    )
+    if dangling_harms:
+        raise ValueError(f"Reconciled harms have unknown adjudications: {dangling_harms}")
 
     adjudication_frame = pd.DataFrame(
         [record.model_dump(mode="json") for record in reconciled_adjudications],
@@ -217,6 +257,10 @@ def reconcile_pilot_records(
     impact_frame = pd.DataFrame(
         [record.model_dump(mode="json") for record in reconciled_impacts],
         columns=list(ImpactAssessment.model_fields),
+    )
+    harm_frame = pd.DataFrame(
+        [record.model_dump(mode="json") for record in reconciled_harms],
+        columns=list(HarmAssessment.model_fields),
     )
     audit_frame = pd.DataFrame(audit_rows)
     decision_counts = Counter(review.review_status for review in reviews)
@@ -231,6 +275,7 @@ def reconcile_pilot_records(
         "input_sha256": hashes,
         "adjudication_count": len(reconciled_adjudications),
         "impact_assessment_count": len(reconciled_impacts),
+        "harm_assessment_count": len(reconciled_harms),
         "review_target_count": len(reviews),
         "review_decision_counts": dict(sorted(decision_counts.items())),
         "field_correction_count": correction_rows,
@@ -241,6 +286,7 @@ def reconcile_pilot_records(
         reconciliation_id=reconciliation_id,
         adjudications=adjudication_frame,
         impacts=impact_frame,
+        harms=harm_frame,
         audit=audit_frame,
         manifest=manifest,
     )
@@ -249,18 +295,23 @@ def reconcile_pilot_records(
 def build_pilot_reconciliation(
     coding_path: Path,
     impact_path: Path,
+    harm_path: Path,
     review_path: Path,
 ) -> ReconciliationBundle:
     """Load linked CSVs, validate them, and build a reconciled in-memory bundle."""
 
-    coded, impacts, reviews = load_pilot_manual_records(coding_path, impact_path, review_path)
+    coded, impacts, harms, reviews = load_pilot_manual_records(
+        coding_path, impact_path, harm_path, review_path
+    )
     return reconcile_pilot_records(
         coded,
         impacts,
+        harms,
         reviews,
         {
             "coded_adjudications": file_sha256(coding_path),
             "impact_assessments": file_sha256(impact_path),
+            "harm_assessments": file_sha256(harm_path),
             "independent_review": file_sha256(review_path),
         },
     )
@@ -274,6 +325,9 @@ def serialize_reconciliation_bundle(bundle: ReconciliationBundle) -> dict[str, b
             "utf-8"
         ),
         "impact_assessments.csv": bundle.impacts.to_csv(index=False, lineterminator="\n").encode(
+            "utf-8"
+        ),
+        "harm_assessments.csv": bundle.harms.to_csv(index=False, lineterminator="\n").encode(
             "utf-8"
         ),
         "reconciliation_audit.csv": bundle.audit.to_csv(index=False, lineterminator="\n").encode(

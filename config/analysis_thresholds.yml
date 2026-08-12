@@ -56,6 +56,20 @@ analysis_thresholds:
     next_event_grid_penalty_default_tier: not_estimable
     require_independent_review: true
 
+  victim_harm:
+    minimum_clean_laps_each_side: 5
+    sensitivity_clean_laps_each_side: [3, 8]
+    require_teammate_or_field_reference: true
+    require_compound_tyre_age_fuel_track_controls: true
+    exclude_pit_in_out_laps: true
+    exclude_safety_car_vsc_laps: true
+    exclude_weather_transition_laps: true
+    benefit_requires_documented_mechanism: true
+    confirmed_benefit_requires_validated_counterfactual: true
+    proportionality_requires_fault_established: true
+    prohibit_cross_unit_composite_score: true
+    require_independent_review: true
+
   evidence_explorer:
     require_official_url_per_adjudication: true
     require_reference_query_filter_tests: true

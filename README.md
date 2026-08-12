@@ -95,6 +95,7 @@ f1stewards international-sporting-code-audit
 f1stewards claim-audit
 f1stewards validate-coding
 f1stewards validate-impact
+f1stewards validate-harm
 f1stewards review-status
 f1stewards reconcile-pilot
 f1stewards scale-readiness
@@ -133,21 +134,22 @@ catalog separately models effective windows, including the April 2020 revision a
 publication metadata for older binaries. The nine candidate adjudications and
 four impact assessments have an
 AI-assisted first coding pass, but every row remains explicitly pending independent human review.
-The separate 13-row review packet preserves corrections and measured review effort without
+The separate 15-row review packet, now including two mirrored victim-harm assessments, preserves corrections and measured review effort without
 overwriting the first pass.
 Completed reviews are reconciled into new content-addressed files with protected lineage fields,
 whole-record validation, a field-level change log, and SHA-256 input/output manifests; the command
 cannot overwrite a previously generated version.
 
 A dependency-free pilot evidence explorer is also generated from the same DuckDB and curated manual
-inputs. It exposes nine candidate adjudications and four impact assessments with exact filters,
+inputs. It exposes nine candidate adjudications, four sanction-impact assessments, and two mirrored
+victim-harm assessments with exact filters,
 official evidence links, data-quality state, build lineage, and a downloadable filtered extract.
 The explorer remains visibly provisional, and comparable-case/model views remain unavailable until
 independent review, reconciliation, full-corpus collection, and model validation pass their gates.
 
-The optional Snowflake/Snowsight package exports 12 content-addressed Parquet tables, excludes
+The optional Snowflake/Snowsight package exports 13 content-addressed Parquet tables, excludes
 machine-specific cache paths, verifies every file hash/schema/count locally, and supplies worksheet
-SQL for setup, fail-fast loads, evidence-linked views, 15 integrity controls, review gating, and
+SQL for setup, fail-fast loads, evidence-linked views, 18 integrity controls, review gating, and
 DuckDB/Snowflake parity checks. It is accurately labeled a validated deployment package until a real
 account run records query IDs and load results.
 

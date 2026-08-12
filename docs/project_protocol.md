@@ -7,7 +7,7 @@ Coverage: completed FIA Formula One World Championship seasons 2018-2025
 
 ## Purpose
 
-This study evaluates the consistency and competitive consequences of formally adjudicated Formula One driving incidents. It also tests whether decision outcomes are associated with nationality or steward-panel composition after accounting for observable incident context.
+This study evaluates the consistency and competitive consequences of formally adjudicated Formula One driving incidents. It also tests whether decision outcomes are associated with nationality or steward-panel composition after accounting for observable incident context. Competitive consequence includes both the burden imposed on a sanctioned driver and the realized or credibly estimated harm to an affected driver.
 
 The study is designed as an oversight analysis. Its models prioritize cases for review and quantify associations; they do not determine fault, intent, corruption, or the correctness of evidence that is unavailable to the public.
 
@@ -86,14 +86,27 @@ Estimate adjusted differences in sanction probability and severity associated wi
 
 Nationality fields must be defined before outcome analysis. Driver nationality means the nationality represented in FIA/F1 records for that season. Team nationality is excluded from the primary nationality test because entrant nationality, ownership, and operational base are different constructs.
 
-### RQ4: competitive impact
+### RQ4: sanction burden and victim harm
 
 Measure separately:
 
 - exact mechanical classification changes for time added after the session;
 - bounded estimates for penalties served during the session;
 - modeled expected-points changes if validation supports them;
-- non-estimable counterfactuals such as grid penalties and governance decisions.
+- non-estimable counterfactuals such as grid penalties and governance decisions;
+- affected-driver position changes, repair stops, punctures, retirement, and confirmed damage;
+- bounded or modeled persistent pace loss when clean-lap support is adequate; and
+- incident-triggered stops with harmful, neutral, possibly beneficial, or beneficial net effects.
+
+For fault-established incidents, compare victim harm with both the nominal sanction and the sanction's
+realized position/points burden. The comparison is multi-metric; seconds, positions, points, and
+retirements are never converted into one arbitrary fairness score. Shared-fault, racing-incident, and
+no-fault findings may be described but are not labeled disproportionate solely because harm was
+large.
+
+This harm-proportionality lens is an external distributive-fairness analysis. It is not interchangeable
+with rule/guideline conformance. Whether consequences were relevant to the stewards is coded from
+the applicable decision or governing material, not assumed uniformly across 2018-2025.
 
 ### RQ5: formal correction
 
@@ -117,6 +130,8 @@ The initial context set is:
 - damage;
 - immediate position loss;
 - retirement;
+- incident-responsive repair stop and pit-window state;
+- post-incident clean-lap support and persistent pace status;
 - lasting advantage retained or returned;
 - written mitigation;
 - written aggravation;
@@ -153,6 +168,21 @@ Cross-validation groups must prevent documents or adjudications from the same ev
 - **D — qualitative only:** no defensible numerical counterfactual.
 
 Every reported impact must include its evidence level.
+
+Victim harm uses a parallel but distinct hierarchy:
+
+- **A - observed:** direct official or timing evidence of position change, stop, repair, puncture,
+  retirement, or relative-time swing; no no-incident counterfactual claim.
+- **B - bounded:** direct cost is observed but the alternate pit/strategy path remains a range.
+- **C - modeled:** persistent pace, finishing position, or points impact from an out-of-sample
+  validated counterfactual with propagated uncertainty.
+- **D - not estimable:** mechanism described without a numerical loss.
+
+Damage is never inferred from slow pace alone. A persistent-pace model requires the frozen minimum
+clean laps before and after the incident, tyre/fuel/track/traffic controls, a teammate or field
+reference, and sensitivity windows. Incident-triggered stops are allowed to be neutral or beneficial
+when a documented Safety Car/VSC, planned-window overlap, tyre offset, or undercut mechanism supports
+that direction.
 
 ## Case-study selection
 

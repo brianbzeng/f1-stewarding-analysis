@@ -23,7 +23,8 @@ full-season scale-up until the nine-row primary coding queue receives a document
 | FastF1 driver laps | 3,684 |
 | FastF1 race-control messages | 285 |
 | Event-linked regulatory sources | 11 |
-| Provisional impact assessments | 4 |
+| Provisional sanction-impact assessments | 4 |
+| Provisional mirrored victim-harm assessments | 2 |
 | Reproduced mechanical impact calculations | 2 |
 
 ## What the pilot established
@@ -62,5 +63,6 @@ The technical pilot supports continued method and report development. Do not col
 events until independent review estimates minutes per record, tests the controlled vocabulary, and
 confirms that recalled/corrected lineage can be resolved with an acceptable unresolved rate.
 
-The independent-review packet contains 13 targets and is currently 0/13 complete. Pending status is
+The independent-review packet contains 15 targets and is currently 1/15 started: the first
+adjudication remains `needs_discussion`, and the two new harm rows are pending. Pending status is
 an expected gate condition, not a validation failure.

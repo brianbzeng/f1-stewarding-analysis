@@ -32,6 +32,8 @@ Third-party summaries cannot overwrite an official source. Conflicts are logged 
 | [2025 F1 Driving Standards Guidelines v4.1](https://www.fia.com/sites/default/files/f1_driving_standards_guidelines_version_4.1_feb_20_2025.pdf) | Public overtaking and driving-standard tests | Guideline, not regulation |
 | [2025 guideline publication and explanation](https://www.fia.com/news/fia-adds-further-transparency-fia-formula-one-world-championship-publication-stewards) | Purpose, history, and non-regulatory status | Historical internal versions are not public |
 | [FIA explanation of guideline use](https://www.fia.com/news/fia-insights-guiding-principles-how-fia-bringing-even-more-transparency-application-f1) | Evidence limitations, living-document status, and first-lap tolerance | Explanatory material, not governing law |
+| [2018 Azerbaijan Right of Review decision](https://www.fia.com/file/68044/download?token=T9Ow9Dxc) | Historical evidence that realized consequences of penalties were not used to resize the sanction | Event decision; do not assume identical policy wording for every season |
+| [2024 Australian GP Car 14 decision](https://www.fia.com/sites/default/files/decision-document/2024%20Australian%20Grand%20Prix%20-%20Infringement%20-%20Car%2014%20-%20Potentially%20dangerous%20driving.pdf) | Direct example in which stewards explicitly did not consider crash consequences | One decision, not a universal rule text |
 | [2026 F1 guideline update](https://www.fia.com/news/updated-fia-formula-one-world-championship-stewards-guidelines-driving-standards-penalties) | Future taxonomy and rule-evolution reference | Must not be applied retrospectively to 2018-2025 |
 | [FIA International Court of Appeal judgments](https://www.fia.com/judgments-ica) | Final appellate decisions and case-law index | Appeals are selected, not representative of all decisions |
 | [2021 Abu Dhabi review](https://www.fia.com/sites/default/files/2021_f1_abu_dhabi_grand_prix_-_report_to_the_wmsc_-_19_march_2022.pdf) | Governance case study | Race Control procedure, not an ordinary steward penalty |
@@ -54,7 +56,7 @@ The collector will identify and retain:
 
 | Source | Coverage/use | Known caveat |
 |---|---|---|
-| [FastF1](https://docs.fastf1.dev/data_reference/index.html) | Timing, laps, telemetry, positions, weather, track status, race control, and results from 2018 | Public feed is less complete than FIA/team evidence; individual sessions can be missing |
+| [FastF1](https://docs.fastf1.dev/data_reference/index.html) | Timing, laps, pit in/out, tyre age, positions, telemetry, weather, track status, race control, and results from 2018 | Public feed is less complete than FIA/team evidence; individual sessions can be missing and timing alone cannot confirm damage |
 | [OpenF1](https://openf1.org/docs/) | Secondary validation for timing, position, and race control from 2023 | Unofficial; not a primary source |
 
 ## Completeness-only references
@@ -70,6 +72,10 @@ The [F1 Penalties Dashboard](https://github.com/j5t3313/F1_Penalties_Dashboard) 
 - Steward decisions are collective; individual votes are not public.
 - Driver and steward nationality must be sourced and defined consistently rather than inferred from names.
 - Final classifications show official consequences, not the alternate race strategy that would have occurred without a penalty.
+- Team debriefs can confirm damage or an incident-responsive stop, but teams are interested parties;
+  the timing consequence is independently checked where possible.
+- A slow post-incident lap can reflect traffic, tyre condition, fuel, track evolution, damage, or race
+  management. It is not damage evidence by itself.
 
 ## Pilot event-date assignments
 

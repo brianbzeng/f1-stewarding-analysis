@@ -5,16 +5,18 @@ must remain separate from the initial file so agreement and corrections are audi
 
 ## What to review
 
-Open `data/manual/pilot_independent_review.csv`. It contains 13 targets:
+Open `data/manual/pilot_independent_review.csv`. It contains 15 targets:
 
 - nine accused-driver adjudications;
 - two mechanically calculated post-race penalty impacts;
 - one served-penalty impact labeled not estimable;
 - one next-event grid-penalty impact labeled not estimable.
+- two mirrored driver-side harm assessments for the 2019 Austria lap-69 incident.
 
 Each row contains official FIA evidence links and a short initial summary. Use
-`data/manual/pilot_coded_adjudications.csv`, `data/manual/pilot_impact_assessments.csv`, the decision
-codebook, and the event-date source matrix for the complete first-pass fields.
+`data/manual/pilot_coded_adjudications.csv`, `data/manual/pilot_impact_assessments.csv`,
+`data/manual/pilot_harm_assessments.csv`, the decision codebook, and the event-date source matrix for
+the complete first-pass fields.
 
 ## Review procedure
 
@@ -26,19 +28,22 @@ For each row:
    status, guideline clause, conformance, and primary-study inclusion.
 3. For an impact assessment, verify how the sanction was applied, completed laps, official order and
    gaps, evidence tier, arithmetic, points, podium/win flags, and assumptions.
-4. Set `review_status` to `agree`, `correct`, or `needs_discussion`.
-5. Add `reviewer_id`, an ISO-8601 UTC timestamp, and `review_minutes`.
-6. For `correct`, write only changed fields in `corrected_fields_json` and explain the evidence in
+4. For a harm assessment, verify driver roles, responsibility status, confirmed versus unconfirmed
+   damage, repair-stop link, position/time arithmetic, post-incident clean-lap support, net effect,
+   and the distinction between observed change and causal counterfactual.
+5. Set `review_status` to `agree`, `correct`, or `needs_discussion`.
+6. Add `reviewer_id`, an ISO-8601 UTC timestamp, and `review_minutes`.
+7. For `correct`, write only changed fields in `corrected_fields_json` and explain the evidence in
    `reviewer_notes`. Example: `{"lap_number": 47, "turn_number": 6}`.
-7. For `needs_discussion`, explain the ambiguity in `reviewer_notes`.
-8. Run `f1stewards review-status` after saving.
+8. For `needs_discussion`, explain the ambiguity in `reviewer_notes`.
+9. Run `f1stewards review-status` after saving.
 
 After all discussion items are resolved, run `f1stewards reconcile-pilot`. The command will refuse
 an incomplete sheet and will create new reviewed versions rather than modifying either first-pass
 file. See `docs/pilot_reconciliation_workflow.md` for the protected fields and audit outputs.
 
-Do not edit the first-pass adjudication or impact CSV during independent review. Reconciliation is a
-separate, documented step.
+Do not edit the first-pass adjudication, sanction-impact, or harm CSV during independent review.
+Reconciliation is a separate, documented step.
 
 ## Known items that deserve attention
 
@@ -52,12 +57,15 @@ separate, documented step.
   to infer event-date internal guidance.
 - Perez's 2023 penalty was added after the race; Tsunoda's 2025 penalty was served. The same number
   of seconds therefore does not support the same counterfactual method.
+- For 2019 Austria, Leclerc's P1-to-P2 change and the 1.683-second relative swing are observed. The
+  pass, racing line, battle, and contact are inseparable in that number. No repair stop is present,
+  and one clean post-incident lap is insufficient to estimate lasting damage.
 
 ## Completion criteria
 
 The review gate passes only when:
 
-- all 13 rows are complete;
+- all 15 rows are complete;
 - every correction has a non-empty JSON object and evidence note;
 - every discussion item is reconciled or explicitly accepted as unresolved;
 - review effort is summarized for scale planning;

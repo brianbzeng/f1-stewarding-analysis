@@ -80,6 +80,46 @@ is permitted from this observational design.
 
 Otherwise use `not_estimable`.
 
+### Victim harm - observed
+
+- Before/after positions or relative timing reproduce from the frozen timing extract.
+- Damage, puncture, repair, or incident-caused retirement uses a direct official source or is labeled
+  only as observed/alleged.
+- A repair stop is causally linked to the incident rather than inferred from proximity alone.
+- Observed change is not described as a no-incident counterfactual.
+
+### Victim harm - bounded
+
+- Pit transit, stationary repair, or another direct component is observed.
+- The lower/upper bounds follow documented physical, timing, or strategy constraints.
+- Planned-stop overlap and Safety Car/VSC state are explicit.
+
+### Victim harm - modeled persistent loss
+
+- At least the frozen minimum clean laps exist before and after the incident.
+- Pit in/out, Safety Car/VSC, rain-transition, materially impeded, and other invalid comparison laps
+  are excluded under a reproducible rule.
+- Compound, tyre age, fuel-lap trend, track evolution, traffic, and teammate/field reference are
+  controlled or the omission is justified.
+- Grouped out-of-sample validation supports the target use and uncertainty is propagated across the
+  exposed laps.
+- Alternate pre/post windows and reference choices do not reverse the substantive conclusion.
+
+Otherwise use `insufficient_data` or `not_estimable`; one clean lap cannot establish no lasting
+damage.
+
+### Harm-sanction proportionality
+
+- Responsibility is independently reviewed and coded `fault_established`.
+- Victim harm and sanction burden each retain their own evidence tier.
+- Nominal and realized sanction burdens are both shown.
+- Seconds, positions, points, repair, and retirement are reported separately rather than converted
+  into a composite score.
+- Shared-fault, racing-incident, and no-fault findings are descriptive only unless the report is
+  explicitly auditing the responsibility finding with independent evidence.
+- The conclusion states that proportionality is an external fairness lens and may differ from FIA
+  penalty policy or guideline conformance.
+
 ## RQ5 - formal correction
 
 Supported as a descriptive count when all discovered versions have lineage status and the final

@@ -150,13 +150,160 @@ class ImpactAssessment(BaseModel):
         return self
 
 
+class HarmAssessment(BaseModel):
+    """One affected-driver assessment of incident harm and any lasting consequence."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    harm_assessment_id: str
+    adjudication_id: str
+    incident_id: str
+    event_id: str
+    source_document_id: str
+    classification_source_document_id: str
+    affected_driver_number: int = Field(ge=1, le=99)
+    counterparty_driver_number: int = Field(ge=1, le=99)
+    responsibility_status: Literal[
+        "fault_established",
+        "shared_or_racing_incident",
+        "no_fault_finding",
+        "unresolved",
+    ]
+    harm_evidence_level: Literal["observed", "bounded", "modeled", "not_estimable"]
+    damage_evidence: Literal[
+        "confirmed",
+        "repair_observed",
+        "alleged",
+        "no_confirmed_damage",
+        "unknown",
+    ]
+    damage_type: Literal[
+        "none_identified",
+        "front_wing",
+        "puncture",
+        "floor_or_bodywork",
+        "suspension",
+        "terminal",
+        "multiple",
+        "other",
+        "unknown",
+    ]
+    repair_stop_required: Literal["yes", "no", "unclear"]
+    pit_lap: int | None = Field(default=None, ge=1)
+    pit_response_status: Literal["confirmed", "plausible", "no", "unclear"]
+    pit_lane_loss_seconds: float | None = Field(default=None, ge=0)
+    repair_stationary_seconds: float | None = Field(default=None, ge=0)
+    retirement_status: Literal[
+        "incident_caused", "no_retirement", "other_cause", "unclear"
+    ]
+    position_before: int | None = Field(default=None, ge=1)
+    position_after: int | None = Field(default=None, ge=1)
+    net_positions_lost_observed: int | None = Field(default=None, ge=-19, le=19)
+    affected_relative_time_loss_seconds: float | None = None
+    post_incident_clean_laps: int = Field(ge=0)
+    persistent_pace_status: Literal[
+        "confirmed_loss",
+        "modeled_loss",
+        "no_detectable_loss",
+        "insufficient_data",
+        "not_applicable",
+    ]
+    persistent_delta_per_lap_seconds: float | None = Field(default=None, ge=0)
+    persistent_laps_exposed: int | None = Field(default=None, ge=1)
+    persistent_loss_seconds_lower: float | None = Field(default=None, ge=0)
+    persistent_loss_seconds_estimate: float | None = Field(default=None, ge=0)
+    persistent_loss_seconds_upper: float | None = Field(default=None, ge=0)
+    net_effect_direction: Literal[
+        "harmed", "neutral", "possible_benefit", "benefit", "unclear"
+    ]
+    benefit_mechanism: str | None = None
+    evidence_urls: str
+    calculation_method: str
+    assumptions: str
+    review_status: Literal["single_coded_pending_human", "double_coded", "adjudicated"]
+
+    @model_validator(mode="after")
+    def validate_harm_evidence(self) -> HarmAssessment:
+        if self.affected_driver_number == self.counterparty_driver_number:
+            raise ValueError("affected and counterparty drivers must differ")
+
+        position_fields = (
+            self.position_before,
+            self.position_after,
+            self.net_positions_lost_observed,
+        )
+        if any(value is not None for value in position_fields):
+            if any(value is None for value in position_fields):
+                raise ValueError("observed position harm requires complete before/after arithmetic")
+            if self.net_positions_lost_observed != self.position_after - self.position_before:
+                raise ValueError("net_positions_lost_observed does not match positions")
+
+        pit_fields = (self.pit_lap, self.pit_lane_loss_seconds, self.repair_stationary_seconds)
+        if self.repair_stop_required == "yes" and (
+            self.pit_lap is None
+            or self.pit_response_status not in {"confirmed", "plausible"}
+        ):
+            raise ValueError("repair stops require a pit lap and incident-response evidence")
+        if self.repair_stop_required == "no" and (
+            any(value is not None for value in pit_fields) or self.pit_response_status != "no"
+        ):
+            raise ValueError("no-repair-stop records cannot contain pit-loss fields")
+
+        if self.damage_evidence in {"confirmed", "repair_observed"} and self.damage_type in {
+            "none_identified",
+            "unknown",
+        }:
+            raise ValueError("confirmed or observed damage requires a specific damage type")
+
+        pace_fields = (
+            self.persistent_delta_per_lap_seconds,
+            self.persistent_laps_exposed,
+            self.persistent_loss_seconds_lower,
+            self.persistent_loss_seconds_estimate,
+            self.persistent_loss_seconds_upper,
+        )
+        if self.persistent_pace_status == "modeled_loss":
+            if self.harm_evidence_level != "modeled" or any(
+                value is None for value in pace_fields
+            ):
+                raise ValueError("modeled persistent loss requires a complete modeled estimate")
+            expected = self.persistent_delta_per_lap_seconds * self.persistent_laps_exposed
+            if abs(self.persistent_loss_seconds_estimate - expected) > 1e-9:
+                raise ValueError("persistent loss estimate must equal delta per lap times exposure")
+        elif self.persistent_pace_status in {
+            "no_detectable_loss",
+            "insufficient_data",
+            "not_applicable",
+        } and any(value is not None for value in pace_fields):
+            raise ValueError("non-modeled persistent-pace status cannot contain pace estimates")
+
+        interval = (
+            self.persistent_loss_seconds_lower,
+            self.persistent_loss_seconds_estimate,
+            self.persistent_loss_seconds_upper,
+        )
+        if all(value is not None for value in interval) and not (
+            self.persistent_loss_seconds_lower
+            <= self.persistent_loss_seconds_estimate
+            <= self.persistent_loss_seconds_upper
+        ):
+            raise ValueError("persistent loss interval must contain the estimate")
+
+        if self.net_effect_direction in {"possible_benefit", "benefit"}:
+            if not self.benefit_mechanism:
+                raise ValueError("beneficial effects require a documented mechanism")
+        elif self.benefit_mechanism:
+            raise ValueError("benefit_mechanism is only valid for possible or observed benefit")
+        return self
+
+
 class IndependentReviewRecord(BaseModel):
     """Human review record that preserves the initial coding rather than overwriting it."""
 
     model_config = ConfigDict(extra="forbid")
 
     review_id: str
-    target_type: Literal["adjudication", "impact_assessment"]
+    target_type: Literal["adjudication", "impact_assessment", "harm_assessment"]
     target_id: str
     evidence_urls: str
     initial_summary: str
