@@ -19,6 +19,7 @@ f1stewards validate-snowflake-export <printed export directory>
 The export is content-addressed and contains 12 Snappy-compressed Parquet files plus a manifest with
 row counts, ordered columns, SHA-256 hashes, Git commit, and release status. The machine-specific
 PDF cache path is deliberately excluded. The current first-pass package remains `provisional`.
+The latest reproducible local run is recorded in `snowflake/local_validation.md`.
 
 ## 2. Prepare Snowsight
 
