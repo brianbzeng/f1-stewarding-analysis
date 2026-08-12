@@ -7,7 +7,7 @@ from pathlib import Path
 
 from pypdf import PdfReader
 
-from f1stewards.models import DecisionSections
+from f1stewards.models import DecisionSections, DocumentClass
 
 SECTION_RE = re.compile(
     r"(?im)^\s*(FACT|OFFENCE|INFRINGEMENT|DECISION|REASON(?:S)?)\b[ \t]*(?:[:\-][ \t]*)?"
@@ -27,6 +27,15 @@ SECTION_FIELDS = {
 DRIVER_RE = re.compile(r"(?im)^\s*No\s*/\s*Driver\s+(\d+)\s*-\s*(.+?)\s*$")
 SESSION_RE = re.compile(r"(?im)^\s*Session\s+(.+?)\s*$")
 TIME_RE = re.compile(r"(?im)^\s*Time\s+(\d{1,2}:\d{2})\s*$")
+SUMMONS_LANGUAGE_RE = re.compile(
+    r"(?is)\b(?:is|are)\s+required\s+to\s+report\s+to\s+the\s+Stewards\b"
+)
+RACE_DIRECTOR_ISSUER_RE = re.compile(
+    r"(?is)^\s*From\s+The\s+FIA\s+Formula\s+One\s+Race\s+Director\b"
+)
+TECHNICAL_DELEGATE_ISSUER_RE = re.compile(
+    r"(?is)^\s*From\s+The\s+FIA\s+Formula\s+One\s+Technical\s+Delegate\b"
+)
 
 
 def normalize_pdf_text(text: str) -> str:
@@ -66,22 +75,40 @@ def parse_header_fields(text: str) -> dict[str, str | int]:
     return fields
 
 
+def infer_content_document_class(text: str) -> tuple[DocumentClass | None, str]:
+    """Type a retrieved steward-labelled PDF without erasing its archive classification."""
+
+    if not text.strip():
+        return None, "empty_text_no_content_classification"
+    if RACE_DIRECTOR_ISSUER_RE.search(text):
+        return DocumentClass.RACE_DIRECTOR_NOTES, "issuer_race_director"
+    if TECHNICAL_DELEGATE_ISSUER_RE.search(text):
+        return DocumentClass.OTHER, "issuer_technical_delegate"
+    if SUMMONS_LANGUAGE_RE.search(text):
+        return DocumentClass.SUMMONS, "required_to_report_to_stewards"
+    return DocumentClass.STEWARD_DECISION, "steward_document_fallback"
+
+
 def parse_decision_pdf(path: Path, document_id: str) -> DecisionSections:
     reader = PdfReader(path)
     page_text = [page.extract_text() or "" for page in reader.pages]
     raw_text = normalize_pdf_text("\n\n".join(page_text))
     sections = split_sections(raw_text)
     header_fields = parse_header_fields(raw_text)
+    content_document_class, content_classification_basis = infer_content_document_class(raw_text)
     warnings: list[str] = []
     if not raw_text:
         warnings.append("no_text_extracted")
-    for expected in ("fact_text", "decision_text", "reason_text"):
-        if expected not in sections:
-            warnings.append(f"missing_{expected}")
+    if content_document_class == DocumentClass.STEWARD_DECISION:
+        for expected in ("fact_text", "decision_text", "reason_text"):
+            if expected not in sections:
+                warnings.append(f"missing_{expected}")
     return DecisionSections(
         document_id=document_id,
         page_count=len(reader.pages),
         raw_text=raw_text,
+        content_document_class=content_document_class,
+        content_classification_basis=content_classification_basis,
         parser_warnings=warnings,
         **header_fields,
         **sections,

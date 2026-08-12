@@ -598,7 +598,14 @@ def study_inventory(
                 e.season,
                 count(DISTINCT d.event_id) AS discovered_events,
                 count(d.document_id) AS source_records,
-                count(*) FILTER (WHERE d.document_class = 'steward_decision') AS decisions,
+                count(*) FILTER (
+                    WHERE d.document_class = 'steward_decision'
+                ) AS archive_decision_labels,
+                count(*) FILTER (
+                    WHERE coalesce(t.content_document_class, d.document_class) =
+                        'steward_decision'
+                ) AS effective_decisions,
+                count(t.content_document_class) AS content_typed_documents,
                 count(d.content_sha256) AS retrieved_files,
                 count(*) FILTER (
                     WHERE d.retrieval_error IS NOT NULL AND NOT d.is_recalled
@@ -606,6 +613,7 @@ def study_inventory(
                 count(*) FILTER (WHERE d.is_recalled) AS recalled_records
             FROM metadata.events AS e
             LEFT JOIN raw.source_documents AS d USING (event_id)
+            LEFT JOIN raw.document_text AS t USING (document_id)
             GROUP BY e.season
             ORDER BY e.season
             """
@@ -917,6 +925,7 @@ def parser_audit(
             """
             SELECT
                 d.event_id,
+                t.content_document_class,
                 count(*) AS parsed_documents,
                 count(t.fact_text) AS fact_sections,
                 count(t.infringement_text) AS infringement_sections,
@@ -924,8 +933,8 @@ def parser_audit(
                 count(t.reason_text) AS reason_sections
             FROM raw.document_text AS t
             JOIN raw.source_documents AS d USING (document_id)
-            GROUP BY d.event_id
-            ORDER BY d.event_id
+            GROUP BY d.event_id, t.content_document_class
+            ORDER BY d.event_id, t.content_document_class
             """
         ).df()
         review = connection.sql(
@@ -933,7 +942,8 @@ def parser_audit(
             SELECT d.event_id, d.title, t.parser_warnings_json
             FROM raw.document_text AS t
             JOIN raw.source_documents AS d USING (document_id)
-            WHERE CAST(t.parser_warnings_json AS VARCHAR) <> '[]'
+            WHERE t.content_document_class = 'steward_decision'
+              AND CAST(t.parser_warnings_json AS VARCHAR) <> '[]'
             ORDER BY d.event_id, d.published_at
             """
         ).df()

@@ -45,6 +45,10 @@ def test_schema_and_pilot_upsert(tmp_path: Path) -> None:
             "SELECT count(*) FROM information_schema.views "
             "WHERE table_name = 'v_primary_adjudications'"
         ).fetchone()[0]
+        typed_view_count = connection.sql(
+            "SELECT count(*) FROM information_schema.views "
+            "WHERE table_name = 'v_source_documents_typed'"
+        ).fetchone()[0]
         selected = connection.sql(
             """
             SELECT event_id, source_id
@@ -76,4 +80,5 @@ def test_schema_and_pilot_upsert(tmp_path: Path) -> None:
         ("2025-aut", "fia-isc-2025-01"),
     ]
     assert view_count == 1
+    assert typed_view_count == 1
     assert (PROJECT_ROOT / "sql" / "quality_checks.sql").exists()

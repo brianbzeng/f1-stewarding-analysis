@@ -1,4 +1,10 @@
-from f1stewards.parsing.decision import normalize_pdf_text, parse_header_fields, split_sections
+from f1stewards.models import DocumentClass
+from f1stewards.parsing.decision import (
+    infer_content_document_class,
+    normalize_pdf_text,
+    parse_header_fields,
+    split_sections,
+)
 
 
 def test_split_sections_preserves_evidentiary_text() -> None:
@@ -63,3 +69,29 @@ Session Race
         "session_type": "Race",
         "incident_time_raw": "15:36",
     }
+
+
+def test_content_classification_identifies_legacy_summons() -> None:
+    result = infer_content_document_class(
+        "From The Stewards\nThe driver and team representative are required "
+        "to report to the Stewards at 20:30."
+    )
+    assert result == (DocumentClass.SUMMONS, "required_to_report_to_stewards")
+
+
+def test_content_classification_separates_non_steward_issuers() -> None:
+    race_director = infer_content_document_class(
+        "From The FIA Formula One Race Director\nTo All Teams, All Officials\nNote to Teams"
+    )
+    technical_delegate = infer_content_document_class(
+        "From The FIA Formula One Technical Delegate\nTo The Stewards\nTechnical Report"
+    )
+    assert race_director == (DocumentClass.RACE_DIRECTOR_NOTES, "issuer_race_director")
+    assert technical_delegate == (DocumentClass.OTHER, "issuer_technical_delegate")
+
+
+def test_content_classification_preserves_nonstandard_steward_decisions() -> None:
+    result = infer_content_document_class(
+        "From The Stewards\nThe Stewards grant permission for car 8 to start the race."
+    )
+    assert result == (DocumentClass.STEWARD_DECISION, "steward_document_fallback")

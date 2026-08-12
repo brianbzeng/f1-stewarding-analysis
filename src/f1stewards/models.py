@@ -208,6 +208,8 @@ class DecisionSections(BaseModel):
     document_id: str
     page_count: int = Field(ge=1)
     raw_text: str
+    content_document_class: DocumentClass | None = None
+    content_classification_basis: str
     driver_number: int | None = Field(default=None, ge=1, le=99)
     driver_name: str | None = None
     session_type: str | None = None

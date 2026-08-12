@@ -22,6 +22,15 @@ status, stable event ID, guideline regime, archive system, and official FIA arch
 These are discovery counts, not final analytical adjudication counts. They deliberately precede
 session, offence-family, document-version, referral, and exclusion rules.
 
+The 2018 archive demonstrates why that distinction matters: its labels call all 175 retrieved files
+“Stewards Decision,” while content typing identifies 143 steward decisions, 29 summonses, two Race
+Director notes, and one Technical Delegate referral. The pipeline preserves both the archive label
+and content-derived class rather than rewriting source history.
+Of the 143 actual 2018 decisions, 130 (90.9%) expose the standard labeled Decision section. The
+remaining 13 are retained in an explicit manual-review queue; they are mostly permissions to start,
+re-scrutineering rulings, protests, or event-wide procedural decisions rather than silently failed
+parses.
+
 ## Archive systems
 
 - For 2019-2025, the collector uses the FIA decision-document archive and its published timestamps.

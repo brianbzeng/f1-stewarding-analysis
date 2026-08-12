@@ -280,7 +280,7 @@ def upsert_document_text(
     connection: duckdb.DuckDBPyConnection,
     sections: list[DecisionSections],
     *,
-    parser_version: str = "decision-sections-v1",
+    parser_version: str = "decision-sections-v2",
 ) -> None:
     if not sections:
         return
@@ -298,12 +298,14 @@ def upsert_document_text(
         """
         INSERT INTO raw.document_text (
             document_id, parser_version, parsed_at, page_count, raw_text,
+            content_document_class, content_classification_basis,
             driver_number, driver_name, session_type, incident_time_raw,
             fact_text, infringement_text, decision_text, reason_text,
             parser_warnings_json
         )
         SELECT
             document_id, parser_version, parsed_at, page_count, raw_text,
+            content_document_class, content_classification_basis,
             driver_number, driver_name, session_type, incident_time_raw,
             fact_text, infringement_text, decision_text, reason_text,
             parser_warnings_json
@@ -313,6 +315,8 @@ def upsert_document_text(
             parsed_at = EXCLUDED.parsed_at,
             page_count = EXCLUDED.page_count,
             raw_text = EXCLUDED.raw_text,
+            content_document_class = EXCLUDED.content_document_class,
+            content_classification_basis = EXCLUDED.content_classification_basis,
             driver_number = EXCLUDED.driver_number,
             driver_name = EXCLUDED.driver_name,
             session_type = EXCLUDED.session_type,

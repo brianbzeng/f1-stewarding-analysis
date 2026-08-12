@@ -13,6 +13,20 @@ LEFT JOIN raw.source_documents AS d USING (event_id)
 GROUP BY e.event_id, e.season
 HAVING count(d.document_id) = 0;
 
+-- Parsed content types must remain in the documented source taxonomy.
+SELECT document_id, content_document_class, content_classification_basis
+FROM raw.document_text
+WHERE content_document_class IS NOT NULL
+  AND content_document_class NOT IN (
+      'steward_decision', 'summons', 'final_classification',
+      'provisional_classification', 'championship_points',
+      'race_director_notes', 'circuit_map', 'other'
+  );
+
+SELECT document_id, content_document_class, content_classification_basis
+FROM raw.document_text
+WHERE (content_document_class IS NULL) <> (content_classification_basis LIKE 'empty_text%');
+
 SELECT i.incident_id, i.source_document_id
 FROM curated.incidents AS i
 LEFT JOIN raw.source_documents AS d ON i.source_document_id = d.document_id
