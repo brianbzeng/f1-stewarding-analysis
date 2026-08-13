@@ -83,8 +83,10 @@ The structure supports the planned adjusted analyses while preserving the study'
 - home-race exposure uses a published code crosswalk rather than names;
 - multi-car incidents retain every affected role;
 - unmapped outcomes remain null rather than being guessed into sanction/no-sanction; and
-- panel exposure is explicitly `not_collected` until steward signatures and nationalities have
-  source-backed coverage.
+- panel exposure remains `not_collected` in this frozen first feature build. Document-level panel
+  signatures now have complete assignment coverage, but the feature is not releasable until the 83
+  steward nationalities have source-backed lineage and a subsequent feature build joins the panel
+  dimension.
 
 Grouped validation, overlap diagnostics, and outcome-free simulation power are implemented in
 [`model_validation_method.md`](model_validation_method.md). Substantive estimates stay suppressed

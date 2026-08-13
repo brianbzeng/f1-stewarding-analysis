@@ -16,7 +16,9 @@ The warehouse separates source documents, incidents, adjudications, people, rule
 | `decisions` | one versioned steward outcome for an adjudication |
 | `decision_lineage` | one supersession/review relationship |
 | `stewards` | one steward identity |
-| `event_stewards` | one steward assignment at one event |
+| `panels` | one distinct steward-panel composition at one event |
+| `panel_members` | one steward membership in one panel |
+| `document_panels` | one evidence-based panel assignment for one decision document |
 | `rule_versions` | one version of one regulatory document |
 | `rule_provisions` | one article/provision within a rule version |
 | `guideline_sanctions` | one offence-session-guideline recommendation |
@@ -87,6 +89,12 @@ All principal tables include:
 - manual-review status where relevant.
 
 Large timing tables remain partitioned Parquet and are queried through DuckDB views rather than copied unnecessarily into the database file.
+
+Panel composition is assigned at decision-document grain rather than assumed constant for an
+event. Exact signatures establish content-addressed panel identities; an event-consensus fallback
+is permitted only when all directly parsed documents identify one panel. Signature order does not
+infer a chair or driver-steward role. See
+[`steward_panel_extraction.md`](steward_panel_extraction.md).
 
 `harm_assessments` keeps responsibility, observed victim harm, lasting-damage evidence, repair-stop
 response, and persistent-pace estimates separate from `classification_impact`, which measures the

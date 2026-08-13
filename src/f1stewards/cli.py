@@ -96,6 +96,13 @@ from f1stewards.reconciliation import (
     write_reconciliation_bundle,
 )
 from f1stewards.snowflake import export_snowflake_pilot, validate_snowflake_export
+from f1stewards.steward_panels import (
+    build_steward_panel_frames,
+    load_decision_signature_population,
+    load_steward_name_aliases,
+    replace_steward_panel_frames,
+    steward_panel_audit,
+)
 from f1stewards.warehouse import (
     DEFAULT_DB_PATH,
     connect,
@@ -347,6 +354,39 @@ def nationality_audit_command(
         controls = nationality_audit(connection)
     typer.echo(controls.to_string(index=False))
     if strict and not controls["status"].eq("pass").all():
+        raise typer.Exit(code=1)
+
+
+@app.command("load-steward-panels")
+def load_steward_panels_command(
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+    strict_extraction: Annotated[
+        bool,
+        typer.Option(
+            help="Exit nonzero if extraction controls fail; nationality release is separate."
+        ),
+    ] = False,
+) -> None:
+    """Extract source-preserving FIA signature panels and audit document assignments."""
+
+    initialize_database(db_path)
+    try:
+        aliases = load_steward_name_aliases()
+        with connect(db_path) as connection:
+            population = load_decision_signature_population(connection)
+            frames = build_steward_panel_frames(population, aliases)
+            replace_steward_panel_frames(connection, frames)
+            controls = steward_panel_audit(connection)
+    except (FileNotFoundError, ValueError, duckdb.Error) as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=1) from exc
+    typer.echo(controls.to_string(index=False))
+    typer.echo(
+        f"Assigned {len(frames.document_panels)} documents to {len(frames.panels)} panels; "
+        f"identified {len(frames.stewards)} steward identities"
+    )
+    extraction = controls.loc[controls["gate_type"].eq("extraction")]
+    if strict_extraction and not extraction["status"].eq("pass").all():
         raise typer.Exit(code=1)
 
 

@@ -1,0 +1,97 @@
+steward_id,canonical_name,observed_name,alias_status
+achim_loth,Achim Loth,Achim Loth,canonical
+adrienne_watson,Adrienne Watson,Adrienne Watson,canonical
+alfonso_oros,Alfonso Oros,Alfonso Oros,canonical
+alfonso_oros,Alfonso Oros,Alfonso Oros Trigueros,full_name_variant
+amro_al_hamad,Amro Al Hamad,Amro Al Hamad,canonical
+anar_shukurov,Anar Shukurov,Anar Shukurov,canonical
+andrew_mallalieu,Andrew Mallalieu,Andrew Mallalieu,canonical
+andy_witkowski,Andy Witkowski,Andy Witkowski,canonical
+arie_kroeze,Arie Kroeze,Arie Kroeze,canonical
+bruno_correia,Bruno Correia,Bruno Correia,canonical
+christopher_mcmahon,Christopher McMahon,Christopher McMahon,canonical
+danil_solomin,Danil Solomin,Danil Solomin,canonical
+danny_sullivan,Danny Sullivan,Danny Sullivan,canonical
+david_domingo,David Domingo,David Domingo,canonical
+dennis_carter,Dennis Carter,Dennis Carter,canonical
+dennis_dean,Dennis Dean,Dennis Dean,canonical
+derek_warwick,Derek Warwick,Derek Warwick,canonical
+emanuele_pirro,Emanuele Pirro,Emanuele Pirro,canonical
+enrique_bernoldi,Enrique Bernoldi,Enrique Bernoldi,canonical
+enzo_spano,Enzo Spano,Enzo Spano,canonical
+eric_barrabino,Eric Barrabino,Eric Barrabino,canonical
+fatih_altayli,Fatih Altayli,Fatih Altayli,canonical
+felipe_giaffone,Felipe Giaffone,Felipe Giaffone,canonical
+felix_holter,Felix Holter,Felix Holter,canonical
+freddy_van_beuren,Freddy Van Beuren,Freddy Van Beuren,canonical
+garry_connelly,Garry Connelly,Garry Connelly,canonical
+george_andreev,George Andreev,George Andreev,canonical
+gerd_ennser,Gerd Ennser,Gerd Ennser,canonical
+hassan_alabdali,Hassan Alabdali,Hassan Alabdali,canonical
+hassan_alabdali,Hassan Alabdali,Hassan AlAbdali,source_spelling_variant
+hassan_alabdali,Hassan Alabdali,Hasan Al Abdali,source_spelling_variant
+iacopo_arcangeli,Iacopo Arcangeli,Iacopo Arcangeli,canonical
+iacopo_arcangeli,Iacopo Arcangeli,Iacapo Arcangeli,source_spelling_variant
+ian_watson,Ian Watson,Ian Watson,canonical
+istvan_moni,Istvan Moni,Istvan Moni,canonical
+istvan_moni,Istvan Moni,István Moni,accent_variant
+istvan_moni,Istvan Moni,István Móni,accent_variant
+jacob_boulter,Jacob Boulter,Jacob Boulter,canonical
+jean_marie_krempff,Jean-Marie Krempff,Jean-Marie Krempff,canonical
+jean_marie_krempff,Jean-Marie Krempff,Jean Marie Krempff,source_spelling_variant
+jean_francois_calmes,Jean-Francois Calmes,Jean-Francois Calmes,canonical
+jean_francois_calmes,Jean-Francois Calmes,Jean-François Calmes,accent_variant
+johnny_herbert,Johnny Herbert,Johnny Herbert,canonical
+jorge_rodriguez,Jorge Rodriguez,Jorge Rodriguez,canonical
+jose_abed,Jose Abed,Jose Abed,canonical
+kazuhiro_tsuge,Kazuhiro Tsuge,Kazuhiro Tsuge,canonical
+lajos_herczeg,Lajos Herczeg,Lajos Herczeg,canonical
+loic_bacquelaine,Loic Bacquelaine,Loic Bacquelaine,canonical
+loic_bacquelaine,Loic Bacquelaine,Loïc Bacquelaine,accent_variant
+luciano_burti,Luciano Burti,Luciano Burti,canonical
+mahir_al_badri,Mahir Al Badri,Mahir Al Badri,canonical
+marc_boonman,Marc Boonman,Marc Boonman,canonical
+marc_van_geel,Marc van Geel,Marc van Geel,canonical
+marcel_demers,Marcel Demers,Marcel Demers,canonical
+mathieu_remmerie,Mathieu Remmerie,Mathieu Remmerie,canonical
+matthew_selley,Matthew Selley,Matthew Selley,canonical
+matthew_selley,Matthew Selley,Matt Selley,short_name_variant
+matteo_perini,Matteo Perini,Matteo Perini,canonical
+max_wilson,Max Wilson,Max Wilson,canonical
+mazen_al_hilli,Mazen Al Hilli,Mazen Al Hilli,canonical
+michael_masi,Michael Masi,Michael Masi,canonical
+mika_salo,Mika Salo,Mika Salo,canonical
+mike_kaerne,Mike Kaerne,Mike Kaerne,canonical
+mohammed_al_hashmi,Mohammed Al Hashmi,Mohammed Al Hashmi,canonical
+mohammed_al_hashmi,Mohammed Al Hashmi,Mohamed Al Hashmi,source_spelling_variant
+mumtaz_tahincioglu,Mumtaz Tahincioglu,Mumtaz Tahincioglu,canonical
+natalie_corsmit,Natalie Corsmit,Natalie Corsmit,canonical
+natalie_corsmit,Natalie Corsmit,Natalie Cormit,ocr_variant
+nicky_moffitt,Nicky Moffitt,Nicky Moffitt,canonical
+nish_shetty,Nish Shetty,Nish Shetty,canonical
+paolo_longoni,Paolo Longoni,Paolo Longoni,canonical
+paul_cooke,Paul Cooke,Paul Cooke,canonical
+paul_ng,Paul Ng,Paul Ng,canonical
+paulo_magalhaes,Paulo Magalhaes,Paulo Magalhaes,canonical
+pedro_lamy,Pedro Lamy,Pedro Lamy,canonical
+peter_oord,Peter Oord,Peter Oord,canonical
+richard_norbury,Richard Norbury,Richard Norbury,canonical
+roberto_pupo_moreno,Roberto Pupo Moreno,Roberto Pupo Moreno,canonical
+silvia_bellot,Silvia Bellot,Silvia Bellot,canonical
+steve_chopping,Steve Chopping,Steve Chopping,canonical
+steve_pence,Steve Pence,Steve Pence,canonical
+steve_stringwell,Steve Stringwell,Steve Stringwell,canonical
+tanja_geilhausen,Tanja Geilhausen,Tanja Geilhausen,canonical
+tim_mayer,Tim Mayer,Tim Mayer,canonical
+tom_kristensen,Tom Kristensen,Tom Kristensen,canonical
+valerio_brizzolari,Valerio Brizzolari,Valerio Brizzolari,canonical
+vasiliy_skryl,Vasiliy Skryl,Vasiliy Skryl,canonical
+vitaly_petrov,Vitaly Petrov,Vitaly Petrov,canonical
+vitantonio_liuzzi,Vitantonio Liuzzi,Vitantonio Liuzzi,canonical
+vitantonio_liuzzi,Vitantonio Liuzzi,Tonio Luizzi,ocr_or_short_name_variant
+walter_jobst,Walter Jobst,Walter Jobst,canonical
+wilhelm_singer,Wilhelm Singer,Wilhelm Singer,canonical
+yannick_dalmas,Yannick Dalmas,Yannick Dalmas,canonical
+yasuhiro_yodono,Yasuhiro Yodono,Yasuhiro Yodono,canonical
+yves_bacquelaine,Yves Bacquelaine,Yves Bacquelaine,canonical
+zheng_honghai,Zheng Honghai,Zheng Honghai,canonical

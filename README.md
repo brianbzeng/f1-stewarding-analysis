@@ -125,6 +125,7 @@ f1stewards build-full-coding-queues
 f1stewards audit-full-coding-queues
 f1stewards study-fastf1 --max-sessions 5
 f1stewards study-fastf1-inventory --strict
+f1stewards load-steward-panels --strict-extraction
 ```
 
 `build-study-catalog` freezes FastF1 schedules into stable event IDs and FIA archive targets;
@@ -171,6 +172,13 @@ Race/Sprint sessions: 3,938 classifications, 198,620 driver laps, and 16,039 Rac
 Strict completeness and 35 warehouse controls pass. All laps remain available for incident timing,
 while 162,383 satisfy the conservative pace-model gate. Timestamp, normalization, and known
 historical source gaps remain explicit rather than imputed.
+
+The [steward-panel extraction](docs/steward_panel_extraction.md) now assigns all 1,951 live
+decisions at document grain: 1,935 signatures parse directly, 16 use a bounded single-panel event
+consensus, and none remain unresolved. The resulting 181 panels preserve seven events with
+within-weekend substitutions and identify 83 stewards. Every extraction control passes; panel-
+nationality analysis remains explicitly blocked until all steward nationalities have source-backed
+lineage.
 
 The content-addressed [full-corpus coding workspace](docs/full_corpus_coding_workspace.md) now joins
 all 1,951 adjudication starters to protected source lineage and the complete timing-quality context.
