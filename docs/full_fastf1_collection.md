@@ -50,8 +50,8 @@ how each absolute `lap_start_timestamp` was obtained:
 
 - `fastf1_lap_start_date`: directly populated by FastF1 after timing/car data establish the session
   time origin;
-- `session_date_plus_lap_start_time`: derived from FastF1's UTC session anchor and relative lap-start
-  time when the absolute field is unavailable; or
+- `session_t0_plus_lap_start_time`: derived from FastF1's UTC `t0_date` timing origin and relative
+  lap-start time when the absolute field is unavailable; or
 - `unavailable`: neither route supports a timestamp.
 
 The derived route is explicit, tested, and never overwrites a direct timestamp. The ingestion ledger
@@ -64,6 +64,15 @@ origin, a forced normalized reload produced 940 direct absolute lap starts from 
 The logged position-stream warning remains a source limitation; normalized lap position was present
 for 939 of the 940 rows.
 
+The 2018 Italian Race exposed a different FastF1 edge case: malformed historical tyre-stint data
+prevented the library from constructing its processed `Laps` object even though its raw extended
+timing stream was complete. A narrowly scoped fallback accepts raw timing only when its row count
+equals the sum of official classified completed laps and driver-lap keys are unique. It preserves
+basic timing, pit, position, and track-status fields, labels all rows
+`fastf1_raw_timing_fallback`, and forces `is_accurate = false` with compound and tyre fields null.
+This retains the 925 timing observations for incident reconstruction while excluding them from
+persistent-pace models until a separate parity study supports broader use.
+
 ## Quality controls
 
 The SQL suite now rejects:
@@ -72,7 +81,10 @@ The SQL suite now rejects:
 - Sprint rows at events not marked as Sprint events;
 - lap rows without a same-session classification record;
 - invalid timestamp basis, nullability, or derived-flag combinations; and
-- successful ledger counts that disagree with stored results, laps, messages, or timestamp lineage.
+- unrecognized normalization lineage or fallback rows presented as clean tyre/pace observations;
+  and
+- successful ledger counts or normalization bases that disagree with stored results, laps,
+  messages, or timestamp lineage.
 
 Completeness is enforced separately by `study-fastf1-inventory --strict`. This prevents a clean
 partial load from being mistaken for the completed 197-session enrichment population.

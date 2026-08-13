@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS raw.fastf1_session_laps (
     lap_start_timestamp TIMESTAMPTZ,
     lap_start_timestamp_basis VARCHAR,
     lap_start_timestamp_is_derived BOOLEAN,
+    lap_normalization_basis VARCHAR,
     pit_in_time_seconds DOUBLE,
     pit_out_time_seconds DOUBLE,
     position DOUBLE,
@@ -70,6 +71,7 @@ CREATE TABLE IF NOT EXISTS metadata.fastf1_session_ingestion (
     direct_lap_timestamp_rows INTEGER,
     derived_lap_timestamp_rows INTEGER,
     missing_lap_timestamp_rows INTEGER,
+    lap_normalization_basis VARCHAR,
     error_message VARCHAR,
     PRIMARY KEY (event_id, session_type)
 );
@@ -79,6 +81,9 @@ ALTER TABLE raw.fastf1_session_laps
 
 ALTER TABLE raw.fastf1_session_laps
     ADD COLUMN IF NOT EXISTS lap_start_timestamp_is_derived BOOLEAN;
+
+ALTER TABLE raw.fastf1_session_laps
+    ADD COLUMN IF NOT EXISTS lap_normalization_basis VARCHAR;
 
 UPDATE raw.fastf1_session_laps
 SET lap_start_timestamp_basis = CASE
@@ -91,6 +96,14 @@ UPDATE raw.fastf1_session_laps
 SET lap_start_timestamp_is_derived = FALSE
 WHERE lap_start_timestamp_is_derived IS NULL;
 
+UPDATE raw.fastf1_session_laps
+SET lap_start_timestamp_basis = 'session_t0_plus_lap_start_time'
+WHERE lap_start_timestamp_basis = 'session_date_plus_lap_start_time';
+
+UPDATE raw.fastf1_session_laps
+SET lap_normalization_basis = 'fastf1_session_laps'
+WHERE lap_normalization_basis IS NULL;
+
 ALTER TABLE metadata.fastf1_session_ingestion
     ADD COLUMN IF NOT EXISTS direct_lap_timestamp_rows INTEGER;
 
@@ -99,6 +112,21 @@ ALTER TABLE metadata.fastf1_session_ingestion
 
 ALTER TABLE metadata.fastf1_session_ingestion
     ADD COLUMN IF NOT EXISTS missing_lap_timestamp_rows INTEGER;
+
+ALTER TABLE metadata.fastf1_session_ingestion
+    ADD COLUMN IF NOT EXISTS lap_normalization_basis VARCHAR;
+
+UPDATE metadata.fastf1_session_ingestion AS ingestion
+SET lap_normalization_basis = observed.lap_normalization_basis
+FROM (
+    SELECT event_id, session_type, min(lap_normalization_basis) AS lap_normalization_basis
+    FROM raw.fastf1_session_laps
+    GROUP BY event_id, session_type
+    HAVING count(DISTINCT lap_normalization_basis) = 1
+) AS observed
+WHERE ingestion.event_id = observed.event_id
+  AND ingestion.session_type = observed.session_type
+  AND ingestion.lap_normalization_basis IS NULL;
 
 INSERT INTO raw.fastf1_session_results
 SELECT event_id, 'Race', driver_number, driver_name, abbreviation, country_code, team_name,
@@ -115,15 +143,16 @@ WHERE NOT EXISTS (
 INSERT INTO raw.fastf1_session_laps (
     event_id, session_type, driver_number, lap_number, lap_time_seconds,
     lap_start_time_seconds, lap_start_timestamp, lap_start_timestamp_basis,
-    lap_start_timestamp_is_derived, pit_in_time_seconds, pit_out_time_seconds,
-    position, compound, stint, tyre_life, fresh_tyre, track_status, is_accurate,
-    retrieved_at
+    lap_start_timestamp_is_derived, lap_normalization_basis, pit_in_time_seconds,
+    pit_out_time_seconds, position, compound, stint, tyre_life, fresh_tyre,
+    track_status, is_accurate, retrieved_at
 )
 SELECT event_id, 'Race', driver_number, lap_number, lap_time_seconds, lap_start_time_seconds,
        lap_start_timestamp,
        CASE WHEN lap_start_timestamp IS NOT NULL THEN 'fastf1_lap_start_date'
             ELSE 'unavailable' END,
        FALSE,
+       'legacy_pilot_fastf1_session_laps',
        pit_in_time_seconds, pit_out_time_seconds, position, compound, stint, tyre_life,
        fresh_tyre, track_status, is_accurate, retrieved_at
 FROM raw.fastf1_laps AS legacy
@@ -148,7 +177,8 @@ WHERE NOT EXISTS (
 INSERT INTO metadata.fastf1_session_ingestion (
     event_id, session_type, status, started_at, finished_at, fastf1_version,
     result_rows, lap_rows, message_rows, direct_lap_timestamp_rows,
-    derived_lap_timestamp_rows, missing_lap_timestamp_rows, error_message
+    derived_lap_timestamp_rows, missing_lap_timestamp_rows,
+    lap_normalization_basis, error_message
 )
 WITH results AS (
     SELECT event_id, session_type, count(*) AS result_rows,
@@ -163,7 +193,7 @@ laps AS (
                WHERE lap_start_timestamp_basis = 'fastf1_lap_start_date'
            ) AS direct_rows,
            count(*) FILTER (
-               WHERE lap_start_timestamp_basis = 'session_date_plus_lap_start_time'
+               WHERE lap_start_timestamp_basis = 'session_t0_plus_lap_start_time'
            ) AS derived_rows,
            count(*) FILTER (
                WHERE lap_start_timestamp_basis = 'unavailable'
@@ -189,6 +219,7 @@ SELECT
     coalesce(l.direct_rows, 0),
     coalesce(l.derived_rows, 0),
     coalesce(l.missing_rows, 0),
+    'legacy_pilot_fastf1_session_laps',
     NULL
 FROM results AS r
 LEFT JOIN laps AS l USING (event_id, session_type)

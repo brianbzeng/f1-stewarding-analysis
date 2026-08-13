@@ -8,7 +8,9 @@ from pathlib import Path
 
 import duckdb
 import fastf1
+import numpy as np
 import pandas as pd
+from fastf1 import exceptions as fastf1_exceptions
 
 from f1stewards.models import PilotEvent
 
@@ -147,7 +149,7 @@ def _add_session_type(frame: pd.DataFrame, session_type: str) -> pd.DataFrame:
 
 
 def add_lap_timestamp_lineage(
-    frame: pd.DataFrame, session_date: datetime | pd.Timestamp | None
+    frame: pd.DataFrame, session_t0: datetime | pd.Timestamp | None
 ) -> pd.DataFrame:
     """Fill missing absolute lap starts from FastF1's UTC session anchor with lineage."""
 
@@ -155,19 +157,92 @@ def add_lap_timestamp_lineage(
     timestamps = pd.to_datetime(enriched["lap_start_timestamp"], errors="coerce", utc=True)
     direct = timestamps.notna()
     derived = pd.Series(False, index=enriched.index, dtype="bool")
-    if session_date is not None and not pd.isna(session_date):
-        anchor = pd.Timestamp(session_date)
+    if session_t0 is not None and not pd.isna(session_t0):
+        anchor = pd.Timestamp(session_t0)
         anchor = anchor.tz_localize("UTC") if anchor.tzinfo is None else anchor.tz_convert("UTC")
         relative = pd.to_timedelta(enriched["lap_start_time_seconds"], unit="s", errors="coerce")
         derived = timestamps.isna() & relative.notna()
         timestamps.loc[derived] = anchor + relative.loc[derived]
     basis = pd.Series("unavailable", index=enriched.index, dtype="object")
     basis.loc[direct] = "fastf1_lap_start_date"
-    basis.loc[derived] = "session_date_plus_lap_start_time"
+    basis.loc[derived] = "session_t0_plus_lap_start_time"
     enriched["lap_start_timestamp"] = timestamps
     enriched["lap_start_timestamp_basis"] = basis
     enriched["lap_start_timestamp_is_derived"] = derived
     return enriched
+
+
+def _track_status_for_window(
+    start: pd.Timedelta | pd.NaT,
+    end: pd.Timedelta | pd.NaT,
+    track_status: pd.DataFrame,
+) -> str:
+    if pd.isna(start) or pd.isna(end) or track_status.empty:
+        return ""
+    timeline = track_status.dropna(subset=["Time", "Status"]).sort_values("Time")
+    before = timeline[timeline["Time"] <= start].tail(1)
+    during = timeline[(timeline["Time"] > start) & (timeline["Time"] <= end)]
+    statuses = pd.concat([before["Status"], during["Status"]], ignore_index=True).astype(str)
+    return "".join(dict.fromkeys(statuses))
+
+
+def normalize_raw_timing_fallback(
+    frame: pd.DataFrame,
+    event_id: str,
+    retrieved_at: datetime,
+    session_start_time: pd.Timedelta,
+    session_t0: datetime | pd.Timestamp | None,
+    track_status: pd.DataFrame | None = None,
+) -> pd.DataFrame:
+    """Normalize complete raw timing when FastF1's tyre-stint repair drops all laps."""
+
+    required = {
+        "Time",
+        "Driver",
+        "LapTime",
+        "NumberOfLaps",
+        "NumberOfPitStops",
+        "PitOutTime",
+        "PitInTime",
+    }
+    if missing := required - set(frame.columns):
+        raise ValueError(f"Raw FastF1 timing is missing: {', '.join(sorted(missing))}")
+    if frame.empty or frame.duplicated(["Driver", "NumberOfLaps"]).any():
+        raise ValueError("Raw FastF1 timing must contain unique driver-lap rows")
+
+    laps = frame.sort_values(["Driver", "NumberOfLaps"], kind="stable").copy()
+    laps["DriverNumber"] = laps["Driver"]
+    laps["LapNumber"] = laps["NumberOfLaps"]
+    laps["LapStartTime"] = laps.groupby("Driver")["Time"].shift(1)
+    first_lap = laps.groupby("Driver").cumcount().eq(0)
+    laps.loc[first_lap, "LapStartTime"] = session_start_time
+    laps["LapTime"] = laps["LapTime"].fillna(laps["Time"] - laps["LapStartTime"])
+    laps["Position"] = laps.groupby("NumberOfLaps")["Time"].rank(
+        method="first", ascending=True
+    )
+    laps["Compound"] = pd.NA
+    laps["Stint"] = pd.to_numeric(laps["NumberOfPitStops"], errors="coerce") + 1
+    laps["TyreLife"] = np.nan
+    laps["FreshTyre"] = pd.NA
+    timeline = track_status if track_status is not None else pd.DataFrame()
+    laps["TrackStatus"] = [
+        _track_status_for_window(start, end, timeline)
+        for start, end in zip(laps["LapStartTime"], laps["Time"], strict=True)
+    ]
+    # This fallback deliberately cannot satisfy persistent-pace clean-lap requirements until
+    # separate validation establishes parity with FastF1's processed Laps contract.
+    laps["IsAccurate"] = False
+    normalized = normalize_laps(laps, event_id, retrieved_at)
+    normalized = add_lap_timestamp_lineage(normalized, session_t0)
+    normalized["lap_normalization_basis"] = "fastf1_raw_timing_fallback"
+    return normalized
+
+
+def _session_t0(session: object) -> pd.Timestamp | None:
+    try:
+        return pd.Timestamp(session.t0_date)
+    except fastf1_exceptions.DataNotLoadedError:
+        return None
 
 
 def fetch_study_session(
@@ -189,8 +264,28 @@ def fetch_study_session(
         normalize_results(pd.DataFrame(session.results), event.pilot_id, retrieved_at),
         session_type,
     )
-    laps = normalize_laps(pd.DataFrame(session.laps), event.pilot_id, retrieved_at)
-    laps = add_lap_timestamp_lineage(laps, session.date)
+    try:
+        laps = normalize_laps(pd.DataFrame(session.laps), event.pilot_id, retrieved_at)
+        laps = add_lap_timestamp_lineage(laps, _session_t0(session))
+        laps["lap_normalization_basis"] = "fastf1_session_laps"
+    except fastf1_exceptions.DataNotLoadedError as laps_error:
+        from fastf1 import _api as fastf1_api
+
+        raw_timing, _, _ = fastf1_api._extended_timing_data(session.api_path)
+        expected_laps = int(pd.to_numeric(session.results["Laps"], errors="coerce").sum())
+        if len(raw_timing) != expected_laps:
+            raise ValueError(
+                f"Raw timing fallback has {len(raw_timing)} rows but results report "
+                f"{expected_laps} completed laps"
+            ) from laps_error
+        laps = normalize_raw_timing_fallback(
+            raw_timing,
+            event.pilot_id,
+            retrieved_at,
+            session.session_start_time,
+            _session_t0(session),
+            getattr(session, "_track_status", None),
+        )
     laps = _add_session_type(laps, session_type)
     messages = _add_session_type(
         normalize_messages(
@@ -251,6 +346,7 @@ def upsert_session_ingestion(
     direct_lap_timestamp_rows: int | None = None,
     derived_lap_timestamp_rows: int | None = None,
     missing_lap_timestamp_rows: int | None = None,
+    lap_normalization_basis: str | None = None,
     error_message: str | None = None,
 ) -> None:
     """Record resumable FastF1 session ingestion state."""
@@ -264,8 +360,9 @@ def upsert_session_ingestion(
         INSERT INTO metadata.fastf1_session_ingestion (
             event_id, session_type, status, started_at, finished_at, fastf1_version,
             result_rows, lap_rows, message_rows, direct_lap_timestamp_rows,
-            derived_lap_timestamp_rows, missing_lap_timestamp_rows, error_message
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            derived_lap_timestamp_rows, missing_lap_timestamp_rows,
+            lap_normalization_basis, error_message
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (event_id, session_type) DO UPDATE SET
             status = EXCLUDED.status,
             started_at = EXCLUDED.started_at,
@@ -277,6 +374,7 @@ def upsert_session_ingestion(
             direct_lap_timestamp_rows = EXCLUDED.direct_lap_timestamp_rows,
             derived_lap_timestamp_rows = EXCLUDED.derived_lap_timestamp_rows,
             missing_lap_timestamp_rows = EXCLUDED.missing_lap_timestamp_rows,
+            lap_normalization_basis = EXCLUDED.lap_normalization_basis,
             error_message = EXCLUDED.error_message
         """,
         [
@@ -292,6 +390,7 @@ def upsert_session_ingestion(
             direct_lap_timestamp_rows,
             derived_lap_timestamp_rows,
             missing_lap_timestamp_rows,
+            lap_normalization_basis,
             error_message,
         ],
     )
@@ -339,6 +438,9 @@ def replace_session_enrichment(
                 )
                 connection.unregister("session_enrichment_batch")
         timestamp_basis = laps["lap_start_timestamp_basis"].value_counts()
+        normalization_bases = set(laps["lap_normalization_basis"])
+        if len(normalization_bases) != 1:
+            raise ValueError("One session cannot mix lap normalization bases")
         upsert_session_ingestion(
             connection,
             event_id,
@@ -351,9 +453,10 @@ def replace_session_enrichment(
             message_rows=len(messages),
             direct_lap_timestamp_rows=int(timestamp_basis.get("fastf1_lap_start_date", 0)),
             derived_lap_timestamp_rows=int(
-                timestamp_basis.get("session_date_plus_lap_start_time", 0)
+                timestamp_basis.get("session_t0_plus_lap_start_time", 0)
             ),
             missing_lap_timestamp_rows=int(timestamp_basis.get("unavailable", 0)),
+            lap_normalization_basis=normalization_bases.pop(),
         )
         connection.execute("COMMIT")
     except Exception:

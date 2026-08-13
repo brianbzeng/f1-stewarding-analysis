@@ -9,6 +9,7 @@ from f1stewards.enrichment.fastf1 import (
     add_lap_timestamp_lineage,
     normalize_laps,
     normalize_messages,
+    normalize_raw_timing_fallback,
     normalize_results,
     replace_session_enrichment,
 )
@@ -55,6 +56,7 @@ def test_normalize_laps_and_messages_convert_timedeltas_to_seconds() -> None:
         RETRIEVED_AT,
     )
     laps = add_lap_timestamp_lineage(laps, pd.Timestamp("2025-01-01T12:00:00Z"))
+    laps["lap_normalization_basis"] = "fastf1_session_laps"
     messages = normalize_messages(
         pd.DataFrame({"Time": [pd.to_timedelta(151.0, unit="s")], "Message": ["TEST"]}),
         "2025-aut",
@@ -110,6 +112,7 @@ def session_frames(
         RETRIEVED_AT,
     )
     laps = add_lap_timestamp_lineage(laps, pd.Timestamp("2025-01-01T12:00:00Z"))
+    laps["lap_normalization_basis"] = "fastf1_session_laps"
     messages = normalize_messages(
         pd.DataFrame(
             {"Time": [pd.to_timedelta(10.0, unit="s")], "Message": ["GREEN LIGHT"]}
@@ -147,7 +150,7 @@ def test_session_keyed_enrichment_keeps_race_and_sprint_separate(tmp_path: Path)
             """
             SELECT session_type, status, result_rows, lap_rows, message_rows,
                    direct_lap_timestamp_rows, derived_lap_timestamp_rows,
-                   missing_lap_timestamp_rows
+                   missing_lap_timestamp_rows, lap_normalization_basis
             FROM metadata.fastf1_session_ingestion
             ORDER BY session_type
             """
@@ -155,8 +158,8 @@ def test_session_keyed_enrichment_keeps_race_and_sprint_separate(tmp_path: Path)
 
     assert counts == [("Race", 1), ("Sprint", 1)]
     assert statuses == [
-        ("Race", "succeeded", 1, 1, 1, 0, 1, 0),
-        ("Sprint", "succeeded", 1, 1, 1, 0, 1, 0),
+        ("Race", "succeeded", 1, 1, 1, 0, 1, 0, "fastf1_session_laps"),
+        ("Sprint", "succeeded", 1, 1, 1, 0, 1, 0, "fastf1_session_laps"),
     ]
 
 
@@ -178,9 +181,47 @@ def test_missing_absolute_lap_start_uses_utc_session_anchor() -> None:
         "2018-03-25T05:17:07.988Z"
     )
     assert enriched.loc[0, "lap_start_timestamp_basis"] == (
-        "session_date_plus_lap_start_time"
+        "session_t0_plus_lap_start_time"
     )
     assert bool(enriched.loc[0, "lap_start_timestamp_is_derived"])
+
+
+def test_raw_timing_fallback_preserves_laps_and_blocks_pace_modeling() -> None:
+    raw = pd.DataFrame(
+        {
+            "Time": pd.to_timedelta([100.0, 190.0, 102.0, 194.0], unit="s"),
+            "Driver": ["22", "22", "43", "43"],
+            "LapTime": pd.to_timedelta([None, 90.0, None, 92.0], unit="s"),
+            "NumberOfLaps": [1, 2, 1, 2],
+            "NumberOfPitStops": [0, 0, 0, 1],
+            "PitOutTime": pd.to_timedelta([None, None, None, 105.0], unit="s"),
+            "PitInTime": pd.to_timedelta([None, None, 102.0, None], unit="s"),
+        }
+    )
+    track_status = pd.DataFrame(
+        {
+            "Time": pd.to_timedelta([0.0, 150.0], unit="s"),
+            "Status": ["1", "4"],
+        }
+    )
+    laps = normalize_raw_timing_fallback(
+        raw,
+        "2018-ita",
+        RETRIEVED_AT,
+        pd.to_timedelta(10.0, unit="s"),
+        pd.Timestamp("2018-09-02T12:55:00Z"),
+        track_status,
+    )
+
+    assert len(laps) == 4
+    assert set(laps["lap_normalization_basis"]) == {"fastf1_raw_timing_fallback"}
+    assert not laps["is_accurate"].any()
+    assert laps["compound"].isna().all()
+    assert laps["tyre_life"].isna().all()
+    assert laps.loc[laps["driver_number"].eq(22), "position"].tolist() == [1, 1]
+    assert laps.loc[laps["driver_number"].eq(43), "position"].tolist() == [2, 2]
+    assert laps.loc[laps["driver_number"].eq(22), "track_status"].tolist() == ["1", "14"]
+    assert laps["lap_start_timestamp"].notna().all()
 
 
 def test_session_enrichment_rejects_cross_session_rows(tmp_path: Path) -> None:

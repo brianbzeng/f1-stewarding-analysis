@@ -259,14 +259,33 @@ SELECT event_id, session_type, driver_number, lap_number,
 FROM raw.fastf1_session_laps
 WHERE lap_start_timestamp_basis NOT IN (
           'fastf1_lap_start_date',
-          'session_date_plus_lap_start_time',
+          'session_t0_plus_lap_start_time',
           'unavailable'
       )
    OR (lap_start_timestamp_basis = 'unavailable' AND lap_start_timestamp IS NOT NULL)
    OR (lap_start_timestamp_basis <> 'unavailable' AND lap_start_timestamp IS NULL)
    OR (
        lap_start_timestamp_is_derived
-       <> (lap_start_timestamp_basis = 'session_date_plus_lap_start_time')
+       <> (lap_start_timestamp_basis = 'session_t0_plus_lap_start_time')
+   );
+
+-- Normalization lineage must be recognized and conservative raw fallbacks cannot become clean laps.
+SELECT event_id, session_type, driver_number, lap_number,
+       lap_normalization_basis, compound, tyre_life, fresh_tyre, is_accurate
+FROM raw.fastf1_session_laps
+WHERE lap_normalization_basis NOT IN (
+          'fastf1_session_laps',
+          'fastf1_raw_timing_fallback',
+          'legacy_pilot_fastf1_session_laps'
+      )
+   OR (
+       lap_normalization_basis = 'fastf1_raw_timing_fallback'
+       AND (
+           is_accurate IS DISTINCT FROM FALSE
+           OR compound IS NOT NULL
+           OR tyre_life IS NOT NULL
+           OR fresh_tyre IS NOT NULL
+       )
    );
 
 -- Successful ingestion ledger counts must reconcile to the stored session tables.
@@ -287,7 +306,7 @@ WITH observed AS (
                 THEN (l.driver_number, l.lap_number)
         END) AS direct_lap_timestamp_rows,
         count(DISTINCT CASE
-            WHEN l.lap_start_timestamp_basis = 'session_date_plus_lap_start_time'
+            WHEN l.lap_start_timestamp_basis = 'session_t0_plus_lap_start_time'
                 THEN (l.driver_number, l.lap_number)
         END) AS derived_lap_timestamp_rows,
         count(DISTINCT CASE
@@ -317,4 +336,13 @@ WHERE i.status = 'succeeded'
       OR i.direct_lap_timestamp_rows <> o.direct_lap_timestamp_rows
       OR i.derived_lap_timestamp_rows <> o.derived_lap_timestamp_rows
       OR i.missing_lap_timestamp_rows <> o.missing_lap_timestamp_rows
+      OR i.lap_normalization_basis IS NULL
+      OR EXISTS (
+          SELECT 1
+          FROM raw.fastf1_session_laps AS basis_lap
+          WHERE basis_lap.event_id = i.event_id
+            AND basis_lap.session_type = i.session_type
+            AND basis_lap.lap_normalization_basis
+                IS DISTINCT FROM i.lap_normalization_basis
+      )
   );

@@ -1325,7 +1325,7 @@ def study_fastf1_inventory(
                     ) AS direct_timestamp_rows,
                     count(*) FILTER (
                         WHERE lap_start_timestamp_basis =
-                              'session_date_plus_lap_start_time'
+                              'session_t0_plus_lap_start_time'
                     ) AS derived_timestamp_rows,
                     count(*) FILTER (
                         WHERE lap_start_timestamp_basis = 'unavailable'
