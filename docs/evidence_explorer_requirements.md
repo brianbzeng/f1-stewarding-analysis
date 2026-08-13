@@ -109,3 +109,7 @@ The console remains `blocked_pending_human_review` at 0 of 4,441 completed targe
 review row is complete, its strongest permitted state is
 `workspace_review_complete_pending_feature_controls`; the separate feature builder owns analytical
 release authority.
+
+A separate GPT-5.6 Sol workspace now supplies a disclosed model-review tier. It does not alter this
+human console or count as independent human completion. The final report identifies that tier as
+`reportable_model_reviewed` and states its assurance limits.

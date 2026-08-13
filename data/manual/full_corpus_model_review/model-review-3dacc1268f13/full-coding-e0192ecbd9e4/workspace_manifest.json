@@ -1,0 +1,27 @@
+{
+  "editing_contract": "Suggestion, source, and workspace-context columns are protected. Final coding fields may be edited; adjudication seeds may be duplicated only with a unique adjudication_instance_id to represent supported one-to-many splits.",
+  "interpretation_boundary": "Timing context prioritizes evidence review and does not establish fault, harm, consistency, nationality effects, or fairness.",
+  "outputs": {
+    "adjudication_coding_worklist.csv": {
+      "row_count": 1952,
+      "sha256": "dac2af512f2f074a394812f440c84c9066809fc9f0af06b8c85f82a6cd293a26"
+    },
+    "document_review_worklist.csv": {
+      "row_count": 2003,
+      "sha256": "5091ae154ea6f4b13ad74a1e35d347566b65628d54d68125adc68299783d1aa9"
+    },
+    "exclusion_qa_worklist.csv": {
+      "row_count": 486,
+      "sha256": "9daf37d57f558eab0b91001f94921f0f3849288a2f88d1cde17a613fec411987"
+    }
+  },
+  "protected_seed_manifest_sha256": "540082201d4bf4ec98ecbc8f3e26ce17e6c17d883ff017a6fd753204cd4830a5",
+  "schema_version": "full-corpus-coding-workspace-v2",
+  "timing_context_counts": {
+    "drivers": 3938,
+    "sessions": 197
+  },
+  "timing_context_sha256": "3227b6dac56635caa08a71a9ba789cecc59bb4557786749d9f997d9531e35264",
+  "workspace_content_sha256": "dec10c707f4e9fa262a3b4f1bfc439fba0cbd73737caf8a7f918aa8e186ea618",
+  "workspace_id": "full-coding-e0192ecbd9e4"
+}

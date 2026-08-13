@@ -1,0 +1,11 @@
+metric,value
+rows,346.0
+events,131.0
+outcome_prevalence,0.6184971098265896
+model_brier_score,0.23934070804471783
+baseline_brier_score,0.23988181125218797
+brier_improvement_over_baseline,0.0005411032074701394
+model_log_loss,0.6755485087399912
+model_roc_auc,0.5576677994902294
+calibration_intercept,0.2863364200367038
+calibration_slope,0.3555063640382714

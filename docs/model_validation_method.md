@@ -1,94 +1,80 @@
 # Grouped Validation and Nationality Design Diagnostics
 
-Status: methods implemented and tested; outcome validation remains blocked; outcome-free design
-diagnostics executed.
+Status: outcome validation and nationality diagnostics executed on the disclosed model-reviewed
+release.
 
 The frozen specification is `config/outcome_model_spec.yml`. It defines the analytical unit,
 release filter, event grouping, covariates, regularization, calibration outputs, overlap method,
 simulation assumptions, and circularity safeguards outside the notebook.
 
-## Outcome-model release boundary
+## Outcome model
 
-`validate_released_outcome_model` selects only rows where `reporting_eligible=true`. It then checks
-that every selected row is `human_reviewed_final`, the sanction outcome is complete and binary,
-both outcome classes exist, and event IDs are present. With the current feature release it raises a
-controlled error rather than accepting provisional suggestions.
+`validate_released_outcome_model` selects only `reporting_eligible=true` rows and accepts only
+completed, disclosed review labels: `human_reviewed_final` or `model_reviewed_final`. It requires a
+complete binary outcome and event ID for every released row.
 
-When final labels exist, validation will use five-fold `GroupKFold` by `event_id`. The same event can
-never occur in train and test within a fold. Each test-row prediction uses only its training fold;
-the prevalence baseline is also estimated from that fold. The method returns:
+Five-fold `GroupKFold` holds out whole events. Each prediction and its simple prevalence baseline
+come only from the matching training fold. The same Grand Prix cannot appear in both train and test.
+The model uses incident type, season, and multi-car status. Penalty amount, outcome family, decision
+reason, fault language, and other post-decision fields are excluded.
 
-- model and prevalence-baseline Brier scores;
-- Brier improvement, log loss, and ROC AUC;
-- calibration intercept and slope from out-of-fold probabilities;
-- a reliability table;
-- a fold-level event-overlap audit; and
-- leave-one-season-out sensitivity results.
+The model-reviewed population contains 346 rows across 131 events:
 
-Penalty amount, outcome family, decision reason, fault language, and other post-decision fields are
-not predictors. Tests use synthetic human-reviewed labels to exercise all statistical code without
-bypassing the real release gate.
-
-## Outcome-free nationality overlap
-
-`nationality_overlap_diagnostics` does not require or read `sanction_outcome`. Its current input is
-the 348 provisional primary candidates solely to evaluate whether British and other accused-driver
-exposures occupy comparable parts of the frozen covariate space.
-
-| Diagnostic | Current value |
+| Measure | Result |
 |---|---:|
-| Events | 131 |
-| British accused-driver rows | 44 |
-| Other accused-driver rows | 304 |
-| British exposure prevalence | 12.6% |
-| Rows inside estimated common support | 97.4% |
-| Overlap-weight effective N, British | 43.1 |
-| Overlap-weight effective N, other | 213.2 |
-| Maximum absolute SMD, unweighted | 0.526 |
-| Maximum absolute SMD, overlap weighted | 0.040 |
-| Rows with extreme raw propensity requiring clipping | 4 |
+| Observed sanction rate | 61.85% |
+| Model Brier score | 0.23934 |
+| Training-fold prevalence baseline | 0.23988 |
+| Brier improvement | 0.00054 |
+| ROC AUC | 0.55767 |
+| Calibration intercept | 0.28634 |
+| Calibration slope | 0.35551 |
 
-All 18 one-dimensional season/family support cells contain both exposure groups. Overlap weighting
-substantially improves measured balance, but this is not evidence that nationality did or did not
-affect an outcome. Final independent review can change these counts; all diagnostics must be
-rerun on the released population.
+The broad model barely improves on the baseline and ranks outcomes weakly. This does not prove that
+stewarding is inconsistent. It means the three broad predictors omit too much case-specific context
+to judge consistency or produce a defensible anomaly ranking. Leave-one-season-out results are
+published with the final report as a sensitivity check.
+
+## Nationality overlap
+
+The released population contains 44 British and 302 other accused-driver cases. The overlap
+diagnostic does not read the sanction outcome.
+
+| Diagnostic | Result |
+|---|---:|
+| British exposure prevalence | 12.72% |
+| Rows inside estimated common support | 97.69% |
+| Overlap-weight effective N, British | 43.06 |
+| Overlap-weight effective N, other | 212.60 |
+| Maximum absolute SMD, unweighted | 0.521 |
+| Maximum absolute SMD, overlap weighted | 0.039 |
+| Extreme raw propensity rows requiring clipping | 4 |
+
+Overlap weighting improves measured balance, but it cannot fix a small exposed group, unmeasured
+case details, missing referrals, or incomplete panel-nationality evidence.
 
 ## Simulation-based power
 
-The simulation fixes the observed exposure, covariate, and 131-event cluster structure but excludes
-the observed sanction label. For each scenario it:
-
-1. assumes a 50% or 70% unexposed baseline sanction probability;
-2. imposes a 5, 10, 15, or 20 percentage-point British-exposure difference;
-3. adds a normally distributed event random intercept with SD 0.35;
-4. generates a binary outcome; and
-5. fits the prespecified logistic adjustment with event-cluster-robust uncertainty.
-
-Each of the eight scenarios uses 500 repetitions. The frozen acceptance targets are at least 90%
-successful fits and 80% detection power at two-sided alpha 0.05. Fit stability is 99.2%–100%, so
-the power results are usable as design diagnostics.
+The simulation fixes the observed exposure, covariates, and 131-event cluster structure. It tests
+5, 10, 15, and 20 percentage-point differences from 50% and 70% baselines, with 500 repetitions per
+scenario and a prespecified 80% power target.
 
 | Baseline | Target difference | Detection power |
 |---:|---:|---:|
-| 50% | 5 points | 9.2% |
-| 50% | 10 points | 18.2% |
-| 50% | 15 points | 43.6% |
-| 50% | 20 points | 60.6% |
-| 70% | 5 points | 8.2% |
-| 70% | 10 points | 25.8% |
-| 70% | 15 points | 52.8% |
-| 70% | 20 points | 78.8% |
+| 50% | 5 points | 7.8% |
+| 50% | 10 points | 17.4% |
+| 50% | 15 points | 37.8% |
+| 50% | 20 points | 69.8% |
+| 70% | 5 points | 7.4% |
+| 70% | 10 points | 25.4% |
+| 70% | 15 points | 53.6% |
+| 70% | 20 points | 80.0% |
 
-No scenario reaches the 80% target. Under the current provisional exposure structure, the study is
-not capable of reliably detecting subtle nationality associations and does not even attain target
-power for an assumed 20-point difference. This is a design limitation, not a null result: no
-observed nationality effect has been estimated.
+Only the most favorable 20-point scenario reaches the target. The study is underpowered for subtle
+nationality differences.
 
 ## Reporting consequence
 
-The executed
-[`05_nationality_design_diagnostics.ipynb`](../notebooks/05_nationality_design_diagnostics.ipynb)
-shows the exposure distribution, propensity support, standardized balance, simulation power, and
-blocked release controls. Unless the final reviewed population materially improves exposure and
-common support, the nationality section should be descriptive or explicitly inconclusive. A bias
-claim is not permitted from this design.
+The raw sanction rate is 56.8% for British accused drivers and 62.6% for other accused drivers, a
+-5.8 percentage-point difference. It is not an adjusted or causal estimate. The final report labels
+the nationality result inconclusive and does not interpret the gap as evidence of bias or no bias.

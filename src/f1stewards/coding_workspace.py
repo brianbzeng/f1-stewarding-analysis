@@ -34,6 +34,10 @@ WORKSPACE_MANIFEST_FILENAME = "workspace_manifest.json"
 FULL_CORPUS_REVIEW_STATUSES = {
     "",
     "single_coded_pending_human",
+    "model_reviewed_agree",
+    "model_reviewed_corrected",
+    "source_unavailable_model_review",
+    "model_review_unresolved",
     "double_coded",
     "adjudicated",
 }

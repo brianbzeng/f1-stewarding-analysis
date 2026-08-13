@@ -1492,7 +1492,7 @@ def build_analysis_features_command(
     ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_seed",
     db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
     strict_release: Annotated[
-        bool, typer.Option(help="Exit nonzero while human-review release controls are blocked.")
+        bool, typer.Option(help="Exit nonzero while disclosed review controls are blocked.")
     ] = False,
 ) -> None:
     """Materialize gated adjudication and driver-role features in DuckDB."""
@@ -1514,7 +1514,10 @@ def build_analysis_features_command(
         f"Materialized {build.feature_build_id}: {len(build.features)} adjudication rows, "
         f"{len(build.driver_roles)} role rows; release={build.release_status}"
     )
-    if strict_release and build.release_status != "reportable_human_reviewed":
+    if strict_release and build.release_status not in {
+        "reportable_model_reviewed",
+        "reportable_human_reviewed",
+    }:
         raise typer.Exit(code=1)
 
 
@@ -1534,7 +1537,8 @@ def nationality_overlap_audit_command(
             SELECT *
             FROM analysis.v_latest_adjudication_features
             WHERE feature_label_status IN (
-                'provisional_machine_suggestion', 'incomplete_human_coding'
+                'provisional_machine_suggestion', 'incomplete_human_coding',
+                'model_reviewed_final', 'human_reviewed_final'
             )
             ORDER BY adjudication_instance_id
             """
@@ -1578,7 +1582,8 @@ def nationality_power_audit_command(
             SELECT * EXCLUDE (sanction_outcome)
             FROM analysis.v_latest_adjudication_features
             WHERE feature_label_status IN (
-                'provisional_machine_suggestion', 'incomplete_human_coding'
+                'provisional_machine_suggestion', 'incomplete_human_coding',
+                'model_reviewed_final', 'human_reviewed_final'
             )
             ORDER BY adjudication_instance_id
             """

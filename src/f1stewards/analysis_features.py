@@ -26,8 +26,15 @@ from f1stewards.coding_workspace import (
     validate_edited_full_corpus_coding_workspace,
 )
 
-FEATURE_SCHEMA_VERSION = "adjudication-analysis-features-v3"
-COMPLETE_REVIEW_STATUSES = {"double_coded", "adjudicated"}
+FEATURE_SCHEMA_VERSION = "adjudication-analysis-features-v4"
+HUMAN_REVIEW_STATUSES = {"double_coded", "adjudicated"}
+MODEL_REVIEW_STATUSES = {
+    "model_reviewed_agree",
+    "model_reviewed_corrected",
+    "source_unavailable_model_review",
+}
+COMPLETE_REVIEW_STATUSES = HUMAN_REVIEW_STATUSES | MODEL_REVIEW_STATUSES
+RELEASED_FINAL_LABELS = {"human_reviewed_final", "model_reviewed_final"}
 SANCTION_OUTCOMES = {
     "warning",
     "reprimand",
@@ -42,9 +49,8 @@ SANCTION_OUTCOMES = {
 NON_SANCTION_OUTCOMES = {"no_further_action"}
 MODEL_OUTCOMES = SANCTION_OUTCOMES | NON_SANCTION_OUTCOMES
 INTERPRETATION_BOUNDARY = (
-    "Machine suggestions may be used for pipeline and overlap diagnostics only. Reporting and "
-    "inference remain blocked until the denominator, inclusions, exclusions, and QA sample are "
-    "independently reviewed and every release control passes."
+    "Every released row must disclose its review basis. Model-reviewed findings are not "
+    "independent human findings, and descriptive associations are not causal conclusions."
 )
 
 ADJUDICATION_REQUIRED_COLUMNS = {
@@ -132,6 +138,15 @@ def _pipe_numbers(value: Any) -> list[int]:
 
 def _review_complete(value: Any) -> bool:
     return _clean(value) in COMPLETE_REVIEW_STATUSES
+
+
+def _review_basis(value: Any) -> str:
+    status = _clean(value)
+    if status in HUMAN_REVIEW_STATUSES:
+        return "human"
+    if status in MODEL_REVIEW_STATUSES:
+        return "model"
+    return "incomplete"
 
 
 def _adjudication_structurally_complete(row: pd.Series) -> bool:
@@ -339,7 +354,11 @@ def _release_controls(
     document_complete = int(documents.apply(_document_final_complete, axis=1).sum())
     adjudication_complete = int(adjudications.apply(_adjudication_final_complete, axis=1).sum())
     qa_complete = int(exclusion_qa.apply(_qa_final_complete, axis=1).sum())
-    final_primary = features[features["population_status"].eq("human_reviewed_primary")]
+    final_primary = features[
+        features["population_status"].isin(
+            {"human_reviewed_primary", "model_reviewed_primary"}
+        )
+    ]
     panel_context_missing = int((~features["panel_context_complete"].astype(bool)).sum())
     identity_missing = int(
         final_primary["accused_identity_match_status"].ne("matched").sum()
@@ -358,7 +377,7 @@ def _release_controls(
             document_complete == len(documents),
             document_complete,
             len(documents),
-            "Every archive outcome label needs an independently reviewed final disposition.",
+            "Every archive outcome label needs a completed, disclosed final review.",
         ),
         (
             "selected_candidate_panel_identity_complete",
@@ -379,7 +398,7 @@ def _release_controls(
             qa_complete == len(exclusion_qa),
             qa_complete,
             len(exclusion_qa),
-            "Every frozen exclusion-QA row needs independent review.",
+            "Every frozen exclusion-QA row needs a completed, disclosed review.",
         ),
         (
             "final_primary_population_nonempty",
@@ -480,12 +499,13 @@ def assemble_analysis_features(
         is_final_primary = bool(row["_final_complete"] and row["_final_primary"])
         is_final_excluded = bool(row["_final_complete"] and not row["_final_primary"])
         use_final = bool(row["_structurally_complete"] and row["_final_primary"])
+        review_basis = _review_basis(row["review_status"])
         if is_final_primary:
-            label_status = "human_reviewed_final"
-            population_status = "human_reviewed_primary"
+            label_status = f"{review_basis}_reviewed_final"
+            population_status = f"{review_basis}_reviewed_primary"
         elif is_final_excluded:
-            label_status = "human_reviewed_excluded"
-            population_status = "human_reviewed_excluded"
+            label_status = f"{review_basis}_reviewed_excluded"
+            population_status = f"{review_basis}_reviewed_excluded"
         elif use_final:
             label_status = "incomplete_human_coding"
             population_status = "source_coded_primary_pending_human"
@@ -565,7 +585,7 @@ def assemble_analysis_features(
                 role_sequence=1,
                 driver_number=accused_number,
                 role_number_basis=(
-                    "human_reviewed_final"
+                    label_status
                     if is_final_primary
                     else "single_coded_pending_human"
                     if use_final
@@ -587,7 +607,7 @@ def assemble_analysis_features(
                 role_sequence=sequence,
                 driver_number=number,
                 role_number_basis=(
-                    "human_reviewed_final"
+                    label_status
                     if is_final_primary
                     else "single_coded_pending_human"
                     if use_final
@@ -627,7 +647,7 @@ def assemble_analysis_features(
             and accused_match == "matched"
         )
         model_eligible = bool(
-            label_status == "human_reviewed_final"
+            label_status in RELEASED_FINAL_LABELS
             and outcome_model_eligible
             and accused_match == "matched"
         )
@@ -713,7 +733,7 @@ def assemble_analysis_features(
                 "feature_provenance": json.dumps(
                     {
                         "label_basis": (
-                            "human_reviewed_final"
+                            label_status
                             if is_final_primary
                             else "single_coded_pending_human"
                             if use_final
@@ -721,7 +741,7 @@ def assemble_analysis_features(
                         ),
                         "identity_basis": "FastF1 classification plus sourced registry",
                         "affected_role_basis": (
-                            "human_reviewed_final"
+                            label_status
                             if is_final_primary
                             else "single_coded_pending_human"
                             if use_final
@@ -746,13 +766,24 @@ def assemble_analysis_features(
     controls = _release_controls(
         documents, adjudications, exclusion_qa, workspace_validation, features
     )
-    release_status = (
-        "reportable_human_reviewed"
-        if controls.set_index("control").loc["analytical_release", "status"] == "pass"
-        else "blocked_pending_human_review"
+    release_passed = (
+        controls.set_index("control").loc["analytical_release", "status"] == "pass"
     )
-    if release_status == "reportable_human_reviewed":
+    completed_statuses = {
+        _clean(value)
+        for frame in (documents, adjudications, exclusion_qa)
+        for value in frame["review_status"]
+        if _clean(value)
+    }
+    if release_passed:
+        release_status = (
+            "reportable_human_reviewed"
+            if completed_statuses.issubset(HUMAN_REVIEW_STATUSES)
+            else "reportable_model_reviewed"
+        )
         features["reporting_eligible"] = features["model_eligible"]
+    else:
+        release_status = "blocked_pending_review"
     controls.insert(0, "feature_build_id", feature_build_id)
     built_at = datetime.now(UTC)
     return AnalysisFeatureBuild(
@@ -828,6 +859,73 @@ def replace_analysis_feature_build(
     build: AnalysisFeatureBuild,
 ) -> None:
     """Transactionally materialize one immutable feature build in DuckDB."""
+
+    release_constraint = connection.sql(
+        """
+        SELECT constraint_text
+        FROM duckdb_constraints()
+        WHERE schema_name = 'metadata'
+          AND table_name = 'analysis_feature_builds'
+          AND constraint_type = 'CHECK'
+        """
+    ).fetchone()
+    if release_constraint and "reportable_model_reviewed" not in release_constraint[0]:
+        connection.execute(
+            """
+            DROP VIEW IF EXISTS analysis.v_latest_adjudication_features;
+            DROP VIEW IF EXISTS analysis.v_latest_adjudication_driver_roles;
+            CREATE TABLE metadata.analysis_feature_builds_review_basis (
+                feature_build_id VARCHAR PRIMARY KEY,
+                schema_version VARCHAR NOT NULL,
+                workspace_id VARCHAR NOT NULL,
+                workspace_input_sha256 VARCHAR NOT NULL,
+                nationality_registry_sha256 VARCHAR NOT NULL,
+                panel_assignments_sha256 VARCHAR NOT NULL,
+                built_at_utc TIMESTAMPTZ NOT NULL,
+                release_status VARCHAR NOT NULL CHECK (
+                    release_status IN (
+                        'blocked_pending_review',
+                        'blocked_pending_human_review',
+                        'reportable_model_reviewed',
+                        'reportable_human_reviewed'
+                    )
+                ),
+                adjudication_rows INTEGER NOT NULL,
+                driver_role_rows INTEGER NOT NULL,
+                interpretation_boundary VARCHAR NOT NULL
+            );
+            INSERT INTO metadata.analysis_feature_builds_review_basis
+            SELECT feature_build_id, schema_version, workspace_id, workspace_input_sha256,
+                   nationality_registry_sha256,
+                   coalesce(panel_assignments_sha256, '') AS panel_assignments_sha256,
+                   built_at_utc, release_status, adjudication_rows, driver_role_rows,
+                   interpretation_boundary
+            FROM metadata.analysis_feature_builds;
+            DROP TABLE metadata.analysis_feature_builds;
+            ALTER TABLE metadata.analysis_feature_builds_review_basis
+                RENAME TO analysis_feature_builds;
+            CREATE VIEW analysis.v_latest_adjudication_features AS
+            WITH latest AS (
+                SELECT feature_build_id
+                FROM metadata.analysis_feature_builds
+                ORDER BY built_at_utc DESC, feature_build_id DESC
+                LIMIT 1
+            )
+            SELECT features.*
+            FROM analysis.adjudication_features AS features
+            JOIN latest USING (feature_build_id);
+            CREATE VIEW analysis.v_latest_adjudication_driver_roles AS
+            WITH latest AS (
+                SELECT feature_build_id
+                FROM metadata.analysis_feature_builds
+                ORDER BY built_at_utc DESC, feature_build_id DESC
+                LIMIT 1
+            )
+            SELECT roles.*
+            FROM analysis.adjudication_driver_roles AS roles
+            JOIN latest USING (feature_build_id);
+            """
+        )
 
     metadata = pd.DataFrame(
         [

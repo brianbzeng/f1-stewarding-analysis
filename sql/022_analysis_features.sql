@@ -7,7 +7,12 @@ CREATE TABLE IF NOT EXISTS metadata.analysis_feature_builds (
     panel_assignments_sha256 VARCHAR NOT NULL,
     built_at_utc TIMESTAMPTZ NOT NULL,
     release_status VARCHAR NOT NULL CHECK (
-        release_status IN ('blocked_pending_human_review', 'reportable_human_reviewed')
+        release_status IN (
+            'blocked_pending_review',
+            'blocked_pending_human_review',
+            'reportable_model_reviewed',
+            'reportable_human_reviewed'
+        )
     ),
     adjudication_rows INTEGER NOT NULL,
     driver_role_rows INTEGER NOT NULL,
