@@ -37,6 +37,8 @@ data/external/**
 *.duckdb.wal
 data/cache/
 data/manual/full_corpus_workspaces/
+data/manual/full_corpus_first_pass/
+data/manual/full_corpus_review_edits/
 
 # Generated reports
 reports/generated/**

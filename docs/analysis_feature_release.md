@@ -7,11 +7,12 @@ grains without treating machine suggestions as findings. It is built with:
 
 ```powershell
 f1stewards build-analysis-features `
-  data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4
+  data/manual/full_corpus_first_pass/full-coding-e0192ecbd9e4
 ```
 
-The current content-addressed build is `features-514129c8143d`. It uses workspace
-`full-coding-e0192ecbd9e4`, the sourced 43-driver nationality registry, the controlled 28-label
+The current content-addressed build is `features-0dda4b045f28`. It uses machine-assisted first pass
+`first-pass-29113bebd312` over workspace `full-coding-e0192ecbd9e4`, the sourced 43-driver
+nationality registry, the controlled 28-label
 event-country crosswalk, all 3,938 Race/Sprint classifications, and the complete decision-document
 panel assignment register. The panel register contributes its own SHA-256 lineage field to the
 feature-build identity.
@@ -30,7 +31,7 @@ adjudication. This bridge prevents a four-car incident from being reduced to a f
 record. `role_sequence` preserves multiple affected drivers, while `role_number_basis` states
 whether the number was machine-extracted or human-reviewed.
 
-The current provisional build contains:
+The current gated build contains:
 
 | Diagnostic | Count |
 |---|---:|
@@ -53,6 +54,10 @@ The current provisional build contains:
 These are workload and design-coverage counts. They are not sanction rates, nationality effects,
 or evidence of bias.
 
+Of the 296 provisional primary candidates, 295 now contain disclosed machine-assisted first-pass
+fields and are labeled `incomplete_human_coding`; the single parser-review candidate remains
+`provisional_machine_suggestion`. No first-pass row is relabeled `human_reviewed_final`.
+
 ## Label separation
 
 Every row carries both `feature_label_status` and `population_status`:
@@ -72,8 +77,8 @@ parsed punishment.
 `analysis.feature_release_controls` records nine fail-fast checks. The current workspace passes
 all 19 lineage and editing controls, but correctly fails these substantive gates:
 
-- 0 of 2,003 document dispositions independently reviewed;
-- 0 of 1,952 adjudication seeds independently reviewed;
+- 0 of 2,003 document dispositions independently reviewed, despite 1,696 first-pass rows;
+- 0 of 1,952 adjudication seeds independently reviewed, despite 1,649 first-pass rows;
 - 0 of 486 frozen exclusion-QA rows independently reviewed; and
 - no final reviewed primary population yet exists.
 

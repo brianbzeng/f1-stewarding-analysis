@@ -63,6 +63,7 @@ from f1stewards.enrichment.fastf1 import (
     upsert_session_ingestion,
 )
 from f1stewards.explorer import build_explorer_payload, write_explorer
+from f1stewards.first_pass import write_first_pass_workspace
 from f1stewards.impact import remove_post_race_time_penalty
 from f1stewards.inventory import (
     inventory_reconciliation_is_clean,
@@ -1361,6 +1362,53 @@ def build_full_corpus_review_explorer_command(
         f"{payload['metadata']['review_complete_count']} of "
         f"{payload['metadata']['review_target_count']} review targets complete; "
         f"status={payload['metadata']['release_status']}"
+    )
+
+
+@app.command("build-full-corpus-first-pass")
+def build_full_corpus_first_pass_command(
+    workspace_directory: Annotated[
+        Path, typer.Argument(help="Source full-corpus coding workspace directory.")
+    ],
+    output_root: Annotated[
+        Path, typer.Option(help="Parent for the separate machine-assisted first-pass workspace.")
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_first_pass",
+    coder_id: Annotated[
+        str, typer.Option(help="Disclosed machine-assisted first-pass coder identifier.")
+    ] = "codex_assisted_prefill_v1",
+    seed_directory: Annotated[
+        Path, typer.Option(help="Protected full-corpus seed-bundle directory.")
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_seed",
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Prefill only parser-clean, conflict-free paths and preserve all exceptions."""
+
+    output_directory, manifest, created = write_first_pass_workspace(
+        workspace_directory,
+        output_root,
+        coder_id=coder_id,
+    )
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        session_context, driver_context = load_timing_review_context(connection)
+    validation = validate_edited_full_corpus_coding_workspace(
+        seed_directory,
+        output_directory,
+        session_context,
+        driver_context,
+    )
+    typer.echo(validation.to_string(index=False))
+    if not validation["status"].eq("pass").all():
+        raise typer.Exit(code=1)
+    action = "Created" if created else "Verified existing"
+    summary = manifest["summary"]
+    typer.echo(
+        f"{action} {manifest['first_pass_id']} at {output_directory}; "
+        f"documents={summary['documents']['prefilled_rows']} prefilled/"
+        f"{summary['documents']['unresolved_rows']} unresolved, "
+        f"adjudications={summary['adjudications']['prefilled_rows']} prefilled/"
+        f"{summary['adjudications']['unresolved_rows']} unresolved, "
+        f"exclusion QA={summary['exclusion_qa']['unresolved_rows']} unresolved; "
+        "analytical release remains blocked"
     )
 
 

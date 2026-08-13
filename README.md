@@ -85,8 +85,10 @@ full-study catalog now contains all 173 completed championship events from 2018 
 ```powershell
 f1stewards build-full-corpus-review-explorer `
   data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4
+f1stewards build-full-corpus-first-pass `
+  data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4
 f1stewards apply-full-corpus-review-ledger `
-  data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4 `
+  data/manual/full_corpus_first_pass/full-coding-e0192ecbd9e4 `
   <exported-review-ledger.json>
 f1stewards validate-edited-full-coding-workspace `
   data/manual/full_corpus_review_edits/full-coding-e0192ecbd9e4
@@ -96,6 +98,13 @@ The generated [full-corpus review console](explorer/full_corpus_review.html) exp
 adjudication, and stratified exclusion-QA target while preserving the blocked analytical release.
 Browser drafts export only editable final fields in a ledger locked to the current workspace hash;
 the apply command writes a separate workspace and reruns protected-lineage validation.
+
+The conservative [machine-assisted first pass](docs/full_corpus_first_pass.md) prepopulates 1,696
+parser-clean document dispositions and 1,649 conflict-free adjudication rows as
+`single_coded_pending_human`. It leaves 307 document exceptions, 303 adjudication exceptions, and
+all 486 exclusion-QA judgments unstarted. The generated
+[first-pass review console](explorer/full_corpus_first_pass_review.html) exposes those assignments
+without counting any as independent review.
 
 ## Pilot commands
 
@@ -216,6 +225,13 @@ into a portable evidence-review surface covering 2,003 document dispositions, 1,
 starters, and 486 frozen exclusion checks. It supports official-source inspection, queue filtering,
 local draft fields, filtered CSV export, and stale-safe ledger application without presenting any
 machine suggestion as a finding.
+
+The next controlled layer is `first-pass-29113bebd312`. It transfers only parser-clean,
+conflict-free deterministic paths into disclosed editable fields, preserves every protected source
+column, uses source-unique provisional incident IDs to avoid false grouping, and extracts written
+fault language only from explicit phrases. All 19 edited-workspace controls pass. The resulting
+feature build, `features-0dda4b045f28`, contains 295 `incomplete_human_coding` primary rows and one
+untouched provisional parser exception; reporting eligibility remains zero.
 
 The [gated analysis feature release](docs/analysis_feature_release.md) materializes one
 adjudication-grain table and a separate accused/affected driver-role bridge in DuckDB. Its current

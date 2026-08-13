@@ -68,6 +68,22 @@ This interface improves review throughput but does not relax the protocol. A bro
 an independent review, and the console cannot assert analytical release. Documents that require
 one-to-many adjudication splits still use the controlled CSV duplication procedure below.
 
+## Machine-assisted first pass
+
+The deterministic `first-pass-29113bebd312` release is generated into a separate ignored workspace:
+
+```powershell
+f1stewards build-full-corpus-first-pass `
+  data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4
+```
+
+It prepopulates 1,696 document rows and 1,649 adjudication rows with
+`single_coded_pending_human`. It does not touch 208 parser-review documents, 18 family-conflict
+documents, any manual eligibility path, 224 multi-decision/format-review adjudications, 61 manual
+scope adjudications, 18 family-conflict adjudications, or any of the 486 exclusion-QA judgments.
+All protected fields remain byte-equivalent to the starter and all 19 edited-workspace controls
+pass. See [the first-pass release record](full_corpus_first_pass.md) for its field rules and hashes.
+
 ## Worklists and editing boundary
 
 `document_review_worklist.csv` preserves one row per FIA outcome label. Only its final disposition,

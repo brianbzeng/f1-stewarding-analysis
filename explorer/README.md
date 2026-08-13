@@ -45,3 +45,9 @@ The ledger contains only editable final fields and is bound to the exact source-
 Stale ledgers, unknown IDs, protected-field changes, and invalid edited workspaces fail closed. The
 browser cannot create supported one-to-many adjudication splits; use the documented CSV split
 procedure and rebuild the console for those cases.
+
+`full_corpus_first_pass_review.html` is the same review interface rebuilt over conservative first
+pass `first-pass-29113bebd312`. It shows 1,696 document and 1,649 adjudication rows as
+`single_coded_pending_human`, while 307 document exceptions, 303 adjudication exceptions, and all
+486 exclusion-QA checks remain unstarted. It is the operational starting point for source-level
+review; `full_corpus_review.html` remains the untouched-starter reference.
