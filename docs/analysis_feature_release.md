@@ -10,9 +10,10 @@ f1stewards build-analysis-features `
   data/manual/full_corpus_first_pass/full-coding-e0192ecbd9e4
 ```
 
-The current content-addressed build is `features-8f34710dfddc`. It uses machine-assisted first pass
-`first-pass-5aa88d7f05b2` plus the 17-case
-[parser-format source review](parser_format_source_review.md) over workspace
+The current content-addressed build is `features-99c7c3429c01`. It uses machine-assisted first pass
+`first-pass-5aa88d7f05b2`, the 17-case
+[parser-format source review](parser_format_source_review.md), and the 18-case
+[analytical-scope conflict review](analytical_scope_conflict_review.md) over workspace
 `full-coding-e0192ecbd9e4`, the sourced 43-driver
 nationality registry, the controlled 28-label
 event-country crosswalk, all 3,938 Race/Sprint classifications, and the complete decision-document

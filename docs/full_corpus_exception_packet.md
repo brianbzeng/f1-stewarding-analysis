@@ -102,6 +102,11 @@ forcing off track. Their official text has now been coded through the versioned
 [parser-format source-review ledger](parser_format_source_review.md): 16 exclusions and one primary
 no-action inclusion. All remain `single_coded_pending_human` pending independent review.
 
+The 18 analytical-scope conflicts have likewise been recorded through the versioned
+[scope-conflict ledger](analytical_scope_conflict_review.md): eight secondary Qualifying-impeding
+inclusions and ten exclusions. The original exception packet remains the immutable handoff from
+first-pass schema v3; the chained ledgers are the auditable resolution layer.
+
 ## Interpretation boundary
 
 The packet is an operational review control. It does not recover the four recalled Belgian source

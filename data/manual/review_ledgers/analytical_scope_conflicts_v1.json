@@ -1,0 +1,576 @@
+{
+  "schema_version": "full-corpus-review-ledger-v1",
+  "workspace_id": "full-coding-e0192ecbd9e4",
+  "source_workspace_sha256": "c938b2d25c28493b6593a29156a44c17822a1a68f79342a4ed30b64a92e431d9",
+  "review_basis": "Official FIA source-level coding of all 18 analytical-scope conflicts. These are single-coded pending-human records, not independent review.",
+  "changes": {
+    "documents": [
+      {
+        "row_id": "document-review-fia-2019-ita-4a635506287b",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "gaining_advantage_off_track",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "out_of_scope_session",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source places Car 18's Turn 11 track-limits offence in Practice 3; excluded by session despite explicit lasting advantage."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-ita-7919f2fd3cec",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "gaining_advantage_off_track",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "out_of_scope_session",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source places Car 8's Turn 11 track-limits offence in Practice 3; excluded by session despite explicit lasting advantage."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-ita-79b9b8a347cd",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "gaining_advantage_off_track",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "out_of_scope_session",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source places Car 16's Turn 11 track-limits offence in Practice 3; excluded by session despite explicit lasting advantage."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-ita-aa4687bd7ef0",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "gaining_advantage_off_track",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "out_of_scope_session",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Later corrected Document 29 for Car 26 at 12:58; Practice 3 track-limits offence, excluded by session and retained as the effective version."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-ita-b42dad90f42f",
+        "fields": {
+          "version_status_final": "superseded",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "gaining_advantage_off_track",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "superseded_corrected_predecessor",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Document 27 is superseded by later corrected Document 29: same Car 26, 12:58 incident, fact, and deleted lap time. Both remain in provenance."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-ita-e36f6c562e32",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "gaining_advantage_off_track",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "out_of_scope_session",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source places Car 20's Turn 11 track-limits offence in Practice 3; excluded by session despite explicit lasting advantage."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-ita-e98431c9a075",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "gaining_advantage_off_track",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "out_of_scope_session",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official Document 24 records Car 23 at 12:30 in Practice 3; distinct from later Qualifying Document 30 and excluded by session."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-ita-f957930938ee",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "secondary",
+          "offence_family_final": "gaining_advantage_off_track",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "outside_secondary_offence_scope",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official Document 30 records a distinct Car 23 track-limits offence at 15:11 in Qualifying; secondary population is limited to impeding."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-bhr-dd48415f903e",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "secondary",
+          "offence_family_final": "qualifying_impeding",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source finds Car 8 impeded Car 4 at Turn 14 during Qualifying; included in the secondary impeding population."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-sgp-057a752c9b6d",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "secondary",
+          "offence_family_final": "qualifying_impeding",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source finds Car 1's extraordinary wait impeded cars at the pit exit during Qualifying; included in the secondary population."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-mex-12fa9fca2a38",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "secondary",
+          "offence_family_final": "qualifying_impeding",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source adjudicates alleged pit-exit impeding by Car 63 in Qualifying and takes no further action; included as secondary no-action data."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-mex-4fc6662b74aa",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "secondary",
+          "offence_family_final": "qualifying_impeding",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source adjudicates alleged pit-exit impeding by Car 14 in Qualifying and takes no further action; included as secondary no-action data."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-mex-5a15b7087308",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "secondary",
+          "offence_family_final": "qualifying_impeding",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source adjudicates alleged pit-exit impeding by Car 1 in Qualifying and takes no further action; included as secondary no-action data."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-sao-2db411d9fff1",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "secondary",
+          "offence_family_final": "qualifying_impeding",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source finds Car 63 blocked following cars at the pit exit during Qualifying; included in the secondary impeding population."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-sao-5871a2a81af1",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "secondary",
+          "offence_family_final": "qualifying_impeding",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source finds Car 10 blocked following cars at the pit exit during Qualifying; included in the secondary impeding population."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-sao-b589b802b3d1",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "secondary",
+          "offence_family_final": "qualifying_impeding",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source finds Car 31 blocked following cars at the pit exit during Qualifying; included in the secondary impeding population."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2025-ned-39a578167cde",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "qualifying_impeding",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "out_of_scope_session",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source finds Car 63 impeded Car 14 at pit entry in Practice; excluded by session despite the impeding finding."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2025-abu-7281167dc058",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "pit_lane_procedure",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "out_of_scope_session",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source adjudicates unsafe garage release in Practice, fines the team, and attributes no fault to Car 12's driver; excluded by session and offence family."
+        }
+      }
+    ],
+    "adjudications": [
+      {
+        "row_id": "adjudication-seed-fia-2019-ita-4a635506287b-01",
+        "fields": {
+          "accused_driver_number_final": "18",
+          "session_type_final": "Practice",
+          "location_final": "Turn 11",
+          "incident_family_final": "gaining_advantage_off_track",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "out_of_scope_session",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Practice 3 track-limits offence, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-ita-7919f2fd3cec-01",
+        "fields": {
+          "accused_driver_number_final": "8",
+          "session_type_final": "Practice",
+          "location_final": "Turn 11",
+          "incident_family_final": "gaining_advantage_off_track",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "out_of_scope_session",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Practice 3 track-limits offence, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-ita-79b9b8a347cd-01",
+        "fields": {
+          "accused_driver_number_final": "16",
+          "session_type_final": "Practice",
+          "location_final": "Turn 11",
+          "incident_family_final": "gaining_advantage_off_track",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "out_of_scope_session",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Practice 3 track-limits offence, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-ita-aa4687bd7ef0-01",
+        "fields": {
+          "accused_driver_number_final": "26",
+          "session_type_final": "Practice",
+          "location_final": "Turn 11",
+          "incident_family_final": "gaining_advantage_off_track",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "out_of_scope_session",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official corrected Document 29 reviewed; effective Practice 3 exclusion, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-ita-b42dad90f42f-01",
+        "fields": {
+          "accused_driver_number_final": "26",
+          "session_type_final": "Practice",
+          "location_final": "Turn 11",
+          "incident_family_final": "gaining_advantage_off_track",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "superseded_corrected_predecessor",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official Document 27 reviewed; superseded by corrected Document 29 with identical Car 26 incident evidence, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-ita-e36f6c562e32-01",
+        "fields": {
+          "accused_driver_number_final": "20",
+          "session_type_final": "Practice",
+          "location_final": "Turn 11",
+          "incident_family_final": "gaining_advantage_off_track",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "out_of_scope_session",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Practice 3 track-limits offence, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-ita-e98431c9a075-01",
+        "fields": {
+          "accused_driver_number_final": "23",
+          "session_type_final": "Practice",
+          "location_final": "Turn 11",
+          "incident_family_final": "gaining_advantage_off_track",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "out_of_scope_session",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official Document 24 reviewed; distinct 12:30 Practice 3 incident, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-ita-f957930938ee-01",
+        "fields": {
+          "accused_driver_number_final": "23",
+          "session_type_final": "Qualifying",
+          "location_final": "Turn 11",
+          "incident_family_final": "gaining_advantage_off_track",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "outside_secondary_offence_scope",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official Document 30 reviewed; distinct 15:11 Qualifying track-limits incident outside impeding-only secondary scope."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-bhr-dd48415f903e-01",
+        "fields": {
+          "adjudication_id_final": "adj-531035137d284f91",
+          "incident_id_final": "incident-src-531035137d284f91",
+          "accused_driver_number_final": "8",
+          "affected_driver_numbers_final": "4",
+          "session_type_final": "Qualifying",
+          "location_final": "Turn 14",
+          "incident_family_final": "qualifying_impeding",
+          "outcome_family_final": "grid_penalty",
+          "penalty_points_final": "1",
+          "grid_places_final": "3",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "true",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Car 8 impeded Car 4 in Qualifying and received a three-place grid drop plus one penalty point."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-sgp-057a752c9b6d-01",
+        "fields": {
+          "adjudication_id_final": "adj-1e698f46d1e75d2e",
+          "incident_id_final": "incident-src-1e698f46d1e75d2e",
+          "accused_driver_number_final": "1",
+          "session_type_final": "Qualifying",
+          "location_final": "Pit Exit",
+          "incident_family_final": "qualifying_impeding",
+          "outcome_family_final": "reprimand",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "true",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Car 1 impeded cars at the Qualifying pit exit and received a driving reprimand."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-mex-12fa9fca2a38-01",
+        "fields": {
+          "adjudication_id_final": "adj-82f80be8ca8f0a0a",
+          "incident_id_final": "incident-src-82f80be8ca8f0a0a",
+          "accused_driver_number_final": "63",
+          "session_type_final": "Qualifying",
+          "location_final": "Pit Exit",
+          "incident_family_final": "qualifying_impeding",
+          "outcome_family_final": "no_further_action",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "true",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; alleged Qualifying pit-exit impeding by Car 63, no further action under conflicting minimum-time requirements."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-mex-4fc6662b74aa-01",
+        "fields": {
+          "adjudication_id_final": "adj-0d0b56ed15de01c4",
+          "incident_id_final": "incident-src-0d0b56ed15de01c4",
+          "accused_driver_number_final": "14",
+          "session_type_final": "Qualifying",
+          "location_final": "Pit Exit",
+          "incident_family_final": "qualifying_impeding",
+          "outcome_family_final": "no_further_action",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "true",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; alleged Qualifying pit-exit impeding by Car 14, no further action under conflicting minimum-time requirements."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-mex-5a15b7087308-01",
+        "fields": {
+          "adjudication_id_final": "adj-2ebd5622fc6f6f47",
+          "incident_id_final": "incident-src-2ebd5622fc6f6f47",
+          "accused_driver_number_final": "1",
+          "session_type_final": "Qualifying",
+          "location_final": "Pit Exit",
+          "incident_family_final": "qualifying_impeding",
+          "outcome_family_final": "no_further_action",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "true",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; alleged Qualifying pit-exit impeding by Car 1, no further action under conflicting minimum-time requirements."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-sao-2db411d9fff1-01",
+        "fields": {
+          "adjudication_id_final": "adj-0f1a0dcb6eedb7dd",
+          "incident_id_final": "incident-src-0f1a0dcb6eedb7dd",
+          "accused_driver_number_final": "63",
+          "session_type_final": "Qualifying",
+          "location_final": "Pit Exit",
+          "incident_family_final": "qualifying_impeding",
+          "outcome_family_final": "grid_penalty",
+          "grid_places_final": "2",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "true",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Car 63 blocked following cars at the Qualifying pit exit and received a two-place grid drop."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-sao-5871a2a81af1-01",
+        "fields": {
+          "adjudication_id_final": "adj-3d3cb80c25c65895",
+          "incident_id_final": "incident-src-3d3cb80c25c65895",
+          "accused_driver_number_final": "10",
+          "session_type_final": "Qualifying",
+          "location_final": "Pit Exit",
+          "incident_family_final": "qualifying_impeding",
+          "outcome_family_final": "grid_penalty",
+          "grid_places_final": "2",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "true",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Car 10 blocked following cars at the Qualifying pit exit and received a two-place grid drop."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-sao-b589b802b3d1-01",
+        "fields": {
+          "adjudication_id_final": "adj-066e84f625baae15",
+          "incident_id_final": "incident-src-066e84f625baae15",
+          "accused_driver_number_final": "31",
+          "session_type_final": "Qualifying",
+          "location_final": "Pit Exit",
+          "incident_family_final": "qualifying_impeding",
+          "outcome_family_final": "grid_penalty",
+          "grid_places_final": "2",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "true",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Car 31 blocked following cars at the Qualifying pit exit and received a two-place grid drop."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2025-ned-39a578167cde-01",
+        "fields": {
+          "accused_driver_number_final": "63",
+          "affected_driver_numbers_final": "14",
+          "session_type_final": "Practice",
+          "location_final": "Pit Entry",
+          "incident_family_final": "qualifying_impeding",
+          "outcome_family_final": "warning",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "out_of_scope_session",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Car 63 impeded Car 14 in Practice and was warned, while the team was fined for failing to warn the driver."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2025-abu-7281167dc058-01",
+        "fields": {
+          "accused_driver_number_final": "12",
+          "affected_driver_numbers_final": "22",
+          "session_type_final": "Practice",
+          "location_final": "Garage Release",
+          "incident_family_final": "pit_lane_procedure",
+          "outcome_family_final": "fine",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "out_of_scope_session",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; unsafe garage release collision in Practice, team fine, and explicit no driver fault."
+        }
+      }
+    ]
+  }
+}

@@ -40,6 +40,7 @@ data/manual/full_corpus_workspaces/
 data/manual/full_corpus_first_pass/
 data/manual/full_corpus_exception_packets/
 data/manual/full_corpus_review_edits/
+data/manual/full_corpus_review_rounds/
 
 # Generated reports
 reports/generated/**

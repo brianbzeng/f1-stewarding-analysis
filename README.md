@@ -121,6 +121,12 @@ included Hungarian no-action adjudication. Its versioned ledger changes no prote
 keeps every row `single_coded_pending_human`; the review console now shows 1,920 document and 1,873
 adjudication rows pending human confirmation, with 83 and 79 respectively still unstarted.
 
+The next [analytical-scope conflict review](docs/analytical_scope_conflict_review.md) records all 18
+cross-family/session decisions: eight secondary Qualifying-impeding inclusions and ten exclusions.
+It also preserves a previously unlinked corrected Italian decision by coding its matching earlier
+version as superseded. The chained console now shows 1,938 document and 1,891 adjudication rows
+pending human confirmation, leaving 65 and 61 respectively unstarted.
+
 ## Pilot commands
 
 ```powershell
@@ -246,7 +252,7 @@ paths and clearly out-of-scope parser-warning exclusions into disclosed editable
 never prefilling a parser-warning inclusion. It preserves every protected source column, uses
 source-unique provisional incident IDs to avoid false grouping, and extracts written fault language
 only from explicit phrases. All 19 edited-workspace controls pass. The resulting feature build,
-`features-8f34710dfddc`, contains 296 `incomplete_human_coding` primary rows after source coding the
+`features-99c7c3429c01`, contains 296 `incomplete_human_coding` primary rows after source coding the
 last parser exception; reporting eligibility remains zero.
 
 The [gated analysis feature release](docs/analysis_feature_release.md) materializes one
