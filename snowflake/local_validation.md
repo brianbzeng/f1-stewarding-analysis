@@ -2,9 +2,9 @@
 
 ## Run identity
 
-- Source commit: `9707b01`
-- Export ID: `snowflake-pilot-6db39a522219`
-- Generated UTC: `2026-08-12T23:05:46.655668+00:00`
+- Source commit: `d7269ef`
+- Export ID: `snowflake-pilot-217e95c92fc9`
+- Generated UTC: `2026-08-13T08:27:33.837837+00:00`
 - Export schema: `snowflake_pilot_v3`
 - Release status: `reviewed`
 - Remote Snowflake status: **not executed**
@@ -13,9 +13,9 @@
 
 | Snowflake table | Rows | File/hash/schema/count |
 |---|---:|---|
-| `METADATA.EVENTS` | 3 | pass |
-| `RAW.SOURCE_DOCUMENTS` | 156 | pass |
-| `RAW.DOCUMENT_TEXT` | 26 | pass |
+| `METADATA.EVENTS` | 173 | pass |
+| `RAW.SOURCE_DOCUMENTS` | 9,467 | pass |
+| `RAW.DOCUMENT_TEXT` | 1,984 | pass |
 | `RAW.FASTF1_RESULTS` | 60 | pass |
 | `METADATA.REGULATORY_SOURCES` | 11 | pass |
 | `METADATA.EVENT_REGULATORY_SOURCES` | 11 | pass |
@@ -35,7 +35,7 @@ manifest row count, and ordered columns. Automated tests also compared every Par
 the corresponding Snowflake DDL, confirmed one fail-fast load per table, rejected machine-local PDF
 paths, tested content-addressed reruns, and detected a deliberately corrupted Parquet footer.
 
-The repository-wide validation at package completion passed 67 tests and 22 DuckDB quality
+The repository-wide validation at package completion passed 184 tests and 38 DuckDB quality
 controls. All 26 review targets agree with no corrections or unresolved discussions. The expanded
 reconciliation is `pilot-41f4502411c2`, and scale readiness has advanced to
 `human_go_no_go_required`. The export is reviewed; local validation still does not substitute for a
@@ -43,7 +43,8 @@ remote Snowflake execution or authorize population-level findings from the three
 
 ## What this proves
 
-- the pilot can be transformed into typed, stage-ready Parquet without credentials;
+- the full evidence inventory and reviewed pilot analytical layer can be transformed into typed,
+  stage-ready Parquet without credentials;
 - load contracts, source lineage, event-date rule logic, review status, and parity expectations are
   explicit and testable;
 - the export contains public analytical data and no Snowflake credential or machine-local cache path;
