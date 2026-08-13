@@ -43,6 +43,7 @@ TECHNICAL_DELEGATE_ISSUER_RE = re.compile(
 
 def normalize_pdf_text(text: str) -> str:
     text = text.replace("\u00a0", " ").replace("\r\n", "\n").replace("\r", "\n")
+    text = re.sub(r"(?m)^(\s*Infringement)(?=Breach\b)", r"\1 ", text)
     text = re.sub(r"[ \t]+", " ", text)
     return re.sub(r"\n{3,}", "\n\n", text).strip()
 
@@ -103,7 +104,12 @@ def parse_decision_pdf(path: Path, document_id: str) -> DecisionSections:
     if not raw_text:
         warnings.append("no_text_extracted")
     if content_document_class == DocumentClass.STEWARD_DECISION:
-        for expected in ("fact_text", "decision_text", "reason_text"):
+        for expected in (
+            "fact_text",
+            "infringement_text",
+            "decision_text",
+            "reason_text",
+        ):
             if expected not in sections:
                 warnings.append(f"missing_{expected}")
     return DecisionSections(

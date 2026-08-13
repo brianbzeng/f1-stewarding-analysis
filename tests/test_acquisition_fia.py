@@ -7,6 +7,7 @@ import pandas as pd
 from f1stewards.acquisition.fia import (
     _normalized_pdf_bytes,
     _resolve_pdf_response,
+    apply_document_lineage,
     apply_retrieval_exceptions,
     classify_document,
     discover_event,
@@ -25,7 +26,24 @@ FIXTURES = Path(__file__).parent / "fixtures"
 def test_classification_respects_includes_and_excludes() -> None:
     config = load_document_classes()
     assert classify_document("Decision - Car 33", config) == DocumentClass.STEWARD_DECISION
+    assert classify_document("Offence Doc38 - F.Alonso", config) == DocumentClass.STEWARD_DECISION
+    assert (
+        classify_document("Infringement (Corrected) - Car 18", config)
+        == DocumentClass.STEWARD_DECISION
+    )
+    assert (
+        classify_document("Decision - Qualifying SC2-SC1 Times", config)
+        == DocumentClass.STEWARD_DECISION
+    )
+    assert (
+        classify_document("Car 14 - Correction Penalty Point Total", config)
+        == DocumentClass.STEWARD_DECISION
+    )
     assert classify_document("Summons - Car 33", config) == DocumentClass.SUMMONS
+    assert (
+        classify_document("Summons - Car 33 - Alleged infringement", config)
+        == DocumentClass.SUMMONS
+    )
     assert (
         classify_document("Final Race Classification", config) == DocumentClass.FINAL_CLASSIFICATION
     )
@@ -234,3 +252,27 @@ def test_retrieval_exception_preserves_broken_link_evidence() -> None:
     assert resolved.source_availability_note == (
         "Verified 2026-08-12: Official link returns HTTP 404."
     )
+
+
+def test_document_lineage_links_live_successor_to_recalled_predecessor() -> None:
+    event = load_pilot_events()[0]
+    documents = extract_document_links(
+        (FIXTURES / "fia_archive.html").read_text(encoding="utf-8"),
+        event,
+        load_document_classes(),
+        discovered_at=datetime(2026, 8, 12, tzinfo=UTC),
+    )[:2]
+    predecessor = documents[0].model_copy(update={"is_recalled": True})
+    successor = documents[1]
+    links = {
+        successor.document_id: {
+            "event_id": event.pilot_id,
+            "predecessor_document_id": predecessor.document_id,
+            "verified_at": "2026-08-12",
+            "note": "Corrected successor.",
+        }
+    }
+
+    linked = apply_document_lineage([predecessor, successor], links)
+
+    assert linked[1].supersedes_document_id == predecessor.document_id

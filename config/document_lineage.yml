@@ -1,0 +1,76 @@
+lineage_links:
+  - event_id: 2024-mex
+    predecessor_document_id: fia-2024-mex-cd682dfdcf3b
+    successor_document_id: fia-2024-mex-9398d22e8e7e
+    verified_at: 2026-08-12
+    note: Corrected Doc 47 replaces recalled Doc 43 for Car 1 at Turn 4.
+  - event_id: 2025-aut
+    predecessor_document_id: fia-2025-aut-08c6b846f05c
+    successor_document_id: fia-2025-aut-3666395a2885
+    verified_at: 2026-08-12
+    note: Doc 46 resolves the recalled Doc 39 allegation involving Cars 22 and 18.
+  - event_id: 2025-bhr
+    predecessor_document_id: fia-2025-bhr-ab278801b35b
+    successor_document_id: fia-2025-bhr-fadfd5ceb9c2
+    verified_at: 2026-08-12
+    note: Corrected Doc 53 replaces recalled Doc 48 for Car 55.
+  - event_id: 2025-can
+    predecessor_document_id: fia-2025-can-ce72d36dfdb7
+    successor_document_id: fia-2025-can-621572ee797e
+    verified_at: 2026-08-12
+    note: Corrected Doc 63 replaces recalled Doc 61 and corrects the driver number.
+  - event_id: 2025-can
+    predecessor_document_id: fia-2025-can-1f908900524f
+    successor_document_id: fia-2025-can-b0bd1a4ff054
+    verified_at: 2026-08-12
+    note: Corrected Doc 64 replaces recalled Doc 62 for Car 31.
+  - event_id: 2025-chn
+    predecessor_document_id: fia-2025-chn-5d57ba37ef77
+    successor_document_id: fia-2025-chn-f8b63c96f52e
+    verified_at: 2026-08-12
+    note: Doc 87 replaces recalled Doc 82 for Car 16 weight non-compliance.
+  - event_id: 2025-chn
+    predecessor_document_id: fia-2025-chn-24f8c109b5de
+    successor_document_id: fia-2025-chn-47aca21a367c
+    verified_at: 2026-08-12
+    note: Doc 88 replaces recalled Doc 83 for Car 10 weight non-compliance.
+  - event_id: 2025-gbr
+    predecessor_document_id: fia-2025-gbr-fd5295495648
+    successor_document_id: fia-2025-gbr-75096f182c89
+    verified_at: 2026-08-12
+    note: Corrected Doc 25 replaces recalled Doc 24 for Car 87.
+  - event_id: 2025-lvs
+    predecessor_document_id: fia-2025-lvs-77eae437353c
+    successor_document_id: fia-2025-lvs-7dcf672c0eb6
+    verified_at: 2026-08-12
+    note: Corrected Doc 58 replaces recalled Doc 56 for Car 81 plank non-conformity.
+  - event_id: 2025-mia
+    predecessor_document_id: fia-2025-mia-5c581fe2bc0f
+    successor_document_id: fia-2025-mia-63c0e9e1240d
+    verified_at: 2026-08-12
+    note: Corrected Doc 68 replaces recalled Doc 67 for Car 10.
+  - event_id: 2025-qat
+    predecessor_document_id: fia-2025-qat-931bd5b878a2
+    successor_document_id: fia-2025-qat-7b55d1bf033f
+    verified_at: 2026-08-12
+    note: Doc 65 replaces recalled Doc 64 for Car 87 unsafe-condition adjudication.
+  - event_id: 2025-sao
+    predecessor_document_id: fia-2025-sao-f6d7d9bf0d5a
+    successor_document_id: fia-2025-sao-61b609bbbc46
+    verified_at: 2026-08-12
+    note: Corrected Sprint Doc 65 replaces recalled Doc 41 for Car 30.
+  - event_id: 2025-sao
+    predecessor_document_id: fia-2025-sao-9a1c04cfdf96
+    successor_document_id: fia-2025-sao-f7a215166f92
+    verified_at: 2026-08-12
+    note: Corrected Race Doc 68 replaces recalled Doc 63 for Car 81.
+  - event_id: 2025-usa
+    predecessor_document_id: fia-2025-usa-f1e8688b2e69
+    successor_document_id: fia-2025-usa-128be2a520d5
+    verified_at: 2026-08-12
+    note: Doc 34 replaces recalled Doc 31 for Car 87 track advantage.
+  - event_id: 2025-usa
+    predecessor_document_id: fia-2025-usa-363ca5c6ae34
+    successor_document_id: fia-2025-usa-0d0255f52838
+    verified_at: 2026-08-12
+    note: Doc 43 replaces recalled Doc 39 for Car 5 pit-lane speeding.

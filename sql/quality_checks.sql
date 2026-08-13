@@ -42,6 +42,30 @@ SELECT document_id, source_availability_status
 FROM raw.source_documents
 WHERE source_availability_status NOT IN ('advertised', 'verified_unavailable');
 
+-- Corrected-document lineage must point backward to one recalled record in the same event.
+SELECT
+    successor.document_id,
+    successor.event_id,
+    successor.supersedes_document_id,
+    predecessor.event_id AS predecessor_event_id,
+    predecessor.is_recalled AS predecessor_is_recalled
+FROM raw.source_documents AS successor
+LEFT JOIN raw.source_documents AS predecessor
+    ON predecessor.document_id = successor.supersedes_document_id
+WHERE successor.supersedes_document_id IS NOT NULL
+  AND (
+      predecessor.document_id IS NULL
+      OR predecessor.event_id <> successor.event_id
+      OR NOT predecessor.is_recalled
+      OR successor.is_recalled
+  );
+
+SELECT supersedes_document_id, count(*) AS successor_count
+FROM raw.source_documents
+WHERE supersedes_document_id IS NOT NULL
+GROUP BY supersedes_document_id
+HAVING count(*) > 1;
+
 SELECT i.incident_id, i.source_document_id
 FROM curated.incidents AS i
 LEFT JOIN raw.source_documents AS d ON i.source_document_id = d.document_id

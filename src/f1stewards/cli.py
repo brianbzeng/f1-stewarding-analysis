@@ -14,6 +14,7 @@ import pandas as pd
 import typer
 
 from f1stewards.acquisition.fia import (
+    apply_document_lineage,
     apply_retrieval_exceptions,
     build_client,
     discover_event,
@@ -25,6 +26,7 @@ from f1stewards.config import (
     PROJECT_ROOT,
     load_analysis_thresholds,
     load_document_classes,
+    load_document_lineage,
     load_evidence_profiles,
     load_full_collection_settings,
     load_international_sporting_code_issues,
@@ -410,10 +412,12 @@ def pilot_discover(
         if not events:
             raise typer.BadParameter(f"Unknown pilot id: {event_id}")
     classes = load_document_classes()
+    lineage_links = load_document_lineage()
     all_documents = []
     with build_client() as client:
         for event in events:
             documents = discover_event(client, event, classes)
+            documents = apply_document_lineage(documents, lineage_links)
             documents = _reuse_verified_downloads(documents, db_path)
             typer.echo(f"{event.pilot_id}: discovered {len(documents)} documents")
             if download:
@@ -483,6 +487,7 @@ def study_discover(
             raise typer.BadParameter("Season must be between 2018 and 2025")
         events = [event for event in events if event.season == season]
     classes = load_document_classes()
+    lineage_links = load_document_lineage()
     evidence_profiles = load_evidence_profiles()
     if download_profile not in evidence_profiles:
         choices = ", ".join(sorted(evidence_profiles))
@@ -513,6 +518,7 @@ def study_discover(
                 )
                 typer.echo(f"{event.pilot_id}: discovery failed: {exc}", err=True)
                 continue
+            documents = apply_document_lineage(documents, lineage_links)
             documents = _reuse_verified_downloads(documents, db_path)
             typer.echo(f"{event.pilot_id}: discovered {len(documents)} documents")
             if download:
@@ -608,7 +614,8 @@ def study_inventory(
                     WHERE d.document_class = 'steward_decision'
                 ) AS archive_decision_labels,
                 count(*) FILTER (
-                    WHERE coalesce(t.content_document_class, d.document_class) =
+                    WHERE NOT d.is_recalled
+                      AND coalesce(t.content_document_class, d.document_class) =
                         'steward_decision'
                 ) AS effective_decisions,
                 count(t.content_document_class) AS content_typed_documents,
@@ -621,10 +628,20 @@ def study_inventory(
                 count(*) FILTER (
                     WHERE d.source_availability_status = 'verified_unavailable'
                 ) AS verified_unavailable_records,
+                count(*) FILTER (
+                    WHERE d.supersedes_document_id IS NOT NULL
+                ) AS corrected_successor_records,
+                count(*) FILTER (
+                    WHERE d.is_recalled
+                      AND d.document_class = 'steward_decision'
+                      AND successor.document_id IS NULL
+                ) AS unresolved_recalled_decisions,
                 count(*) FILTER (WHERE d.is_recalled) AS recalled_records
             FROM metadata.events AS e
             LEFT JOIN raw.source_documents AS d USING (event_id)
             LEFT JOIN raw.document_text AS t USING (document_id)
+            LEFT JOIN raw.source_documents AS successor
+                ON successor.supersedes_document_id = d.document_id
             GROUP BY e.season
             ORDER BY e.season
             """

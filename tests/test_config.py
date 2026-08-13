@@ -5,6 +5,7 @@ import pytest
 
 from f1stewards.config import (
     load_analysis_thresholds,
+    load_document_lineage,
     load_evidence_profiles,
     load_full_collection_settings,
     load_international_sporting_code_issues,
@@ -107,6 +108,14 @@ retrieval_exceptions:
 
 def test_official_retrieval_exception_register_is_currently_empty() -> None:
     assert load_retrieval_exceptions() == {}
+
+
+def test_document_lineage_register_has_unique_verified_links() -> None:
+    links = load_document_lineage()
+
+    assert len(links) == 15
+    assert len({link["predecessor_document_id"] for link in links.values()}) == 15
+    assert links["fia-2024-mex-9398d22e8e7e"]["event_id"] == "2024-mex"
 
 
 def test_sporting_regulation_catalog_covers_2018_through_2025() -> None:

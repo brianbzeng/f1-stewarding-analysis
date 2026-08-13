@@ -395,6 +395,37 @@ def apply_retrieval_exceptions(
     return output
 
 
+def apply_document_lineage(
+    documents: Iterable[SourceDocument], links: dict[str, dict[str, str]]
+) -> list[SourceDocument]:
+    """Attach verified predecessor links without inferring unavailable document contents."""
+
+    document_list = list(documents)
+    by_id = {document.document_id: document for document in document_list}
+    output: list[SourceDocument] = []
+    for document in document_list:
+        link = links.get(document.document_id)
+        if link is None:
+            output.append(document)
+            continue
+        predecessor_id = link["predecessor_document_id"]
+        predecessor = by_id.get(predecessor_id)
+        if predecessor is None:
+            raise ValueError(
+                f"Missing configured predecessor {predecessor_id} for {document.document_id}"
+            )
+        if link["event_id"] != document.pilot_id or predecessor.pilot_id != document.pilot_id:
+            raise ValueError(f"Document-lineage event mismatch for {document.document_id}")
+        if document.is_recalled or not predecessor.is_recalled:
+            raise ValueError(
+                f"Document-lineage recall status is invalid for {document.document_id}"
+            )
+        output.append(
+            document.model_copy(update={"supersedes_document_id": predecessor_id})
+        )
+    return output
+
+
 def write_manifest(documents: Iterable[SourceDocument], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     incoming = pd.DataFrame([document.model_dump(mode="json") for document in documents])

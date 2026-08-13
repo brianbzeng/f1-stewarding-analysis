@@ -265,6 +265,7 @@ def upsert_source_documents(
         FROM document_batch
         ON CONFLICT (document_id) DO UPDATE SET
             title = EXCLUDED.title,
+            document_class = EXCLUDED.document_class,
             published_at_raw = EXCLUDED.published_at_raw,
             published_at = EXCLUDED.published_at,
             retrieved_at = EXCLUDED.retrieved_at,
@@ -286,7 +287,7 @@ def upsert_document_text(
     connection: duckdb.DuckDBPyConnection,
     sections: list[DecisionSections],
     *,
-    parser_version: str = "decision-sections-v3",
+    parser_version: str = "decision-sections-v4",
 ) -> None:
     if not sections:
         return

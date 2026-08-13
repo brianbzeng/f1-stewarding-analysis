@@ -1,9 +1,11 @@
 classes:
   steward_decision:
     include:
-      - "decision - car"
-      - "infringement - car"
-      - "offence - car"
+      - "decision"
+      - "infringement"
+      - "offence"
+      - "offense"
+      - "correction penalty point total"
       - "stewards decision"
       - "steward decision"
     exclude:

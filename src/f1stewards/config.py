@@ -138,6 +138,39 @@ def load_retrieval_exceptions(path: Path | None = None) -> dict[str, dict[str, s
     return exceptions
 
 
+def load_document_lineage(path: Path | None = None) -> dict[str, dict[str, str]]:
+    config_path = path or PROJECT_ROOT / "config" / "document_lineage.yml"
+    payload = load_yaml(config_path)
+    raw_links = payload.get("lineage_links")
+    if not isinstance(raw_links, list):
+        raise ValueError(f"Missing lineage_links list in {config_path}")
+    links: dict[str, dict[str, str]] = {}
+    predecessors: set[str] = set()
+    required = {
+        "event_id",
+        "predecessor_document_id",
+        "successor_document_id",
+        "verified_at",
+        "note",
+    }
+    for raw in raw_links:
+        if not isinstance(raw, dict):
+            raise ValueError("Each document-lineage link must be a mapping")
+        if missing := required - set(raw):
+            raise ValueError(f"Document-lineage link is missing: {', '.join(sorted(missing))}")
+        successor = str(raw["successor_document_id"])
+        predecessor = str(raw["predecessor_document_id"])
+        if successor in links:
+            raise ValueError(f"Duplicate lineage successor: {successor}")
+        if predecessor in predecessors:
+            raise ValueError(f"Duplicate lineage predecessor: {predecessor}")
+        if successor == predecessor:
+            raise ValueError("A document cannot supersede itself")
+        links[successor] = {key: str(raw[key]) for key in required - {"successor_document_id"}}
+        predecessors.add(predecessor)
+    return links
+
+
 def load_regulatory_sources(path: Path | None = None) -> list[RegulatorySource]:
     config_path = path or PROJECT_ROOT / "config" / "regulatory_sources.yml"
     payload = load_yaml(config_path)

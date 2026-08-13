@@ -65,6 +65,19 @@ def test_split_sections_handles_observed_fia_infringment_typo() -> None:
     assert sections["infringement_text"] == "Breach of Article 34.7."
 
 
+def test_normalize_pdf_text_repairs_observed_glued_infringement_heading() -> None:
+    sections = split_sections(
+        normalize_pdf_text(
+            "Fact The car failed the test.\n"
+            "InfringementBreach of Article 3.15.17.\n"
+            "Decision Disqualification.\n"
+            "Reason The vehicle did not comply."
+        )
+    )
+
+    assert sections["infringement_text"] == "Breach of Article 3.15.17."
+
+
 def test_split_sections_does_not_treat_lowercase_prose_as_a_heading() -> None:
     sections = split_sections(
         "Fact A petition was submitted.\n"

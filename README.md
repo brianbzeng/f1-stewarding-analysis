@@ -144,12 +144,13 @@ avoids downloading summonses, classifications, notes, and circuit maps before th
 ## Project status
 
 The full 2018-2025 event inventory is complete. All 173 cataloged events have official FIA evidence:
-9,462 source-document records, including 1,680 records classified as steward decisions and 45
-unavailable recalled notices. The frozen Parquet manifest and DuckDB lineage agree exactly, every
-event has at least 10 records, and the active event-discovery failure queue is empty. The collector
-supports both the FIA's 2018 event-timing pages and its later decision-document archive, with named
-URL overrides for migration-era gaps and historical event labels. The next milestone is bounded
-evidence retrieval, parsing, and corpus-level validation before statistical analysis begins.
+9,462 source-document records, including 2,002 outcome labels and 45 recalled notices across all
+document classes. Nineteen recalls are outcome records: 15 link to verified corrected successors
+and four unavailable Belgian versions remain explicit exclusions. All 1,983 live outcome PDFs are
+retrieved and parsed with parser v4, yielding 1,951 content-confirmed steward decisions and zero
+active discovery or retrieval failures. The frozen Parquet manifest and DuckDB lineage agree
+exactly. The next milestone is full-corpus analytical eligibility and adjudication coding before
+statistical modeling.
 
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active
