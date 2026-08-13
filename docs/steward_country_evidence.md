@@ -47,12 +47,12 @@ but cannot by themselves satisfy the final direct-code control.
 
 | Diagnostic | Result |
 |---|---:|
-| Official-source evidence records | 45 |
+| Official-source evidence records | 53 |
 | Panel steward identities | 83 |
-| Stewards with any evidence | 38 |
+| Stewards with any evidence | 46 |
 | Stewards with direct FIA/F1 code evidence | 33 |
-| Stewards with one observed normalized code | 37 |
-| Stewards with no evidence yet | 45 |
+| Stewards with one observed normalized code | 45 |
+| Stewards with no evidence yet | 37 |
 | Unresolved source conflicts | 1 |
 
 This is research progress, not an analytical result. Coverage is deliberately counted at identity
