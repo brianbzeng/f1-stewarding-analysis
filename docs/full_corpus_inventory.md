@@ -54,6 +54,12 @@ decisions: five permissions to start after failing to set a qualifying time, one
 start Sprint Qualifying, and one force-majeure withdrawal approval. They are retained as valid
 decisions but do not enter incident-penalty comparisons without later eligibility coding.
 
+All 225 decision-labelled 2022 files are genuine steward decisions, with 220 (97.8%) using the
+standard labeled sections. The five narrative-format records comprise three permissions to start,
+one withdrawal approval, and one extension to the power-unit cover period caused by delayed FIA
+personnel availability. As in 2021, these administrative decisions remain auditable but are not
+eligible for incident-penalty comparisons without later coding.
+
 ## Archive systems
 
 - For 2019-2025, the collector uses the FIA decision-document archive and its published timestamps.
@@ -87,7 +93,7 @@ The configuration, rather than hidden scraper branches, is the audit trail for t
 At the 2026-08-12 checkpoint, all 173 events were covered; Parquet and DuckDB each contained 9,462
 unique source-document IDs; no catalog event was missing evidence; and the active discovery-failure
 queue contained zero rows. Bounded decision retrieval and content typing were complete through the
-2021 season, with no active retrieval failures.
+2022 season, with no active retrieval failures.
 
 ## Interpretation boundary
 
