@@ -10,7 +10,9 @@ from pypdf import PdfReader
 from f1stewards.models import DecisionSections, DocumentClass
 
 SECTION_RE = re.compile(
-    r"(?im)^\s*(FACT|OFFENCE|INFRINGEMENT|DECISION|REASON(?:S)?)\b[ \t]*(?:[:\-][ \t]*)?"
+    r"(?m)^\s*(FACT|Fact|OFFENCE|Offence|INFRINGEMENT|Infringement|"
+    r"INFRINGMENT|Infringment|DECISION|Decision|REASON(?:S)?|Reason(?:s)?)\b"
+    r"[ \t]*(?:[:\-][ \t]*)?"
 )
 FOOTER_RE = re.compile(
     r"(?im)^\s*(?:Competitors are reminded|Decisions of the Stewards are taken independently|"
@@ -20,6 +22,7 @@ SECTION_FIELDS = {
     "FACT": "fact_text",
     "OFFENCE": "infringement_text",
     "INFRINGEMENT": "infringement_text",
+    "INFRINGMENT": "infringement_text",
     "DECISION": "decision_text",
     "REASON": "reason_text",
     "REASONS": "reason_text",

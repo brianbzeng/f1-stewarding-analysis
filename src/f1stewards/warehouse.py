@@ -286,7 +286,7 @@ def upsert_document_text(
     connection: duckdb.DuckDBPyConnection,
     sections: list[DecisionSections],
     *,
-    parser_version: str = "decision-sections-v2",
+    parser_version: str = "decision-sections-v3",
 ) -> None:
     if not sections:
         return

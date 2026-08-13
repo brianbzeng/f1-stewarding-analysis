@@ -60,6 +60,15 @@ one withdrawal approval, and one extension to the power-unit cover period caused
 personnel availability. As in 2021, these administrative decisions remain auditable but are not
 eligible for incident-penalty comparisons without later coding.
 
+All 217 decision-labelled 2023 files are genuine steward decisions. Of these, 205 (94.5%) expose
+the full labeled template and 12 use narrative formats: nine permissions to start, one Sprint
+withdrawal, the mandatory Sainz replacement-component penalty after Las Vegas drain-cover damage,
+and Alonso's successful Saudi Arabian Right of Review reversing a 10-second penalty. The latter two
+remain visible for later institutional-constraint and reversal analyses rather than being grouped
+with routine incident penalties. Forty-seven standard documents reproduce the FIA heading typo
+`Infringment`; parser v3 recognizes that exact observed spelling while rejecting lowercase prose
+fragments that previously resembled headings.
+
 ## Archive systems
 
 - For 2019-2025, the collector uses the FIA decision-document archive and its published timestamps.
@@ -93,7 +102,7 @@ The configuration, rather than hidden scraper branches, is the audit trail for t
 At the 2026-08-12 checkpoint, all 173 events were covered; Parquet and DuckDB each contained 9,462
 unique source-document IDs; no catalog event was missing evidence; and the active discovery-failure
 queue contained zero rows. Bounded decision retrieval and content typing were complete through the
-2022 season, with no active retrieval failures.
+2023 season, with no active retrieval failures.
 
 ## Interpretation boundary
 

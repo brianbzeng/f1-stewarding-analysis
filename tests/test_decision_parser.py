@@ -54,6 +54,29 @@ Competitors are reminded that appeal rights may apply.
     assert sections["reason_text"] == "The applicable requirements were fulfilled."
 
 
+def test_split_sections_handles_observed_fia_infringment_typo() -> None:
+    sections = split_sections(
+        "Fact Pit lane speeding.\n"
+        "Infringment Breach of Article 34.7.\n"
+        "Decision The competitor is fined.\n"
+        "Reason The speed limit was exceeded."
+    )
+
+    assert sections["infringement_text"] == "Breach of Article 34.7."
+
+
+def test_split_sections_does_not_treat_lowercase_prose_as_a_heading() -> None:
+    sections = split_sections(
+        "Fact A petition was submitted.\n"
+        "Decision The original penalty is reversed.\n"
+        "Reason New evidence was presented.\n"
+        "decision, in particular the video evidence, called the original basis into question."
+    )
+
+    assert sections["decision_text"] == "The original penalty is reversed."
+    assert "New evidence" in sections["reason_text"]
+
+
 def test_parse_header_fields_uses_incident_time_after_document_time() -> None:
     fields = parse_header_fields(
         """
