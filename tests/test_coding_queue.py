@@ -181,6 +181,7 @@ def test_full_corpus_queues_preserve_versions_and_only_seed_live_decisions() -> 
     )
 
     primary = candidates.set_index("document_id").loc["primary"]
+    assert primary["driver_number_basis_suggestion"] == "parsed_decision_heading"
     assert primary["participant_driver_numbers_suggestion"] == "27|4|81"
     assert primary["affected_driver_numbers_suggestion"] == "4|81"
     assert bool(primary["multi_party_suggestion"])
@@ -192,6 +193,30 @@ def test_full_corpus_queues_preserve_versions_and_only_seed_live_decisions() -> 
     assert qa["qa_stratum_size"].tolist() == [1]
     assert qa["qa_selection_rank"].tolist() == [1]
     assert qa["qa_disposition"].eq("").all()
+
+
+def test_official_title_driver_number_is_a_traceable_fallback() -> None:
+    population = pd.DataFrame(
+        [
+            outcome_row(
+                "title-driver",
+                title="Doc 47 - Infringement - Car 81 - Causing a collision",
+                driver_number=None,
+                driver_name=None,
+            )
+        ]
+    )
+    _, candidates = build_full_corpus_coding_queues(
+        population, load_full_corpus_coding_settings()
+    )
+
+    candidate = candidates.iloc[0]
+    assert candidate["driver_number_suggestion"] == 81
+    assert (
+        candidate["driver_number_basis_suggestion"]
+        == "official_title_first_car_reference"
+    )
+    assert candidate["candidate_action_suggestion"] == "review_primary_adjudication"
 
 
 def test_seed_bundle_is_deterministic_protected_and_auditable(tmp_path: Path) -> None:

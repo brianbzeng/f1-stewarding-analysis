@@ -81,6 +81,7 @@ ADJUDICATION_SEED_COLUMNS = [
     "version_state_suggestion",
     "parser_review_required",
     "driver_number_suggestion",
+    "driver_number_basis_suggestion",
     "driver_name_suggestion",
     "participant_driver_numbers_suggestion",
     "affected_driver_numbers_suggestion",
@@ -455,6 +456,18 @@ def _extract_driver_numbers(row: pd.Series) -> list[int]:
     return numbers
 
 
+def _accused_driver_suggestion(row: pd.Series) -> tuple[int | str, str]:
+    """Prefer the parsed subject, then an explicit first Car number in the FIA title."""
+
+    driver_number = row.get("driver_number")
+    if not _missing(driver_number):
+        return int(driver_number), "parsed_decision_heading"
+    title_match = re.search(r"\bcar\s*(\d{1,2})\b", _text(row.get("title")), re.IGNORECASE)
+    if title_match:
+        return int(title_match.group(1)), "official_title_first_car_reference"
+    return "", "unavailable"
+
+
 def _numbers(pattern: str, text: str) -> list[int]:
     values: list[int] = []
     for match in re.finditer(pattern, text, flags=re.IGNORECASE):
@@ -633,7 +646,7 @@ def build_full_corpus_coding_queues(
         if not effective_version:
             continue
         participants = _extract_driver_numbers(row)
-        accused = "" if _missing(row.get("driver_number")) else int(row["driver_number"])
+        accused, accused_basis = _accused_driver_suggestion(row)
         affected = [number for number in participants if number != accused]
         source_text = " ".join(
             _text(row.get(field)) for field in ("fact_text", "infringement_text", "reason_text")
@@ -657,6 +670,7 @@ def build_full_corpus_coding_queues(
             "version_state_suggestion": version_state,
             "parser_review_required": parser_review_required,
             "driver_number_suggestion": accused,
+            "driver_number_basis_suggestion": accused_basis,
             "driver_name_suggestion": _one_line(row.get("driver_name")),
             "participant_driver_numbers_suggestion": _number_text(participants),
             "affected_driver_numbers_suggestion": _number_text(affected),
@@ -679,7 +693,7 @@ def build_full_corpus_coding_queues(
             "eligibility_suggestion": eligibility,
             "eligibility_basis": eligibility_basis,
             "candidate_action_suggestion": _candidate_action(
-                eligibility, parser_review_required, row.get("driver_number")
+                eligibility, parser_review_required, accused
             ),
             "fact_text": _one_line(row.get("fact_text")),
             "infringement_text": _one_line(row.get("infringement_text")),

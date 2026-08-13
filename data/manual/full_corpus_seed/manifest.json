@@ -1,9 +1,9 @@
 {
   "candidate_action_counts": {
-    "manual_scope_review": 254,
-    "manual_split_or_scope_review": 302,
-    "review_exclusion": 1071,
-    "review_primary_adjudication": 258,
+    "manual_scope_review": 271,
+    "manual_split_or_scope_review": 224,
+    "review_exclusion": 1131,
+    "review_primary_adjudication": 259,
     "review_secondary_adjudication": 66
   },
   "eligibility_suggestion_counts": {
@@ -28,7 +28,7 @@
   "outputs": {
     "adjudication_seed_queue.csv": {
       "row_count": 1951,
-      "sha256": "9eed0c5c0d0bcdff635a4a69dfabd7e668b512f3c621c5058b384b87f788a7e8"
+      "sha256": "46ccd632c40e9dd50acf32dcc7014f42b352468ebe324e575da4038e7af7ed14"
     },
     "document_review_queue.csv": {
       "row_count": 2002,
@@ -39,8 +39,8 @@
       "sha256": "e1d5f36931ee95905e2cd220b9ca0d350c90c187193f71e8bdabd2abfd2afccd"
     }
   },
-  "schema_version": "full_corpus_coding_v1",
-  "settings_sha256": "02bb86885b523eb48741af6113d1ccedd4f7113aae7590990eba8bb1a5065e44",
+  "schema_version": "full_corpus_coding_v2",
+  "settings_sha256": "5c55d57dd9ac322550e9daeff4c3c8a41b5534a9cd9c310f90fb3671df132760",
   "source_counts": {
     "archive_outcome_labels": 2002,
     "content_confirmed_decisions": 1951,

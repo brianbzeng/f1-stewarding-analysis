@@ -26,6 +26,15 @@ f1stewards build-full-coding-queues
 f1stewards audit-full-coding-queues
 ```
 
+Build the timing-enriched, content-addressed human worklists after the protected seed audit passes:
+
+```powershell
+f1stewards build-full-coding-workspace
+```
+
+The current starter, protection rules, split procedure, and timing limitations are recorded in
+[the full-corpus coding workspace](full_corpus_coding_workspace.md).
+
 The builder refuses to replace a differing bundle unless `--overwrite` is explicitly supplied. Use
 that option only after an intentional warehouse or rule change. The audit reconstructs all four
 files from DuckDB and fails if any byte differs.
@@ -86,8 +95,8 @@ exclusion, with every matched family retained for audit.
 
 ## Review sequence
 
-1. Copy the protected seed files into a dated or content-addressed working directory. Never edit the
-   seed release in place.
+1. Generate the content-addressed workspace with `build-full-coding-workspace`. Never edit the seed
+   release in place.
 2. Resolve the 19 recalled outcomes and 32 content mismatches first. Preserve linked predecessors
    even when they are excluded from the effective analytical version.
 3. Review every `primary_candidate`, `secondary_candidate`, `manual_offence_review`, and
@@ -104,6 +113,10 @@ exclusion, with every matched family retained for audit.
    studies. Record disagreement rather than silently overwriting the first code.
 8. Publish an attrition table from 2,002 labels to final adjudications, with a count and reason for
    every exclusion stage.
+
+If a parsed driver heading is unavailable, schema v2 may suggest the first explicit `Car N`
+reference in the official title. `driver_number_basis_suggestion` distinguishes that fallback from
+a parsed heading or an unavailable number; all three remain reviewable suggestions.
 
 The frozen rules select 403 of the 1,305 out-of-scope suggestions across all 223 observed
 season/session/family strata. Selection uses a documented SHA-256 ordering, a 10% target, at least

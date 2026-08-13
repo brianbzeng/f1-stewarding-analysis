@@ -29,6 +29,12 @@ from f1stewards.coding_queue import (
     load_outcome_document_population,
     write_full_corpus_seed_bundle,
 )
+from f1stewards.coding_workspace import (
+    audit_full_corpus_coding_workspace,
+    load_timing_review_context,
+    validate_edited_full_corpus_coding_workspace,
+    write_full_corpus_coding_workspace,
+)
 from f1stewards.config import (
     PROJECT_ROOT,
     load_analysis_thresholds,
@@ -1033,6 +1039,87 @@ def audit_full_coding_queues(
         output_directory,
         settings,
         settings_path,
+    )
+    typer.echo(audit.to_string(index=False))
+    if not audit["status"].eq("pass").all():
+        raise typer.Exit(code=1)
+
+
+@app.command("build-full-coding-workspace")
+def build_full_coding_workspace_command(
+    seed_directory: Annotated[
+        Path, typer.Option(help="Protected full-corpus seed-bundle directory.")
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_seed",
+    output_root: Annotated[
+        Path, typer.Option(help="Parent for content-addressed coding workspaces.")
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_workspaces",
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Build a source-protected review workspace with full-study timing context."""
+
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        session_context, driver_context = load_timing_review_context(connection)
+    output_directory, manifest, created = write_full_corpus_coding_workspace(
+        seed_directory,
+        output_root,
+        session_context,
+        driver_context,
+    )
+    action = "Created" if created else "Verified existing"
+    typer.echo(
+        f"{action} workspace {manifest['workspace_id']} at {output_directory}; "
+        f"{manifest['outputs']['document_review_worklist.csv']['row_count']} documents, "
+        f"{manifest['outputs']['adjudication_coding_worklist.csv']['row_count']} "
+        "adjudication starters, "
+        f"{manifest['outputs']['exclusion_qa_worklist.csv']['row_count']} QA rows; "
+        f"timing sessions={manifest['timing_context_counts']['sessions']}"
+    )
+
+
+@app.command("audit-full-coding-workspace")
+def audit_full_coding_workspace_command(
+    workspace_directory: Annotated[
+        Path, typer.Argument(help="Unedited content-addressed workspace starter to audit.")
+    ],
+    seed_directory: Annotated[
+        Path, typer.Option(help="Protected full-corpus seed-bundle directory.")
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_seed",
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Verify an unedited coding workspace against its seed and timing context."""
+
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        session_context, driver_context = load_timing_review_context(connection)
+    audit = audit_full_corpus_coding_workspace(
+        seed_directory,
+        workspace_directory,
+        session_context,
+        driver_context,
+    )
+    typer.echo(audit.to_string(index=False))
+    if not audit["status"].eq("pass").all():
+        raise typer.Exit(code=1)
+
+
+@app.command("validate-edited-full-coding-workspace")
+def validate_edited_full_coding_workspace_command(
+    workspace_directory: Annotated[
+        Path, typer.Argument(help="Edited content-addressed workspace to validate.")
+    ],
+    seed_directory: Annotated[
+        Path, typer.Option(help="Protected full-corpus seed-bundle directory.")
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_seed",
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Permit final-field edits and supported splits while protecting source lineage."""
+
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        session_context, driver_context = load_timing_review_context(connection)
+    audit = validate_edited_full_corpus_coding_workspace(
+        seed_directory,
+        workspace_directory,
+        session_context,
+        driver_context,
     )
     typer.echo(audit.to_string(index=False))
     if not audit["status"].eq("pass").all():

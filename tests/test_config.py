@@ -81,7 +81,7 @@ def test_full_collection_settings_cover_completed_study_seasons() -> None:
 def test_full_corpus_coding_settings_match_frozen_primary_scope() -> None:
     settings = load_full_corpus_coding_settings()
 
-    assert settings["schema_version"] == "full_corpus_coding_v1"
+    assert settings["schema_version"] == "full_corpus_coding_v2"
     assert settings["primary_sessions"] == ["Race", "Sprint"]
     assert set(settings["primary_incident_patterns"]) == {
         "causing_collision",

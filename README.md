@@ -172,6 +172,13 @@ Strict completeness and 35 warehouse controls pass. All laps remain available fo
 while 162,383 satisfy the conservative pace-model gate. Timestamp, normalization, and known
 historical source gaps remain explicit rather than imputed.
 
+The content-addressed [full-corpus coding workspace](docs/full_corpus_coding_workspace.md) now joins
+all 1,951 adjudication starters to protected source lineage and the complete timing-quality context.
+All 260 primary candidates resolve to a loaded Race/Sprint session and accused-driver
+classification. Exact-starter and edited-workspace validators separately protect reproducibility
+while permitting final fields and traceable one-to-many adjudication splits. Human disposition and
+independent review remain required before substantive modeling.
+
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active
 retrieval failures. Of 26 linked steward-decision PDFs, 25 yielded a complete Decision section and
