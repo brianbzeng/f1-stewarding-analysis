@@ -70,19 +70,21 @@ one-to-many adjudication splits still use the controlled CSV duplication procedu
 
 ## Machine-assisted first pass
 
-The deterministic `first-pass-29113bebd312` release is generated into a separate ignored workspace:
+The deterministic `first-pass-5aa88d7f05b2` release is generated into a separate ignored workspace:
 
 ```powershell
 f1stewards build-full-corpus-first-pass `
   data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4
 ```
 
-It prepopulates 1,696 document rows and 1,649 adjudication rows with
-`single_coded_pending_human`. It does not touch 208 parser-review documents, 18 family-conflict
-documents, any manual eligibility path, 224 multi-decision/format-review adjudications, 61 manual
-scope adjudications, 18 family-conflict adjudications, or any of the 486 exclusion-QA judgments.
-All protected fields remain byte-equivalent to the starter and all 19 edited-workspace controls
-pass. See [the first-pass release record](full_corpus_first_pass.md) for its field rules and hashes.
+It prepopulates 1,903 document rows and 1,856 adjudication rows with
+`single_coded_pending_human`. Among them are 207 parser-warning rows whose protected eligibility is
+already out of scope; the release records those only as pending-human exclusions. It never
+prefills a parser-warning inclusion, a family conflict, a manual eligibility path, or any of the
+486 exclusion-QA judgments. The remaining exceptions are 100 documents and 96 adjudications,
+including 17 genuinely in-scope or ambiguous parser/multi-decision sources. All protected fields
+remain byte-equivalent to the starter and all 19 edited-workspace controls pass. See
+[the first-pass release record](full_corpus_first_pass.md) for its field rules and hashes.
 
 ## Worklists and editing boundary
 

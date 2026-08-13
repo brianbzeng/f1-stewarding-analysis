@@ -109,8 +109,9 @@ exclusion, with every matched family retained for audit.
 
 1. Generate the content-addressed workspace with `build-full-coding-workspace`. Never edit the seed
    release in place.
-2. Generate the conservative first pass in a separate directory. It may prefill only parser-clean,
-   conflict-free deterministic paths and must use `single_coded_pending_human`.
+2. Generate the conservative first pass in a separate directory. It may prefill parser-clean,
+   conflict-free deterministic paths and clearly out-of-scope parser-warning exclusions, but never
+   a parser-warning inclusion. Every prefill must use `single_coded_pending_human`.
 3. Resolve the 19 recalled outcomes and 32 content mismatches first. Preserve linked predecessors
    even when they are excluded from the effective analytical version.
 4. Review every `primary_candidate`, `secondary_candidate`, `manual_offence_review`, and

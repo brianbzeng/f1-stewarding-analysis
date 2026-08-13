@@ -1533,7 +1533,9 @@ def nationality_overlap_audit_command(
             """
             SELECT *
             FROM analysis.v_latest_adjudication_features
-            WHERE feature_label_status <> 'incomplete_human_coding'
+            WHERE feature_label_status IN (
+                'provisional_machine_suggestion', 'incomplete_human_coding'
+            )
             ORDER BY adjudication_instance_id
             """
         ).df()
@@ -1575,7 +1577,9 @@ def nationality_power_audit_command(
             """
             SELECT * EXCLUDE (sanction_outcome)
             FROM analysis.v_latest_adjudication_features
-            WHERE feature_label_status <> 'incomplete_human_coding'
+            WHERE feature_label_status IN (
+                'provisional_machine_suggestion', 'incomplete_human_coding'
+            )
             ORDER BY adjudication_instance_id
             """
         ).df()

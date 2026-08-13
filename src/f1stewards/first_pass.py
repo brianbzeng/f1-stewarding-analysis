@@ -23,7 +23,7 @@ from f1stewards.coding_workspace import (
 )
 from f1stewards.review_explorer import workspace_input_sha256
 
-FIRST_PASS_SCHEMA_VERSION = "full-corpus-machine-assisted-first-pass-v2"
+FIRST_PASS_SCHEMA_VERSION = "full-corpus-machine-assisted-first-pass-v3"
 FIRST_PASS_MANIFEST_FILENAME = "first_pass_manifest.json"
 FIRST_PASS_AUDIT_FILENAME = "first_pass_audit.csv"
 DEFAULT_CODER_ID = "codex_assisted_prefill_v1"
@@ -40,6 +40,7 @@ SAFE_ADJUDICATION_ACTIONS = {
     "review_secondary_adjudication",
     "review_exclusion",
 }
+SAFE_PARSER_EXCLUSION_ELIGIBILITY = {"out_of_scope_suggestion"}
 VERSION_STATUS_MAP = {
     "live_standalone": "effective",
     "corrected_successor": "effective",
@@ -98,7 +99,8 @@ def _document_prefill(row: pd.Series, coder_id: str) -> tuple[dict[str, str] | N
     eligibility = str(row.get("eligibility_suggestion", ""))
     if eligibility not in SAFE_DOCUMENT_ELIGIBILITY:
         return None, f"manual eligibility path: {eligibility or 'blank'}"
-    if _is_true(row.get("parser_review_required", "")):
+    parser_review = _is_true(row.get("parser_review_required", ""))
+    if parser_review and eligibility not in SAFE_PARSER_EXCLUSION_ELIGIBILITY:
         return None, "parser review required"
     if _is_true(row.get("family_conflict_suggestion", "")):
         return None, "cross-family conflict requires source review"
@@ -123,6 +125,8 @@ def _document_prefill(row: pd.Series, coder_id: str) -> tuple[dict[str, str] | N
             "independent official-source review required."
         ),
     }
+    if parser_review:
+        return values, f"safe deterministic exclusion with parser warning: {eligibility}"
     return values, f"safe deterministic path: {eligibility}"
 
 
@@ -198,13 +202,16 @@ def _adjudication_exclusion_reason(row: pd.Series) -> str:
     return "outside_frozen_primary_secondary_scope"
 
 
-def _adjudication_prefill(
-    row: pd.Series, coder_id: str
-) -> tuple[dict[str, str] | None, str]:
+def _adjudication_prefill(row: pd.Series, coder_id: str) -> tuple[dict[str, str] | None, str]:
     action = str(row.get("candidate_action_suggestion", ""))
+    parser_review = _is_true(row.get("parser_review_required", ""))
+    eligibility = str(row.get("eligibility_suggestion", ""))
+    safe_parser_exclusion = parser_review and eligibility in SAFE_PARSER_EXCLUSION_ELIGIBILITY
+    if safe_parser_exclusion:
+        action = "review_exclusion"
     if action not in SAFE_ADJUDICATION_ACTIONS:
         return None, f"manual adjudication path: {action or 'blank'}"
-    if _is_true(row.get("parser_review_required", "")):
+    if parser_review and not safe_parser_exclusion:
         return None, "parser review required"
     if _is_true(row.get("family_conflict_suggestion", "")):
         return None, "cross-family conflict requires source review"
@@ -215,16 +222,12 @@ def _adjudication_prefill(
     secondary = action == "review_secondary_adjudication"
     include = primary or secondary
     instance_id = str(row["adjudication_instance_id"])
-    fault_language = explicit_fault_language(
-        row.get("reason_text", ""), secondary=secondary
-    )
+    fault_language = explicit_fault_language(row.get("reason_text", ""), secondary=secondary)
     values = {
         "adjudication_id_final": _stable_id("adj", instance_id) if include else "",
         "incident_id_final": _stable_id("incident-src", instance_id) if include else "",
         "accused_driver_number_final": str(row.get("driver_number_suggestion", "")),
-        "affected_driver_numbers_final": str(
-            row.get("affected_driver_numbers_suggestion", "")
-        ),
+        "affected_driver_numbers_final": str(row.get("affected_driver_numbers_suggestion", "")),
         "session_type_final": str(row.get("session_type_suggestion", "")),
         "lap_number_final": _single_number(row.get("lap_numbers_suggestion", "")),
         "location_final": _location(row.get("turn_numbers_suggestion", "")),
@@ -241,11 +244,7 @@ def _adjudication_prefill(
         "review_status": "single_coded_pending_human",
         "coding_notes": (
             "Machine-assisted deterministic first pass from protected parsed FIA evidence. "
-            + (
-                "Incident ID is source-unique pending cross-document grouping. "
-                if include
-                else ""
-            )
+            + ("Incident ID is source-unique pending cross-document grouping. " if include else "")
             + (
                 "Explicit fault language was not safely extractable. "
                 if primary and not fault_language
@@ -254,6 +253,8 @@ def _adjudication_prefill(
             + "Independent official-source review required."
         ),
     }
+    if safe_parser_exclusion:
+        return values, f"safe deterministic exclusion with parser warning: {eligibility}"
     return values, f"safe deterministic path: {action}"
 
 
@@ -360,9 +361,7 @@ def _workspace_digest(payloads: dict[str, bytes]) -> str:
         WORKSPACE_ADJUDICATION_FILENAME,
         WORKSPACE_EXCLUSION_QA_FILENAME,
     ]
-    return _sha256(
-        b"\n".join(name.encode("utf-8") + b":" + payloads[name] for name in names)
-    )
+    return _sha256(b"\n".join(name.encode("utf-8") + b":" + payloads[name] for name in names))
 
 
 def build_first_pass_payloads(
@@ -386,6 +385,25 @@ def build_first_pass_payloads(
         coder_id=coder_id,
     )
     document_output, adjudication_output, qa_output, audit, summary = frames
+    parser_warning_inclusions = {
+        "documents": int(
+            (
+                document_output["parser_review_required"].astype(str).str.casefold().eq("true")
+                & document_output["eligibility_final"].eq("include")
+            ).sum()
+        ),
+        "adjudications": int(
+            (
+                adjudication_output["parser_review_required"].astype(str).str.casefold().eq("true")
+                & (
+                    adjudication_output["include_primary_final"].eq("true")
+                    | adjudication_output["include_secondary_final"].eq("true")
+                )
+            ).sum()
+        ),
+    }
+    if any(parser_warning_inclusions.values()):
+        raise ValueError("Parser-warning inclusions cannot be prefilled")
     payloads = {
         WORKSPACE_MANIFEST_FILENAME: manifest_path.read_bytes(),
         WORKSPACE_DOCUMENT_FILENAME: _csv_bytes(document_output),
@@ -395,17 +413,20 @@ def build_first_pass_payloads(
     }
     source_digest = workspace_input_sha256(workspace_directory)
     output_digest = _workspace_digest(payloads)
-    first_pass_id = "first-pass-" + _sha256(
-        (
-            FIRST_PASS_SCHEMA_VERSION
-            + "\n"
-            + source_digest
-            + "\n"
-            + output_digest
-            + "\n"
-            + coder_id
-        ).encode("utf-8")
-    )[:12]
+    first_pass_id = (
+        "first-pass-"
+        + _sha256(
+            (
+                FIRST_PASS_SCHEMA_VERSION
+                + "\n"
+                + source_digest
+                + "\n"
+                + output_digest
+                + "\n"
+                + coder_id
+            ).encode("utf-8")
+        )[:12]
+    )
     manifest = {
         "schema_version": FIRST_PASS_SCHEMA_VERSION,
         "first_pass_id": first_pass_id,
@@ -415,7 +436,19 @@ def build_first_pass_payloads(
         "output_workspace_sha256": output_digest,
         "summary": summary,
         "controls": {
-            "parser_review_rows_prefilled": 0,
+            "parser_warning_inclusion_rows_prefilled": parser_warning_inclusions,
+            "parser_warning_exclusion_rows_prefilled": {
+                queue: int(
+                    (
+                        audit["queue_name"].eq(queue)
+                        & audit["first_pass_action"].eq("prefilled")
+                        & audit["action_basis"].str.startswith(
+                            "safe deterministic exclusion with parser warning:"
+                        )
+                    ).sum()
+                )
+                for queue in ("documents", "adjudications")
+            },
             "family_conflict_rows_prefilled": 0,
             "exclusion_qa_rows_prefilled": 0,
             "incident_id_strategy": "source_unique_pending_cross_document_grouping",

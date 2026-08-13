@@ -101,15 +101,16 @@ adjudication, and stratified exclusion-QA target while preserving the blocked an
 Browser drafts export only editable final fields in a ledger locked to the current workspace hash;
 the apply command writes a separate workspace and reruns protected-lineage validation.
 
-The conservative [machine-assisted first pass](docs/full_corpus_first_pass.md) prepopulates 1,696
-parser-clean document dispositions and 1,649 conflict-free adjudication rows as
-`single_coded_pending_human`. It leaves 307 document exceptions, 303 adjudication exceptions, and
-all 486 exclusion-QA judgments unstarted. The generated
+The conservative [machine-assisted first pass](docs/full_corpus_first_pass.md) prepopulates 1,903
+document dispositions and 1,856 adjudication rows as `single_coded_pending_human`. This includes
+207 clearly out-of-scope parser-warning sources in each worklist, but never a parser-warning
+inclusion. It leaves 100 document exceptions, 96 adjudication exceptions, and all 486 exclusion-QA
+judgments unstarted. The generated
 [first-pass review console](explorer/full_corpus_first_pass_review.html) exposes those assignments
 without counting any as independent review.
 
 The content-addressed [exception investigation packet](docs/full_corpus_exception_packet.md)
-collapses the 1,096 unstarted queue rows to 712 unique FIA documents, eliminating 384 duplicate
+collapses the 682 unstarted queue rows to 582 unique FIA documents, eliminating 100 duplicate
 source reviews. It gives every investigation a root cause, priority, linked queue IDs, official URL,
 available Fact/Decision/Reason evidence, and review question. The QA console now carries the same
 linked decision evidence for all 486 sampled exclusions.
@@ -234,11 +235,12 @@ starters, and 486 frozen exclusion checks. It supports official-source inspectio
 local draft fields, filtered CSV export, and stale-safe ledger application without presenting any
 machine suggestion as a finding.
 
-The next controlled layer is `first-pass-29113bebd312`. It transfers only parser-clean,
-conflict-free deterministic paths into disclosed editable fields, preserves every protected source
-column, uses source-unique provisional incident IDs to avoid false grouping, and extracts written
-fault language only from explicit phrases. All 19 edited-workspace controls pass. The resulting
-feature build, `features-0dda4b045f28`, contains 295 `incomplete_human_coding` primary rows and one
+The next controlled layer is `first-pass-5aa88d7f05b2`. It transfers conflict-free deterministic
+paths and clearly out-of-scope parser-warning exclusions into disclosed editable fields, while
+never prefilling a parser-warning inclusion. It preserves every protected source column, uses
+source-unique provisional incident IDs to avoid false grouping, and extracts written fault language
+only from explicit phrases. All 19 edited-workspace controls pass. The resulting feature build,
+`features-9c870436c35e`, contains 295 `incomplete_human_coding` primary rows and one
 untouched provisional parser exception; reporting eligibility remains zero.
 
 The [gated analysis feature release](docs/analysis_feature_release.md) materializes one

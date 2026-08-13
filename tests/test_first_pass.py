@@ -66,6 +66,18 @@ def _write_workspace(parent: Path) -> Path:
                 "offence_family_suggestion": "qualifying_impeding",
                 "offence_family_group_suggestion": "secondary",
             },
+            {
+                "document_review_id": "doc-parser-exclusion",
+                "event_id": "2025-test",
+                "source_url": "https://www.fia.com/parser-exclusion.pdf",
+                "eligibility_suggestion": "out_of_scope_suggestion",
+                "parser_review_required": "True",
+                "family_conflict_suggestion": "False",
+                "version_state_suggestion": "live_standalone",
+                "session_scope_suggestion": "primary_race_sprint",
+                "offence_family_suggestion": "lap_time_or_delta_procedure",
+                "offence_family_group_suggestion": "excluded",
+            },
         ],
         [
             "document_review_id",
@@ -109,6 +121,20 @@ def _write_workspace(parent: Path) -> Path:
                 "candidate_action_suggestion": "manual_split_or_scope_review",
                 "parser_review_required": "True",
                 "family_conflict_suggestion": "False",
+            },
+            {
+                "adjudication_instance_id": "seed-parser-exclusion-01",
+                "event_id": "2025-test",
+                "source_url": "https://www.fia.com/parser-exclusion.pdf",
+                "candidate_action_suggestion": "manual_split_or_scope_review",
+                "parser_review_required": "True",
+                "family_conflict_suggestion": "False",
+                "eligibility_suggestion": "out_of_scope_suggestion",
+                "session_type_suggestion": "Race",
+                "session_scope_suggestion": "primary_race_sprint",
+                "offence_family_suggestion": "lap_time_or_delta_procedure",
+                "offence_family_group_suggestion": "excluded",
+                "outcome_family_suggestion": "other",
             },
         ],
         [
@@ -159,9 +185,7 @@ def _write_workspace(parent: Path) -> Path:
 def test_first_pass_prefills_safe_rows_and_preserves_exceptions(tmp_path: Path) -> None:
     workspace = _write_workspace(tmp_path)
 
-    output, manifest, created = write_first_pass_workspace(
-        workspace, tmp_path / "first-pass"
-    )
+    output, manifest, created = write_first_pass_workspace(workspace, tmp_path / "first-pass")
 
     documents = pd.read_csv(
         output / WORKSPACE_DOCUMENT_FILENAME, dtype=str, keep_default_na=False
@@ -169,26 +193,41 @@ def test_first_pass_prefills_safe_rows_and_preserves_exceptions(tmp_path: Path) 
     adjudications = pd.read_csv(
         output / WORKSPACE_ADJUDICATION_FILENAME, dtype=str, keep_default_na=False
     ).set_index("adjudication_instance_id")
-    qa = pd.read_csv(
-        output / WORKSPACE_EXCLUSION_QA_FILENAME, dtype=str, keep_default_na=False
-    )
+    qa = pd.read_csv(output / WORKSPACE_EXCLUSION_QA_FILENAME, dtype=str, keep_default_na=False)
     assert created
     assert documents.loc["doc-safe", "eligibility_final"] == "include"
     assert documents.loc["doc-safe", "review_status"] == "single_coded_pending_human"
     assert documents.loc["doc-conflict", "review_status"] == ""
+    assert documents.loc["doc-parser-exclusion", "eligibility_final"] == "exclude"
+    assert (
+        documents.loc["doc-parser-exclusion", "exclusion_reason_final"]
+        == "excluded_offence_family:lap_time_or_delta_procedure"
+    )
     assert adjudications.loc["seed-safe-01", "include_primary_final"] == "true"
     assert adjudications.loc["seed-safe-01", "incident_id_final"].startswith("incident-src-")
     assert adjudications.loc["seed-safe-01", "fault_language_final"] == "wholly_to_blame"
     assert adjudications.loc["seed-safe-01", "location_final"] == "Turns 3-4"
     assert adjudications.loc["seed-manual-01", "review_status"] == ""
+    assert adjudications.loc["seed-parser-exclusion-01", "include_primary_final"] == "false"
+    assert adjudications.loc["seed-parser-exclusion-01", "review_status"] == (
+        "single_coded_pending_human"
+    )
     assert qa.loc[0, "qa_disposition"] == ""
     assert manifest["summary"]["documents"] == {
-        "prefilled_rows": 1,
+        "prefilled_rows": 2,
         "unresolved_rows": 1,
     }
-    assert manifest["summary"]["adjudications"]["prefilled_rows"] == 1
+    assert manifest["summary"]["adjudications"]["prefilled_rows"] == 2
     assert manifest["summary"]["exclusion_qa"]["prefilled_rows"] == 0
     assert not manifest["controls"]["analytical_release_authorized"]
+    assert manifest["controls"]["parser_warning_inclusion_rows_prefilled"] == {
+        "documents": 0,
+        "adjudications": 0,
+    }
+    assert manifest["controls"]["parser_warning_exclusion_rows_prefilled"] == {
+        "documents": 1,
+        "adjudications": 1,
+    }
     assert (output / FIRST_PASS_AUDIT_FILENAME).exists()
     assert (output / FIRST_PASS_MANIFEST_FILENAME).exists()
 

@@ -10,8 +10,8 @@ f1stewards build-analysis-features `
   data/manual/full_corpus_first_pass/full-coding-e0192ecbd9e4
 ```
 
-The current content-addressed build is `features-0dda4b045f28`. It uses machine-assisted first pass
-`first-pass-29113bebd312` over workspace `full-coding-e0192ecbd9e4`, the sourced 43-driver
+The current content-addressed build is `features-9c870436c35e`. It uses machine-assisted first pass
+`first-pass-5aa88d7f05b2` over workspace `full-coding-e0192ecbd9e4`, the sourced 43-driver
 nationality registry, the controlled 28-label
 event-country crosswalk, all 3,938 Race/Sprint classifications, and the complete decision-document
 panel assignment register. The panel register contributes its own SHA-256 lineage field to the
@@ -77,8 +77,8 @@ parsed punishment.
 `analysis.feature_release_controls` records nine fail-fast checks. The current workspace passes
 all 19 lineage and editing controls, but correctly fails these substantive gates:
 
-- 0 of 2,003 document dispositions independently reviewed, despite 1,696 first-pass rows;
-- 0 of 1,952 adjudication seeds independently reviewed, despite 1,649 first-pass rows;
+- 0 of 2,003 document dispositions independently reviewed, despite 1,903 first-pass rows;
+- 0 of 1,952 adjudication seeds independently reviewed, despite 1,856 first-pass rows;
 - 0 of 486 frozen exclusion-QA rows independently reviewed; and
 - no final reviewed primary population yet exists.
 
