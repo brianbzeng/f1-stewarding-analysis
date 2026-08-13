@@ -1,6 +1,6 @@
 # Full-Study FastF1 Collection
 
-Status: resumable session-keyed pipeline implemented; full local enrichment in progress.
+Status: complete local enrichment; strict 197-session inventory and all warehouse controls pass.
 
 ## Purpose and authority
 
@@ -43,6 +43,22 @@ counts, timestamp-lineage counts, and any bounded error. Successful sessions are
 unless `--force` is explicit. A failed bulk run continues by default and exits nonzero after
 recording every attempted failure.
 
+## Completed population audit
+
+The completed local warehouse contains:
+
+- 197 of 197 expected sessions, comprising 173 Races and 24 Sprints;
+- 3,938 classifications;
+- 198,620 driver-lap timing rows;
+- 16,039 Race Control messages;
+- 198,620 incident-timing-eligible rows; and
+- 162,383 rows that satisfy the conservative pace-model eligibility contract.
+
+Every ingestion-ledger record is `succeeded`; no successful session has zero Race Control
+messages. `study-fastf1-inventory --strict` passes, as do all 35 queries in
+`sql/quality_checks.sql`. The 656 rows beyond official classified distance are intentionally
+retained as possible retirement or incident evidence and excluded from pace modeling.
+
 ## Absolute lap-time lineage
 
 Incident PDFs commonly report local clock time rather than a lap. The pipeline therefore preserves
@@ -73,6 +89,22 @@ basic timing, pit, position, and track-status fields, labels all rows
 This retains the 925 timing observations for incident reconstruction while excluding them from
 persistent-pace models until a separate parity study supports broader use.
 
+The completed population has three bounded timing limitations:
+
+- the 2018 Bahrain Race is missing one within-classified-distance timing row for Kimi Räikkönen;
+- the 2020 Austrian Race is missing 79 within-classified-distance rows across 20 drivers because
+  both FastF1's processed and underlying raw timing streams end before the official classified lap
+  totals; and
+- all 958 stored laps from the 2022 French Race retain relative session timing but lack an absolute
+  UTC timestamp because FastF1 could not load position telemetry and could not establish
+  `t0_date`.
+
+No values are imputed for these gaps. They remain queryable in
+`analysis.v_fastf1_driver_lap_coverage` and `analysis.v_fastf1_session_data_quality`. The other
+196 sessions have complete absolute lap-start timestamps. Timestamp lineage totals are 195,739
+direct FastF1 timestamps, 1,923 explicit `t0_date` derivations, and 958 unavailable absolute
+timestamps.
+
 Raw timing coverage and model eligibility are intentionally separate. The warehouse retains timed
 retirement or incident laps beyond a driver's official completed-lap count because those rows can
 document the event that ended the race. `analysis.v_fastf1_lap_eligibility` marks those rows as
@@ -97,3 +129,9 @@ The SQL suite now rejects:
 
 Completeness is enforced separately by `study-fastf1-inventory --strict`. This prevents a clean
 partial load from being mistaken for the completed 197-session enrichment population.
+
+FastF1's high-frequency telemetry cache is reproducible scratch data, not a project deliverable.
+It grew to 12.19 GiB during collection and was safely removed after normalized session writes were
+validated; a second 5.98 GiB cache was removed after final strict validation. The ignored normalized
+Parquet files and DuckDB warehouse remain the local analytical source, and the cache will be
+recreated automatically only when a session is explicitly re-fetched.

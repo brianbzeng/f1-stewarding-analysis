@@ -124,7 +124,7 @@ f1stewards study-inventory
 f1stewards build-full-coding-queues
 f1stewards audit-full-coding-queues
 f1stewards study-fastf1 --max-sessions 5
-f1stewards study-fastf1-inventory
+f1stewards study-fastf1-inventory --strict
 ```
 
 `build-study-catalog` freezes FastF1 schedules into stable event IDs and FIA archive targets;
@@ -166,9 +166,11 @@ season/session/family exclusion strata so proposed exclusions receive a reproduc
 audit. See [the full-corpus coding workflow](docs/full_corpus_coding_workflow.md).
 The [first exclusion-QA diagnostic](docs/exclusion_qa_audit.md) documents an actual 2021 session-
 terminology false-exclusion mechanism, the corrective regeneration, and the remaining human gate.
-The [full FastF1 collection method](docs/full_fastf1_collection.md) adds resumable, session-keyed
-Race/Sprint timing with explicit absolute-timestamp lineage; completeness remains a separate strict
-gate before timing-based analysis.
+The [full FastF1 collection method](docs/full_fastf1_collection.md) now covers all 197 expected
+Race/Sprint sessions: 3,938 classifications, 198,620 driver laps, and 16,039 Race Control messages.
+Strict completeness and 35 warehouse controls pass. All laps remain available for incident timing,
+while 162,383 satisfy the conservative pace-model gate. Timestamp, normalization, and known
+historical source gaps remain explicit rather than imputed.
 
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active
