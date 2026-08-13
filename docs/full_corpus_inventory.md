@@ -69,6 +69,14 @@ with routine incident penalties. Forty-seven standard documents reproduce the FI
 `Infringment`; parser v3 recognizes that exact observed spelling while rejecting lowercase prose
 fragments that previously resembled headings.
 
+The 2024 archive contains 251 decision labels, of which five are recalled records without live PDF
+links. All 246 retrievable files are genuine steward decisions: 239 (97.2%) use the full labeled
+template, six are narrative permissions to start, and one Austrian pit-lane-speeding PDF shifts its
+Fact, Infringement, Decision, and Reason semantics one label to the left. That malformed source is
+retained for explicit human realignment rather than silently rewritten. Four recalled Belgian
+pit-speeding notices have no visible successor. Mexico Doc 47 is visibly marked as the corrected
+successor to recalled Doc 43 and remains queued for explicit lineage linkage before analysis.
+
 ## Archive systems
 
 - For 2019-2025, the collector uses the FIA decision-document archive and its published timestamps.
@@ -102,7 +110,7 @@ The configuration, rather than hidden scraper branches, is the audit trail for t
 At the 2026-08-12 checkpoint, all 173 events were covered; Parquet and DuckDB each contained 9,462
 unique source-document IDs; no catalog event was missing evidence; and the active discovery-failure
 queue contained zero rows. Bounded decision retrieval and content typing were complete through the
-2023 season, with no active retrieval failures.
+2024 season, with no active retrieval failures.
 
 ## Interpretation boundary
 
