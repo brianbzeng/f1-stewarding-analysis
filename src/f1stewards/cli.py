@@ -1827,7 +1827,8 @@ def validate_impact(
             typer.echo(f"row {row_number + 2}: {exc}")
             raise typer.Exit(code=1) from exc
 
-    coded_ids = set(pd.read_csv(coding_path)["adjudication_id"])
+    coding = pd.read_csv(coding_path).set_index("adjudication_id")
+    coded_ids = set(coding.index)
     missing_adjudications = sorted(
         record.adjudication_id for record in records if record.adjudication_id not in coded_ids
     )
@@ -1837,6 +1838,9 @@ def validate_impact(
 
     mechanical = [record for record in records if record.impact_level == "mechanical"]
     with duckdb.connect(str(db_path), read_only=True) as connection:
+        event_seasons = dict(
+            connection.sql("SELECT event_id, season FROM metadata.events").fetchall()
+        )
         known_documents = {
             row[0]
             for row in connection.sql(
@@ -1868,6 +1872,8 @@ def validate_impact(
                 event_results,
                 record.driver_number,
                 record.penalty_seconds,
+                season=event_seasons[record.event_id],
+                session_type=str(coding.loc[record.adjudication_id, "session_type"]),
             )
             if (
                 calculated.official_finish_position != record.official_finish_position
@@ -1875,6 +1881,12 @@ def validate_impact(
                 != record.counterfactual_finish_position
                 or calculated.positions_gained_without_penalty
                 != record.positions_gained_without_penalty
+                or calculated.official_position_points != record.official_points
+                or calculated.counterfactual_position_points != record.counterfactual_points
+                or calculated.position_points_gained_without_penalty
+                != record.points_gained_without_penalty
+                or calculated.podium_changed != record.podium_changed
+                or calculated.win_changed != record.win_changed
             ):
                 typer.echo(f"mechanical impact mismatch: {record.impact_assessment_id}")
                 raise typer.Exit(code=1)

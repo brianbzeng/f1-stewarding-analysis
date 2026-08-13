@@ -198,6 +198,12 @@ assumed 5–20 point difference reaches the predefined 80% power target. This is
 not an effect estimate; absent material improvement after human coding, the nationality result will
 be reported as descriptive or inconclusive.
 
+Competitive-impact arithmetic now validates ordered same-lap classifications, preserves official
+order on exact ties, calculates standard Race/Sprint position points and podium/win changes, and
+separately classifies exact, saturated, or confounded grid displacement. The enhanced validator
+reproduces both reviewed mechanical pilot cases—including Pérez's P4-to-P2, 12-to-18-point change—
+without treating an in-race served penalty or a grid drop as a mechanical finish counterfactual.
+
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active
 retrieval failures. Of 26 linked steward-decision PDFs, 25 yielded a complete Decision section and

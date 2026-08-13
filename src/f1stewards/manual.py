@@ -457,11 +457,17 @@ class CrossEventSanctionEffect(BaseModel):
             raise ValueError("realized grid loss does not match qualifying and starting positions")
         if self.grid_effect_level == "mechanical" and self.realized_grid_places_lost < 0:
             raise ValueError("mechanical grid effects cannot report a position gain")
+        maximum_nominal_loss = min(
+            self.nominal_grid_places,
+            20 - self.qualifying_position,
+        )
         if (
             self.grid_effect_level == "mechanical"
-            and self.realized_grid_places_lost != self.nominal_grid_places
+            and self.realized_grid_places_lost != maximum_nominal_loss
         ):
-            raise ValueError("mechanical grid loss must equal the nominal sanction")
+            raise ValueError(
+                "mechanical grid loss must equal the nominal sanction after grid saturation"
+            )
         if self.race_status in {"finished", "classified_lapped"} and (
             self.official_finish_position is None
         ):

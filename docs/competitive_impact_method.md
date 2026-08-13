@@ -36,6 +36,27 @@ For a post-race-added time penalty:
 6. Recalculate standard finishing-position points; handle fastest-lap or other bonuses separately.
 
 This is deterministic classification arithmetic. It does not simulate a different on-track race.
+The implemented calculator first sorts the same-lap cohort by official finish, rejects duplicate
+cars or positions and non-monotonic gaps, and returns the exact cars passed. Optional season/session
+inputs add standard position points for 2018–2025 Races, 2021 Sprints, and 2022–2025 Sprints,
+plus podium and win changes. `points_scope` explicitly excludes fastest-lap bonuses, shortened-race
+awards, and other exceptional points; official source points remain controlling when those apply.
+
+## Grid penalties
+
+A grid penalty is evaluated at the event where it is applied, not at the origin race. The grid
+calculator stores qualifying position, official starting position, nominal places, realized signed
+displacement, and grid size. It distinguishes:
+
+- `mechanical_exact_nominal` when realized loss equals the stated sanction;
+- `mechanical_grid_saturation` when the back of the grid caps the possible loss;
+- `confounded_grid_reordering` when other penalties or grid changes prevent sole attribution; and
+- `confounded_position_gain` when the driver starts ahead of the qualifying position despite the
+  nominal sanction.
+
+All four statuses leave the finish effect `not_estimable_from_grid_displacement`. Starting three
+places farther back does not mechanically determine race position or points after strategy,
+weather, neutralization, contact, and reliability intervene.
 
 ## Victim-harm evidence tiers
 
@@ -125,7 +146,8 @@ rule or guideline.
 ## Pilot examples and release state
 
 - Sergio Perez, 2023 Abu Dhabi: removing a five-second post-race addition changes the calculated
-  classification from P4 to P2 and standard finishing points from 12 to 18.
+  classification from P4 to P2, standard position points from 12 to 18, and podium status from no
+  to yes. The validator now reproduces all three consequences from the same official-order input.
 - Franco Colapinto, 2025 Austria: removing five seconds leaves the calculated classification at P15.
 - Yuki Tsunoda, 2025 Austria: the ten-second penalty was served during the race, so no mechanical
   finishing-position counterfactual is reported.

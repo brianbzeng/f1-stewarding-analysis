@@ -241,6 +241,39 @@ def test_cross_event_grid_effect_requires_exact_position_arithmetic() -> None:
         CrossEventSanctionEffect.model_validate(payload)
 
 
+def test_cross_event_mechanical_grid_effect_allows_back_of_grid_saturation() -> None:
+    payload = {
+        "cross_event_effect_id": "cross-event-saturation",
+        "adjudication_id": "adj-test",
+        "origin_event_id": "2025-aut",
+        "application_event_id": "2025-gbr",
+        "source_document_id": "fia-test",
+        "driver_number": 12,
+        "sanction_type": "grid_penalty",
+        "nominal_grid_places": 3,
+        "qualifying_position": 19,
+        "starting_grid_position": 20,
+        "realized_grid_places_lost": 1,
+        "grid_effect_level": "mechanical",
+        "official_finish_position": None,
+        "race_status": "retired",
+        "official_points": 0,
+        "finish_effect_level": "not_estimable",
+        "counterfactual_finish_position": None,
+        "counterfactual_points": None,
+        "application_grid_url": "https://www.fia.com/grid.pdf",
+        "application_classification_url": "https://www.fia.com/classification.pdf",
+        "evidence_urls": "https://www.fia.com/test.pdf",
+        "calculation_method": "Back-of-grid saturation arithmetic.",
+        "assumptions": "Finish not estimated.",
+        "review_status": "single_coded_pending_human",
+    }
+
+    record = CrossEventSanctionEffect.model_validate(payload)
+
+    assert record.realized_grid_places_lost == 1
+
+
 def review_payload() -> dict:
     return {
         "review_id": "review-adj-test",
