@@ -17,6 +17,11 @@ from f1stewards.coding_workspace import (
     WORKSPACE_MANIFEST_FILENAME,
 )
 from f1stewards.first_pass import FIRST_PASS_AUDIT_FILENAME, FIRST_PASS_MANIFEST_FILENAME
+from f1stewards.review_explorer import (
+    REVIEW_CHAIN_MANIFEST_FILENAME,
+    REVIEW_CHAIN_SCHEMA_VERSION,
+    workspace_input_sha256,
+)
 
 EXCEPTION_PACKET_SCHEMA_VERSION = "full-corpus-exception-packet-v1"
 INVESTIGATION_FILENAME = "investigation_queue.csv"
@@ -52,6 +57,45 @@ def _verify_first_pass_file(
     expected = manifest["outputs"][filename]
     if _sha256(path.read_bytes()) != expected["sha256"]:
         raise ValueError(f"First-pass input hash mismatch: {filename}")
+
+
+def _verified_workspace_sha256(
+    workspace_directory: Path,
+    first_pass: dict[str, Any],
+) -> str:
+    """Verify an original first pass or a content-addressed descendant review chain."""
+
+    chain_path = workspace_directory / REVIEW_CHAIN_MANIFEST_FILENAME
+    if not chain_path.exists():
+        for filename in (
+            WORKSPACE_DOCUMENT_FILENAME,
+            WORKSPACE_ADJUDICATION_FILENAME,
+            WORKSPACE_EXCLUSION_QA_FILENAME,
+        ):
+            _verify_first_pass_file(workspace_directory, first_pass, filename)
+        return str(first_pass["output_workspace_sha256"])
+
+    chain = json.loads(chain_path.read_text(encoding="utf-8"))
+    if chain.get("schema_version") != REVIEW_CHAIN_SCHEMA_VERSION:
+        raise ValueError("Unexpected review-chain schema version")
+    if chain.get("workspace_id") != first_pass.get("workspace_id"):
+        raise ValueError("Review-chain and first-pass workspace IDs disagree")
+    if chain.get("first_pass_id") != first_pass.get("first_pass_id"):
+        raise ValueError("Review-chain and first-pass IDs disagree")
+    if chain.get("base_workspace_sha256") != first_pass.get("output_workspace_sha256"):
+        raise ValueError("Review-chain base does not match the first-pass workspace")
+    steps = chain.get("steps", [])
+    expected_parent = chain.get("base_workspace_sha256")
+    for step in steps:
+        if step.get("parent_workspace_sha256") != expected_parent:
+            raise ValueError("Review-chain parent/output continuity is broken")
+        expected_parent = step.get("output_workspace_sha256")
+    current_digest = workspace_input_sha256(workspace_directory)
+    if not steps or expected_parent != current_digest:
+        raise ValueError("Review chain is stale for the current workspace")
+    if chain.get("current_workspace_sha256") != current_digest:
+        raise ValueError("Review-chain current workspace digest is stale")
+    return current_digest
 
 
 def _root_cause(action_basis: str) -> str:
@@ -341,13 +385,10 @@ def build_exception_packet_payloads(
     if not first_pass_path.exists():
         raise ValueError(f"Missing first-pass manifest: {first_pass_path}")
     first_pass = json.loads(first_pass_path.read_text(encoding="utf-8"))
-    for filename in (
-        WORKSPACE_DOCUMENT_FILENAME,
-        WORKSPACE_ADJUDICATION_FILENAME,
-        WORKSPACE_EXCLUSION_QA_FILENAME,
-        FIRST_PASS_AUDIT_FILENAME,
-    ):
-        _verify_first_pass_file(workspace_directory, first_pass, filename)
+    _verify_first_pass_file(workspace_directory, first_pass, FIRST_PASS_AUDIT_FILENAME)
+    current_workspace_sha256 = _verified_workspace_sha256(
+        workspace_directory, first_pass
+    )
     workspace_manifest = json.loads(
         (workspace_directory / WORKSPACE_MANIFEST_FILENAME).read_text(encoding="utf-8")
     )
@@ -364,7 +405,7 @@ def build_exception_packet_payloads(
         exclusion_qa,
         audit,
         first_pass_id=first_pass["first_pass_id"],
-        workspace_sha256=first_pass["output_workspace_sha256"],
+        workspace_sha256=current_workspace_sha256,
     )
     payloads = {
         INVESTIGATION_FILENAME: _csv_bytes(investigations),
@@ -386,7 +427,7 @@ def build_exception_packet_payloads(
         "exception_packet_id": packet_id,
         "first_pass_id": first_pass["first_pass_id"],
         "workspace_id": first_pass["workspace_id"],
-        "workspace_sha256": first_pass["output_workspace_sha256"],
+        "workspace_sha256": current_workspace_sha256,
         "summary": summary,
         "outputs": {
             name: {

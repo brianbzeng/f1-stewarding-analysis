@@ -19,6 +19,11 @@ from f1stewards.exception_packet import (
     write_exception_packet,
 )
 from f1stewards.first_pass import FIRST_PASS_AUDIT_FILENAME, FIRST_PASS_MANIFEST_FILENAME
+from f1stewards.review_explorer import (
+    REVIEW_LEDGER_SCHEMA_VERSION,
+    apply_review_ledger,
+    workspace_input_sha256,
+)
 
 
 def _write_csv(path: Path, frame: pd.DataFrame) -> bytes:
@@ -131,18 +136,57 @@ def _write_first_pass_fixture(parent: Path) -> Path:
     (workspace / WORKSPACE_MANIFEST_FILENAME).write_text(
         json.dumps({"workspace_id": workspace.name}), encoding="utf-8"
     )
+    workspace_sha256 = workspace_input_sha256(workspace)
     (workspace / FIRST_PASS_MANIFEST_FILENAME).write_text(
         json.dumps(
             {
                 "first_pass_id": "fixture-first-pass",
                 "workspace_id": workspace.name,
-                "output_workspace_sha256": "fixture-workspace-hash",
+                "output_workspace_sha256": workspace_sha256,
                 "outputs": outputs,
             }
         ),
         encoding="utf-8",
     )
     return workspace
+
+
+def test_exception_packet_accepts_verified_descendant_review_chain(tmp_path: Path) -> None:
+    workspace = _write_first_pass_fixture(tmp_path)
+    ledger_path = tmp_path / "review-ledger.json"
+    ledger_path.write_text(
+        json.dumps(
+            {
+                "schema_version": REVIEW_LEDGER_SCHEMA_VERSION,
+                "workspace_id": workspace.name,
+                "source_workspace_sha256": workspace_input_sha256(workspace),
+                "changes": {
+                    "documents": [
+                        {
+                            "row_id": "document-review-1",
+                            "fields": {
+                                "review_status": "single_coded_pending_human"
+                            },
+                        }
+                    ]
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    edited, _ = apply_review_ledger(workspace, ledger_path, tmp_path / "edited")
+
+    payloads, manifest = build_exception_packet_payloads(edited)
+    linkage = pd.read_csv(
+        pd.io.common.BytesIO(payloads[LINKAGE_FILENAME]),
+        dtype=str,
+        keep_default_na=False,
+    )
+
+    assert len(linkage) == 3
+    document_link = linkage.loc[linkage["queue_name"].eq("documents")].iloc[0]
+    assert document_link["review_status"] == "single_coded_pending_human"
+    assert manifest["workspace_sha256"] == workspace_input_sha256(edited)
 
 
 def test_exception_packet_collapses_cross_queue_rows_to_one_investigation(

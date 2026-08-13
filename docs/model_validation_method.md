@@ -32,31 +32,30 @@ bypassing the real release gate.
 ## Outcome-free nationality overlap
 
 `nationality_overlap_diagnostics` does not require or read `sanction_outcome`. Its current input is
-the 296 provisional primary candidates solely to evaluate whether British and other accused-driver
+the 348 provisional primary candidates solely to evaluate whether British and other accused-driver
 exposures occupy comparable parts of the frozen covariate space.
 
 | Diagnostic | Current value |
 |---|---:|
-| Events | 125 |
-| British accused-driver rows | 40 |
-| Other accused-driver rows | 256 |
-| British exposure prevalence | 13.5% |
-| Rows inside estimated common support | 78.0% |
-| Overlap-weight effective N, British | 39.0 |
-| Overlap-weight effective N, other | 172.3 |
-| Maximum absolute SMD, unweighted | 0.662 |
-| Maximum absolute SMD, overlap weighted | 0.187 |
-| Rows with extreme raw propensity requiring clipping | 41 |
+| Events | 131 |
+| British accused-driver rows | 44 |
+| Other accused-driver rows | 304 |
+| British exposure prevalence | 12.6% |
+| Rows inside estimated common support | 97.4% |
+| Overlap-weight effective N, British | 43.1 |
+| Overlap-weight effective N, other | 213.2 |
+| Maximum absolute SMD, unweighted | 0.526 |
+| Maximum absolute SMD, overlap weighted | 0.040 |
+| Rows with extreme raw propensity requiring clipping | 4 |
 
-One one-dimensional support cell contains only one exposure group: 2018 has no British
-accused-driver candidate. Overlap weighting substantially improves measured balance, but the
-remaining maximum standardized difference of 0.187 is a warning, not evidence
-that nationality affected an outcome. Final coding can change these counts; all diagnostics must be
+All 18 one-dimensional season/family support cells contain both exposure groups. Overlap weighting
+substantially improves measured balance, but this is not evidence that nationality did or did not
+affect an outcome. Final independent review can change these counts; all diagnostics must be
 rerun on the released population.
 
 ## Simulation-based power
 
-The simulation fixes the observed exposure, covariate, and 125-event cluster structure but excludes
+The simulation fixes the observed exposure, covariate, and 131-event cluster structure but excludes
 the observed sanction label. For each scenario it:
 
 1. assumes a 50% or 70% unexposed baseline sanction probability;
@@ -66,19 +65,19 @@ the observed sanction label. For each scenario it:
 5. fits the prespecified logistic adjustment with event-cluster-robust uncertainty.
 
 Each of the eight scenarios uses 500 repetitions. The frozen acceptance targets are at least 90%
-successful fits and 80% detection power at two-sided alpha 0.05. Fit stability is 97.2%–100%, so
+successful fits and 80% detection power at two-sided alpha 0.05. Fit stability is 99.2%–100%, so
 the power results are usable as design diagnostics.
 
 | Baseline | Target difference | Detection power |
 |---:|---:|---:|
-| 50% | 5 points | 8.6% |
-| 50% | 10 points | 16.8% |
-| 50% | 15 points | 36.4% |
-| 50% | 20 points | 57.2% |
-| 70% | 5 points | 7.6% |
-| 70% | 10 points | 21.6% |
-| 70% | 15 points | 43.2% |
-| 70% | 20 points | 75.8% |
+| 50% | 5 points | 9.2% |
+| 50% | 10 points | 18.2% |
+| 50% | 15 points | 43.6% |
+| 50% | 20 points | 60.6% |
+| 70% | 5 points | 8.2% |
+| 70% | 10 points | 25.8% |
+| 70% | 15 points | 52.8% |
+| 70% | 20 points | 78.8% |
 
 No scenario reaches the 80% target. Under the current provisional exposure structure, the study is
 not capable of reliably detecting subtle nationality associations and does not even attain target

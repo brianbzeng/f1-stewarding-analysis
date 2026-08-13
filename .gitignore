@@ -45,6 +45,12 @@ data/manual/full_corpus_review_rounds/
 # Generated reports
 reports/generated/**
 !reports/generated/.gitkeep
+!reports/generated/population_flow.png
+!reports/generated/provisional_candidate_composition.png
+!reports/generated/nationality_power.png
+!reports/generated/pilot_harm_sanction_matrix.png
+!reports/generated/nationality_overlap_summary.csv
+!reports/generated/nationality_power.csv
 
 # OS/editor
 .DS_Store

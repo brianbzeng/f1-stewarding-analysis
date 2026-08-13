@@ -65,8 +65,9 @@ the collision remains visible in protected Fact/Reason evidence for any separate
 
 ## Analytical boundary
 
-After this round, the chained workspace contains 1,938 document and 1,891 adjudication rows marked
-`single_coded_pending_human`, leaving 65 and 61 respectively unstarted; all 486 exclusion-QA rows
-remain unstarted. Feature build `features-99c7c3429c01` still has 296 provisional primary rows, 580
-driver-role rows, zero reporting-eligible rows, and release status
-`blocked_pending_human_review`.
+At this historical checkpoint, the chained workspace contained 1,938 document and 1,891
+adjudication rows marked `single_coded_pending_human`, leaving 65 and 61 respectively unstarted;
+all 486 exclusion-QA rows remained unstarted. The later manual-scope and recalled-version ledgers
+are documented in [`manual_scope_source_review.md`](manual_scope_source_review.md); the current
+feature build and release status are documented in
+[`analysis_feature_release.md`](analysis_feature_release.md).

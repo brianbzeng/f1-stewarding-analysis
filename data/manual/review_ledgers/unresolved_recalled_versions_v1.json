@@ -1,0 +1,62 @@
+{
+  "schema_version": "full-corpus-review-ledger-v1",
+  "workspace_id": "full-coding-e0192ecbd9e4",
+  "source_workspace_sha256": "36b4f0f04be4b7cc2a099a330c2ea01f9d90e265390305546fe897239d8d659f",
+  "review_basis": "Official FIA archive-level disposition of the four 2024 Belgian pit-lane-speeding labels advertised only as recalled records with no live PDF or recoverable successor. These are single-coded pending-human records, not independent review, and no decision outcome is imputed.",
+  "changes": {
+    "documents": [
+      {
+        "row_id": "document-review-fia-2024-bel-4cb44a91ff69",
+        "fields": {
+          "version_status_final": "recalled_unavailable",
+          "session_scope_final": "unknown",
+          "offence_family_final": "pit_lane_speeding",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "recalled_unavailable_no_successor",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA archive reviewed. Recalled Document 14 identifies a first Car 3 pit-lane-speeding infringement but exposes no PDF or successor. Retained as unavailable provenance and excluded without imputing a session, sanction, or outcome; pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-bel-e159cf25cd24",
+        "fields": {
+          "version_status_final": "recalled_unavailable",
+          "session_scope_final": "unknown",
+          "offence_family_final": "pit_lane_speeding",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "recalled_unavailable_no_successor",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA archive reviewed. Recalled Document 15 identifies a Car 11 pit-lane-speeding infringement but exposes no PDF or successor. Retained as unavailable provenance and excluded without imputing a session, sanction, or outcome; pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-bel-2a32bded31d9",
+        "fields": {
+          "version_status_final": "recalled_unavailable",
+          "session_scope_final": "unknown",
+          "offence_family_final": "pit_lane_speeding",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "recalled_unavailable_no_successor",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA archive reviewed. Recalled Document 16 identifies Car 3's second pit-lane-speeding infringement but exposes no PDF or successor. Retained as unavailable provenance and excluded without imputing a session, sanction, or outcome; pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-bel-1d6de3027588",
+        "fields": {
+          "version_status_final": "recalled_unavailable",
+          "session_scope_final": "unknown",
+          "offence_family_final": "pit_lane_speeding",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "recalled_unavailable_no_successor",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA archive reviewed. Recalled Document 17 identifies a Car 1 pit-lane-speeding infringement but exposes no PDF or successor. Retained as unavailable provenance and excluded without imputing a session, sanction, or outcome; pending independent review."
+        }
+      }
+    ]
+  }
+}

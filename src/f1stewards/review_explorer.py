@@ -27,6 +27,10 @@ from f1stewards.coding_workspace import (
 
 REVIEW_EXPLORER_SCHEMA_VERSION = "full-corpus-review-explorer-v1"
 REVIEW_LEDGER_SCHEMA_VERSION = "full-corpus-review-ledger-v1"
+REVIEW_CHAIN_SCHEMA_VERSION = "full-corpus-review-chain-v1"
+REVIEW_CHAIN_MANIFEST_FILENAME = "review_chain_manifest.json"
+FIRST_PASS_MANIFEST_FILENAME = "first_pass_manifest.json"
+FIRST_PASS_AUDIT_FILENAME = "first_pass_audit.csv"
 COMPLETE_REVIEW_STATUSES = {"double_coded", "adjudicated"}
 QA_EVIDENCE_FIELDS = [
     "driver_number_suggestion",
@@ -477,6 +481,15 @@ def apply_review_ledger(
     ):
         shutil.copy2(workspace_directory / filename, output_directory / filename)
 
+    # A review workspace is still a descendant of the machine-assisted first pass. Carry its
+    # immutable audit and manifest through every edit round so downstream exception packets can
+    # reconstruct why an unresolved row was originally withheld. The chain manifest records each
+    # content-addressed delta without changing the protected workspace digest definition.
+    for filename in (FIRST_PASS_MANIFEST_FILENAME, FIRST_PASS_AUDIT_FILENAME):
+        source = workspace_directory / filename
+        if source.exists():
+            shutil.copy2(source, output_directory / filename)
+
     applied: dict[str, int] = {name: 0 for name in QUEUE_SPECS}
     try:
         for queue_name, modifications in changes.items():
@@ -506,6 +519,46 @@ def apply_review_ledger(
                     frame.at[lookup[row_id], field] = "" if value is None else str(value)
                     applied[queue_name] += 1
             frame.to_csv(path, index=False, lineterminator="\n")
+
+        chain_path = workspace_directory / REVIEW_CHAIN_MANIFEST_FILENAME
+        first_pass_path = workspace_directory / FIRST_PASS_MANIFEST_FILENAME
+        chain: dict[str, Any] | None = None
+        if chain_path.exists():
+            chain = json.loads(chain_path.read_text(encoding="utf-8"))
+            if chain.get("schema_version") != REVIEW_CHAIN_SCHEMA_VERSION:
+                raise ValueError("Unexpected review-chain schema version")
+            if chain.get("workspace_id") != workspace_directory.name:
+                raise ValueError("Review-chain workspace ID does not match source workspace")
+            if chain.get("current_workspace_sha256") != current_digest:
+                raise ValueError("Review chain is stale for the current source workspace")
+        elif first_pass_path.exists():
+            first_pass = json.loads(first_pass_path.read_text(encoding="utf-8"))
+            base_digest = str(first_pass.get("output_workspace_sha256", ""))
+            if base_digest != current_digest:
+                raise ValueError("First-pass manifest is stale for the review source workspace")
+            chain = {
+                "schema_version": REVIEW_CHAIN_SCHEMA_VERSION,
+                "workspace_id": workspace_directory.name,
+                "first_pass_id": first_pass.get("first_pass_id"),
+                "base_workspace_sha256": base_digest,
+                "steps": [],
+            }
+        if chain is not None:
+            output_digest = workspace_input_sha256(output_directory)
+            chain["steps"] = [
+                *chain.get("steps", []),
+                {
+                    "parent_workspace_sha256": current_digest,
+                    "ledger_sha256": _sha256(ledger_path.read_bytes()),
+                    "output_workspace_sha256": output_digest,
+                    "applied_field_counts": applied,
+                },
+            ]
+            chain["current_workspace_sha256"] = output_digest
+            (output_directory / REVIEW_CHAIN_MANIFEST_FILENAME).write_text(
+                json.dumps(chain, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
     except Exception:
         shutil.rmtree(output_directory)
         raise

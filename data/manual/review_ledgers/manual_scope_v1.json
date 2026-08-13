@@ -1,0 +1,2269 @@
+{
+  "schema_version": "full-corpus-review-ledger-v1",
+  "workspace_id": "full-coding-e0192ecbd9e4",
+  "source_workspace_sha256": "c7d62651b6eb7646b1682e616e32666620cdbc6f8a1d3a451d3da9e4d8ceb7ae",
+  "review_basis": "Official FIA source-level coding of all 61 remaining manual-scope investigations, including mirrored and multi-car incident grouping. These are single-coded pending-human records, not independent review.",
+  "changes": {
+    "documents": [
+      {
+        "row_id": "document-review-fia-2018-fra-8fdc744f8ecd",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "unclassified",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "outside_frozen_primary_secondary_scope",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 8 was hit from behind, left the track, and rejoined safely without gaining a position; the source does not allege an unsafe rejoin or another frozen primary offence. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-aut-9c50973f6716",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "forcing_off_track",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 55 deliberately crowded Car 31 partly off track after rejoining and received a driving reprimand. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-gbr-c4ec3bfd58d1",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 20 decision for the Turn 3 collision with Car 8; the preceding incident influenced both cars and no further action was taken. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-gbr-dbd297e3a1ec",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 8 decision for the Turn 3 collision with Car 20; the preceding incident influenced both cars and no further action was taken. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-ita-46eec3615f40",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 44 decision for the Turn 4 contact with Car 5; neither driver was wholly or predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-ita-a3456e32915c",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 5 decision for the Turn 4 contact with Car 44; neither driver was wholly or predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-sgp-21e75b934044",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Turn 7 collision between Cars 20 and 28; no driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-sgp-bcfc0b21409a",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. First-lap Turn 3 contact between Cars 11 and 31 while three cars were nearly side by side; neither driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-jpn-af0be8505555",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "gaining_advantage_off_track",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 14 was forced off but then cut the chicane and gained a significant advantage; five-second penalty and one penalty point. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-deu-439337838994",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 10 made an error attempting to pass Car 23; only Car 10 was disadvantaged and no further action was taken. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-ita-5d8bd476d009",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 5 rejoined unsafely and collided with Car 18 in a dangerous incident; ten-second stop-and-go and three penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-sgp-4f116694a24c",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 7 adjudication for the Turn 1 incident with Car 26; both drivers described it as a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-sgp-ab76599fc615",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 26 adjudication for the Turn 1 incident with Car 7; both drivers described it as a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-sgp-6c9e26d4cab3",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 63 decision for the Turn 8 collision with Car 8; both drivers contributed and neither was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-sgp-6db2310a0bec",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 8 decision for the Turn 8 collision with Car 63; both drivers contributed and neither was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-sgp-d456f4419d4f",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 27 decision for the first-lap Turn 5 collision with Car 55; classified as a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-sgp-e6c461804492",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 55 decision for the first-lap Turn 5 collision with Car 27; classified as a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-sgp-5c1d1870e601",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "neutralization_or_flag_procedure",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:neutralization_or_flag_procedure",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 99 disobeyed the Race Director's line instruction near a crane and marshals under double yellow flags; this is an excluded flag/race-direction offence. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-jpn-4a022963168d",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 16 contacted Car 33 and forced it off track on lap 1; Car 16 was predominantly at fault and received five seconds plus two penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-jpn-9be40f8bba4d",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 33 no-action adjudication for the lap-1 contact caused by Car 16; the blame language applies to the counterpart, not accused Car 33. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-jpn-8f4df880b95b",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 10 decision for the Turn 2 contact with Car 11; both drivers contributed and no driver was wholly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-jpn-ddc6b3eef5b1",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 11 decision for the Turn 2 contact with Car 10; both drivers contributed and no driver was wholly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-mex-9a84e5496c6b",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 26 hit the rear of Car 27, causing it to spin into the wall; ten-second penalty and two penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-usa-e8891601d008",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. First-lap Turn 1 incident between Cars 23 and 55; no driver was wholly or predominantly to blame. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-bra-0197a870d5b2",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 16 decision for the Turn 4 collision with Car 5; neither driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-bra-38ee05c4fb59",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 5 decision for the Turn 4 collision with Car 16; neither driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-bra-b956905dbc4f",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 3 locked a front wheel and collided with Car 20; Car 3 was predominantly at fault and received five seconds plus two penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-abu-e94aca06904a",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 88 decision for the Turn 12 incident with Car 99; no driver was wholly or predominantly to blame. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-abu-eed6b57f5b3f",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 99 decision for the Turn 12 incident with Car 88; no driver was wholly or predominantly to blame. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-fra-457ded17de98",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "forcing_off_track",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 3 rejoined at an angle that forced Car 4 off track and took the position; five-second penalty and two penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2020-por-48056c42c597",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "race_direction_or_slow_driving",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:race_direction_or_slow_driving",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 11 made one dangerous defensive movement before the braking zone; it was neither reactive nor a multiple move, so it falls outside the frozen primary families. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2020-sty-965461bfbe13",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "forcing_off_track",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 18's attempted pass caused both Cars 18 and 3 to leave the track; the stewards classified it as a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2020-gbr-319c8c2d52b9",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 23 attempted a late pass at Turn 18 and was predominantly at fault for the collision with Car 20; five seconds and two penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2020-ita-5e5acd0fdb41",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "forcing_off_track",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 33 was investigated for crowding Car 11 at Turn 2; the source found no deliberate crowding and took no further action. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2021-esp-76f0795efb8a",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "routine_track_limits",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:routine_track_limits",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 18 could not pass behind the prescribed bollards after being forced off, rejoined safely, and returned any possible advantage; excluded track-rejoin procedure. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2021-gbr-74d32cf58767",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "forcing_off_track",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 7 was forced onto the kerb while alongside Car 11 and spun; no driver was predominantly at fault and no further action was taken. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2022-fra-832a818ac903",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 6 decision for the Turn 2 collision with Car 20; both drivers contributed, both cars were damaged, and both retired. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2022-fra-f29d68ccd9b0",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 20 decision for the Turn 2 collision with Car 6; both drivers contributed, both cars were damaged, and both retired. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2022-usa-211d82e7968e",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "routine_track_limits",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:routine_track_limits",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 47 left the track without justification four times; this is a routine track-limits offence, not a lasting-advantage adjudication. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2022-sao-002711fb5ae0",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "forcing_off_track",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 18 deliberately drove Car 5 off the road in a dangerous manner; ten-second Sprint penalty and three penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-aus-0144b2323236",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 31 adjudication for the Turn 2 restart collision with Car 10; both drivers accepted it as a first-lap racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-aus-500bb4f284ba",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 10 adjudication for the Turn 2 restart collision with Car 31; both drivers accepted it as a first-lap racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-bel-3192ec4d03d6",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "unclassified",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "outside_frozen_primary_secondary_scope",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 14 moved from right to left after pit exit and caused Car 27 to avoid a collision; it was not a braking-zone or multiple-defence allegation. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-qat-002060120e1b",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 11 side of the three-car Sprint collision with Cars 27 and 31 at Turn 2; no driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-qat-8a64aec7daf5",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 31 side of the three-car Sprint collision with Cars 11 and 27 at Turn 2; no driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2023-qat-9b045d16fdac",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 27 side of the three-car Sprint collision with Cars 11 and 31 at Turn 2; no driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-mia-8181b93a13ff",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "pit_lane_procedure",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:pit_lane_procedure",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 31 left its garage without being released and collided with Car 16 on the reconnaissance lap; excluded pre-session pit-lane procedure. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-mia-86547ded7d12",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 18 side of the four-car, three-contact Sprint chain involving Cars 14, 18, 44, and 4; damage affected Cars 14 and 18 and Car 4 retired. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-mia-b115633c9ba0",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 14 side of the four-car, three-contact Sprint chain involving Cars 14, 18, 44, and 4; no driver was predominantly to blame. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-mia-badde45f9141",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 44 side of the four-car, three-contact Sprint chain involving Cars 14, 18, 44, and 4; the sudden arrival of Car 44 contributed but no driver was predominantly to blame. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-can-2d45bb0945a9",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 81 adjudication for slight contact with Car 63 through Turns 13-14; no driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-can-546aad3f9319",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Mirrored Car 63 adjudication for slight contact with Car 81 through Turns 13-14; no driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-hun-46b193d4af90",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 1 locked both fronts and collided with Car 44 at Turn 1; no driver was predominantly to blame. Car 23 was passed before the incident and is not an affected role. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-usa-1d5ba0527e94",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "gaining_advantage_off_track",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 10 left the track and returned ahead of Car 23 after losing the right to the corner; five-second penalty. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-mex-a4340456d96a",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "forcing_off_track",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 11's late Turn 4 move caused Car 30 to leave the track to avoid contact; Car 11 later conceded and the stewards called it a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-qat-ea0ded916e32",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Race incident: Car 30 understeered into Car 77 at Turn 1; FastF1 lap starts place the minute-rounded 19:12 FIA time at the start of lap 5. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2024-abu-62aed0693198",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Race incident: Car 77 hit the rear-left wheel of Car 11 at Turn 6 on lap 1 and was wholly at fault; ten seconds and two penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2025-chn-c6a27ca62eb2",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 30 and Car 7 made minor contact at Turn 14 in the Sprint; the source says Car 30 had the right to the corner and took no further action. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2025-mco-6f59e264b0c0",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "out_of_scope_session",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Friday Practice 1 collision: Car 18 cut across Car 16, was wholly to blame, and caused confirmed damage; excluded by session while retaining the one-place grid penalty and point. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2025-esp-f89ab19eeac5",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Car 30 made minor contact with Car 87 and forced it onto the Turn 1 escape road; positions were retained and the stewards called it a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2025-bel-91a490dae37f",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "secondary",
+          "offence_family_final": "causing_collision",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "outside_secondary_offence_scope",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official FIA source reviewed. Qualifying document: the competitor received a pit-lane queue reprimand, while the separate driver-collision allegation ended in no further action because neither driver was predominantly to blame; collisions are outside the secondary impeding-only population. Pending independent review."
+        }
+      }
+    ],
+    "adjudications": [
+      {
+        "row_id": "adjudication-seed-fia-2018-fra-8fdc744f8ecd-01",
+        "fields": {
+          "adjudication_id_final": "",
+          "incident_id_final": "",
+          "accused_driver_number_final": "8",
+          "affected_driver_numbers_final": "5|11",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turns 3, 5",
+          "incident_family_final": "unclassified",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "outside_frozen_primary_secondary_scope",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 8 was hit from behind, left the track, and rejoined safely without gaining a position; the source does not allege an unsafe rejoin or another frozen primary offence. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-aut-9c50973f6716-01",
+        "fields": {
+          "adjudication_id_final": "adj-42055c7ca321d011",
+          "incident_id_final": "incident-src-42055c7ca321d011",
+          "accused_driver_number_final": "55",
+          "affected_driver_numbers_final": "31",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 1",
+          "incident_family_final": "forcing_off_track",
+          "outcome_family_final": "reprimand",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 55 deliberately crowded Car 31 partly off track after rejoining and received a driving reprimand. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-gbr-c4ec3bfd58d1-01",
+        "fields": {
+          "adjudication_id_final": "adj-71bfdbf175be2808",
+          "incident_id_final": "incident-group-5f15a97b01053cd7",
+          "accused_driver_number_final": "20",
+          "affected_driver_numbers_final": "8",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 3",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 20 decision for the Turn 3 collision with Car 8; the preceding incident influenced both cars and no further action was taken. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-gbr-dbd297e3a1ec-01",
+        "fields": {
+          "adjudication_id_final": "adj-5085c3b16294abcf",
+          "incident_id_final": "incident-group-5f15a97b01053cd7",
+          "accused_driver_number_final": "8",
+          "affected_driver_numbers_final": "20",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 3",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 8 decision for the Turn 3 collision with Car 20; the preceding incident influenced both cars and no further action was taken. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-ita-46eec3615f40-01",
+        "fields": {
+          "adjudication_id_final": "adj-baf8a03a8e84a2b5",
+          "incident_id_final": "incident-group-dc038f07ea0cd46a",
+          "accused_driver_number_final": "44",
+          "affected_driver_numbers_final": "5",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 4",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 44 decision for the Turn 4 contact with Car 5; neither driver was wholly or predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-ita-a3456e32915c-01",
+        "fields": {
+          "adjudication_id_final": "adj-3d3f08ac55cefb43",
+          "incident_id_final": "incident-group-dc038f07ea0cd46a",
+          "accused_driver_number_final": "5",
+          "affected_driver_numbers_final": "44",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 4",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 5 decision for the Turn 4 contact with Car 44; neither driver was wholly or predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-sgp-21e75b934044-01",
+        "fields": {
+          "adjudication_id_final": "adj-793e772ff47ab03e",
+          "incident_id_final": "incident-src-793e772ff47ab03e",
+          "accused_driver_number_final": "20",
+          "affected_driver_numbers_final": "28",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 7",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Turn 7 collision between Cars 20 and 28; no driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-sgp-bcfc0b21409a-01",
+        "fields": {
+          "adjudication_id_final": "adj-153d9abced4119b1",
+          "incident_id_final": "incident-src-153d9abced4119b1",
+          "accused_driver_number_final": "11",
+          "affected_driver_numbers_final": "31",
+          "session_type_final": "Race",
+          "lap_number_final": "1",
+          "location_final": "Turn 3",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. First-lap Turn 3 contact between Cars 11 and 31 while three cars were nearly side by side; neither driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-jpn-af0be8505555-01",
+        "fields": {
+          "adjudication_id_final": "adj-590d4355a3039791",
+          "incident_id_final": "incident-src-590d4355a3039791",
+          "accused_driver_number_final": "14",
+          "affected_driver_numbers_final": "",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 16",
+          "incident_family_final": "gaining_advantage_off_track",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "5",
+          "penalty_points_final": "1",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 14 was forced off but then cut the chicane and gained a significant advantage; five-second penalty and one penalty point. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-deu-439337838994-01",
+        "fields": {
+          "adjudication_id_final": "adj-f35eb28ba1d26794",
+          "incident_id_final": "incident-src-f35eb28ba1d26794",
+          "accused_driver_number_final": "10",
+          "affected_driver_numbers_final": "23",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 6",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 10 made an error attempting to pass Car 23; only Car 10 was disadvantaged and no further action was taken. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-ita-5d8bd476d009-01",
+        "fields": {
+          "adjudication_id_final": "adj-0a2995f1d6aad572",
+          "incident_id_final": "incident-src-0a2995f1d6aad572",
+          "accused_driver_number_final": "5",
+          "affected_driver_numbers_final": "18",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 9",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "stop_go",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "3",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 5 rejoined unsafely and collided with Car 18 in a dangerous incident; ten-second stop-and-go and three penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-sgp-4f116694a24c-01",
+        "fields": {
+          "adjudication_id_final": "adj-dc7143e62d2b209e",
+          "incident_id_final": "incident-group-17fe6df1bdd9aad8",
+          "accused_driver_number_final": "7",
+          "affected_driver_numbers_final": "26",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 1",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "racing_incident",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 7 adjudication for the Turn 1 incident with Car 26; both drivers described it as a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-sgp-ab76599fc615-01",
+        "fields": {
+          "adjudication_id_final": "adj-90a21a4d4da139bd",
+          "incident_id_final": "incident-group-17fe6df1bdd9aad8",
+          "accused_driver_number_final": "26",
+          "affected_driver_numbers_final": "7",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 1",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "racing_incident",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 26 adjudication for the Turn 1 incident with Car 7; both drivers described it as a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-sgp-6c9e26d4cab3-01",
+        "fields": {
+          "adjudication_id_final": "adj-cde123f133b0c826",
+          "incident_id_final": "incident-group-3e6d04cc117846eb",
+          "accused_driver_number_final": "63",
+          "affected_driver_numbers_final": "8",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 8",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "shared_fault",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 63 decision for the Turn 8 collision with Car 8; both drivers contributed and neither was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-sgp-6db2310a0bec-01",
+        "fields": {
+          "adjudication_id_final": "adj-46676d59c4b4733c",
+          "incident_id_final": "incident-group-3e6d04cc117846eb",
+          "accused_driver_number_final": "8",
+          "affected_driver_numbers_final": "63",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 8",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "shared_fault",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 8 decision for the Turn 8 collision with Car 63; both drivers contributed and neither was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-sgp-d456f4419d4f-01",
+        "fields": {
+          "adjudication_id_final": "adj-2863482e9bf6ad20",
+          "incident_id_final": "incident-group-baa04254fb857cd2",
+          "accused_driver_number_final": "27",
+          "affected_driver_numbers_final": "55",
+          "session_type_final": "Race",
+          "lap_number_final": "1",
+          "location_final": "Turn 5",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "racing_incident",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 27 decision for the first-lap Turn 5 collision with Car 55; classified as a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-sgp-e6c461804492-01",
+        "fields": {
+          "adjudication_id_final": "adj-a7bd7c94072cc013",
+          "incident_id_final": "incident-group-baa04254fb857cd2",
+          "accused_driver_number_final": "55",
+          "affected_driver_numbers_final": "27",
+          "session_type_final": "Race",
+          "lap_number_final": "1",
+          "location_final": "Turn 5",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "racing_incident",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 55 decision for the first-lap Turn 5 collision with Car 27; classified as a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-sgp-5c1d1870e601-01",
+        "fields": {
+          "adjudication_id_final": "",
+          "incident_id_final": "",
+          "accused_driver_number_final": "99",
+          "affected_driver_numbers_final": "",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 8",
+          "incident_family_final": "neutralization_or_flag_procedure",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "10",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:neutralization_or_flag_procedure",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 99 disobeyed the Race Director's line instruction near a crane and marshals under double yellow flags; this is an excluded flag/race-direction offence. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-jpn-4a022963168d-01",
+        "fields": {
+          "adjudication_id_final": "adj-44686757f581c309",
+          "incident_id_final": "incident-group-dee3045f08ed8de7",
+          "accused_driver_number_final": "16",
+          "affected_driver_numbers_final": "33",
+          "session_type_final": "Race",
+          "lap_number_final": "1",
+          "location_final": "Turns 1-2",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "5",
+          "penalty_points_final": "2",
+          "grid_places_final": "",
+          "fault_language_final": "predominantly_to_blame",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 16 contacted Car 33 and forced it off track on lap 1; Car 16 was predominantly at fault and received five seconds plus two penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-jpn-9be40f8bba4d-01",
+        "fields": {
+          "adjudication_id_final": "adj-634036e33dc05333",
+          "incident_id_final": "incident-group-dee3045f08ed8de7",
+          "accused_driver_number_final": "33",
+          "affected_driver_numbers_final": "16",
+          "session_type_final": "Race",
+          "lap_number_final": "1",
+          "location_final": "Turns 1-2",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 33 no-action adjudication for the lap-1 contact caused by Car 16; the blame language applies to the counterpart, not accused Car 33. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-jpn-8f4df880b95b-01",
+        "fields": {
+          "adjudication_id_final": "adj-667d6bb8743116ef",
+          "incident_id_final": "incident-group-9d7ca07e87909a4b",
+          "accused_driver_number_final": "10",
+          "affected_driver_numbers_final": "11",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 2",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "shared_fault",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 10 decision for the Turn 2 contact with Car 11; both drivers contributed and no driver was wholly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-jpn-ddc6b3eef5b1-01",
+        "fields": {
+          "adjudication_id_final": "adj-acc76c36ad0d55b6",
+          "incident_id_final": "incident-group-9d7ca07e87909a4b",
+          "accused_driver_number_final": "11",
+          "affected_driver_numbers_final": "10",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 2",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "shared_fault",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 11 decision for the Turn 2 contact with Car 10; both drivers contributed and no driver was wholly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-mex-9a84e5496c6b-01",
+        "fields": {
+          "adjudication_id_final": "adj-f96f03bc3f42ded4",
+          "incident_id_final": "incident-src-f96f03bc3f42ded4",
+          "accused_driver_number_final": "26",
+          "affected_driver_numbers_final": "27",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 16",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "10",
+          "penalty_points_final": "2",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 26 hit the rear of Car 27, causing it to spin into the wall; ten-second penalty and two penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-usa-e8891601d008-01",
+        "fields": {
+          "adjudication_id_final": "adj-8fa5a7f8737d47e9",
+          "incident_id_final": "incident-src-8fa5a7f8737d47e9",
+          "accused_driver_number_final": "23",
+          "affected_driver_numbers_final": "55",
+          "session_type_final": "Race",
+          "lap_number_final": "1",
+          "location_final": "Turn 1",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. First-lap Turn 1 incident between Cars 23 and 55; no driver was wholly or predominantly to blame. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-bra-0197a870d5b2-01",
+        "fields": {
+          "adjudication_id_final": "adj-bb68ecdf3fcd7591",
+          "incident_id_final": "incident-group-0717c3bfd5f08779",
+          "accused_driver_number_final": "16",
+          "affected_driver_numbers_final": "5",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 4",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 16 decision for the Turn 4 collision with Car 5; neither driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-bra-38ee05c4fb59-01",
+        "fields": {
+          "adjudication_id_final": "adj-14f4d4ae4c61c0d1",
+          "incident_id_final": "incident-group-0717c3bfd5f08779",
+          "accused_driver_number_final": "5",
+          "affected_driver_numbers_final": "16",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 4",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 5 decision for the Turn 4 collision with Car 16; neither driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-bra-b956905dbc4f-01",
+        "fields": {
+          "adjudication_id_final": "adj-75ad7140f56a82b0",
+          "incident_id_final": "incident-src-75ad7140f56a82b0",
+          "accused_driver_number_final": "3",
+          "affected_driver_numbers_final": "20",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 4",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "5",
+          "penalty_points_final": "2",
+          "grid_places_final": "",
+          "fault_language_final": "predominantly_to_blame",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 3 locked a front wheel and collided with Car 20; Car 3 was predominantly at fault and received five seconds plus two penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-abu-e94aca06904a-01",
+        "fields": {
+          "adjudication_id_final": "adj-995c2c2bf5c5a2da",
+          "incident_id_final": "incident-group-8adf0ddcdc980b9a",
+          "accused_driver_number_final": "88",
+          "affected_driver_numbers_final": "99",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 12",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 88 decision for the Turn 12 incident with Car 99; no driver was wholly or predominantly to blame. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-abu-eed6b57f5b3f-01",
+        "fields": {
+          "adjudication_id_final": "adj-bff9e3e79b9d2b32",
+          "incident_id_final": "incident-group-8adf0ddcdc980b9a",
+          "accused_driver_number_final": "99",
+          "affected_driver_numbers_final": "88",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 12",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 99 decision for the Turn 12 incident with Car 88; no driver was wholly or predominantly to blame. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-fra-457ded17de98-01",
+        "fields": {
+          "adjudication_id_final": "adj-ea059e019eeba972",
+          "incident_id_final": "incident-src-ea059e019eeba972",
+          "accused_driver_number_final": "3",
+          "affected_driver_numbers_final": "4",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 8",
+          "incident_family_final": "forcing_off_track",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "5",
+          "penalty_points_final": "2",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 3 rejoined at an angle that forced Car 4 off track and took the position; five-second penalty and two penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2020-por-48056c42c597-01",
+        "fields": {
+          "adjudication_id_final": "",
+          "incident_id_final": "",
+          "accused_driver_number_final": "11",
+          "affected_driver_numbers_final": "10",
+          "session_type_final": "Race",
+          "lap_number_final": "64",
+          "location_final": "Main straight",
+          "incident_family_final": "race_direction_or_slow_driving",
+          "outcome_family_final": "reprimand",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:race_direction_or_slow_driving",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 11 made one dangerous defensive movement before the braking zone; it was neither reactive nor a multiple move, so it falls outside the frozen primary families. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2020-sty-965461bfbe13-01",
+        "fields": {
+          "adjudication_id_final": "adj-e29cbda3e8d0967d",
+          "incident_id_final": "incident-src-e29cbda3e8d0967d",
+          "accused_driver_number_final": "18",
+          "affected_driver_numbers_final": "3",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 3",
+          "incident_family_final": "forcing_off_track",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "racing_incident",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 18's attempted pass caused both Cars 18 and 3 to leave the track; the stewards classified it as a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2020-gbr-319c8c2d52b9-01",
+        "fields": {
+          "adjudication_id_final": "adj-fcd4a7df5c2a7599",
+          "incident_id_final": "incident-src-fcd4a7df5c2a7599",
+          "accused_driver_number_final": "23",
+          "affected_driver_numbers_final": "20",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 18",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "5",
+          "penalty_points_final": "2",
+          "grid_places_final": "",
+          "fault_language_final": "predominantly_to_blame",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 23 attempted a late pass at Turn 18 and was predominantly at fault for the collision with Car 20; five seconds and two penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2020-ita-5e5acd0fdb41-01",
+        "fields": {
+          "adjudication_id_final": "adj-0b5349f408329019",
+          "incident_id_final": "incident-src-0b5349f408329019",
+          "accused_driver_number_final": "33",
+          "affected_driver_numbers_final": "11",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 2",
+          "incident_family_final": "forcing_off_track",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 33 was investigated for crowding Car 11 at Turn 2; the source found no deliberate crowding and took no further action. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2021-esp-76f0795efb8a-01",
+        "fields": {
+          "adjudication_id_final": "",
+          "incident_id_final": "",
+          "accused_driver_number_final": "18",
+          "affected_driver_numbers_final": "14",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turns 1-2",
+          "incident_family_final": "routine_track_limits",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:routine_track_limits",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 18 could not pass behind the prescribed bollards after being forced off, rejoined safely, and returned any possible advantage; excluded track-rejoin procedure. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2021-gbr-74d32cf58767-01",
+        "fields": {
+          "adjudication_id_final": "adj-ef78b859db624c3b",
+          "incident_id_final": "incident-src-ef78b859db624c3b",
+          "accused_driver_number_final": "11",
+          "affected_driver_numbers_final": "7",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 17",
+          "incident_family_final": "forcing_off_track",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 7 was forced onto the kerb while alongside Car 11 and spun; no driver was predominantly at fault and no further action was taken. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2022-fra-832a818ac903-01",
+        "fields": {
+          "adjudication_id_final": "adj-91bd2176be4c7ceb",
+          "incident_id_final": "incident-group-57d76c19243d2b20",
+          "accused_driver_number_final": "6",
+          "affected_driver_numbers_final": "20",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 2",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "shared_fault",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 6 decision for the Turn 2 collision with Car 20; both drivers contributed, both cars were damaged, and both retired. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2022-fra-f29d68ccd9b0-01",
+        "fields": {
+          "adjudication_id_final": "adj-285944dc1f5d725d",
+          "incident_id_final": "incident-group-57d76c19243d2b20",
+          "accused_driver_number_final": "20",
+          "affected_driver_numbers_final": "6",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 2",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "shared_fault",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 20 decision for the Turn 2 collision with Car 6; both drivers contributed, both cars were damaged, and both retired. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2022-usa-211d82e7968e-01",
+        "fields": {
+          "adjudication_id_final": "",
+          "incident_id_final": "",
+          "accused_driver_number_final": "47",
+          "affected_driver_numbers_final": "",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "",
+          "incident_family_final": "routine_track_limits",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "5",
+          "penalty_points_final": "1",
+          "grid_places_final": "",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:routine_track_limits",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 47 left the track without justification four times; this is a routine track-limits offence, not a lasting-advantage adjudication. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2022-sao-002711fb5ae0-01",
+        "fields": {
+          "adjudication_id_final": "adj-a3a7fbd881640e16",
+          "incident_id_final": "incident-src-a3a7fbd881640e16",
+          "accused_driver_number_final": "18",
+          "affected_driver_numbers_final": "5",
+          "session_type_final": "Sprint",
+          "lap_number_final": "",
+          "location_final": "Turn 3",
+          "incident_family_final": "forcing_off_track",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "10",
+          "penalty_points_final": "3",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 18 deliberately drove Car 5 off the road in a dangerous manner; ten-second Sprint penalty and three penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-aus-0144b2323236-01",
+        "fields": {
+          "adjudication_id_final": "adj-3ccb9c1bd9cedb01",
+          "incident_id_final": "incident-group-fba25307a3d5ad50",
+          "accused_driver_number_final": "31",
+          "affected_driver_numbers_final": "10",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 2",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "racing_incident",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 31 adjudication for the Turn 2 restart collision with Car 10; both drivers accepted it as a first-lap racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-aus-500bb4f284ba-01",
+        "fields": {
+          "adjudication_id_final": "adj-90197ab5c6f59cb7",
+          "incident_id_final": "incident-group-fba25307a3d5ad50",
+          "accused_driver_number_final": "10",
+          "affected_driver_numbers_final": "31",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 2",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "racing_incident",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 10 adjudication for the Turn 2 restart collision with Car 31; both drivers accepted it as a first-lap racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-bel-3192ec4d03d6-01",
+        "fields": {
+          "adjudication_id_final": "",
+          "incident_id_final": "",
+          "accused_driver_number_final": "14",
+          "affected_driver_numbers_final": "27",
+          "session_type_final": "Sprint",
+          "lap_number_final": "",
+          "location_final": "Between Turns 1-2",
+          "incident_family_final": "unclassified",
+          "outcome_family_final": "warning",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "outside_frozen_primary_secondary_scope",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 14 moved from right to left after pit exit and caused Car 27 to avoid a collision; it was not a braking-zone or multiple-defence allegation. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-qat-002060120e1b-01",
+        "fields": {
+          "adjudication_id_final": "adj-2bb6a3e3238bf797",
+          "incident_id_final": "incident-group-3d3328a390c3ac33",
+          "accused_driver_number_final": "11",
+          "affected_driver_numbers_final": "27|31",
+          "session_type_final": "Sprint",
+          "lap_number_final": "",
+          "location_final": "Turn 2",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "racing_incident",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 11 side of the three-car Sprint collision with Cars 27 and 31 at Turn 2; no driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-qat-8a64aec7daf5-01",
+        "fields": {
+          "adjudication_id_final": "adj-3963f9cb2db8ec33",
+          "incident_id_final": "incident-group-3d3328a390c3ac33",
+          "accused_driver_number_final": "31",
+          "affected_driver_numbers_final": "11|27",
+          "session_type_final": "Sprint",
+          "lap_number_final": "",
+          "location_final": "Turn 2",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "racing_incident",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 31 side of the three-car Sprint collision with Cars 11 and 27 at Turn 2; no driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2023-qat-9b045d16fdac-01",
+        "fields": {
+          "adjudication_id_final": "adj-be81901bac03674e",
+          "incident_id_final": "incident-group-3d3328a390c3ac33",
+          "accused_driver_number_final": "27",
+          "affected_driver_numbers_final": "11|31",
+          "session_type_final": "Sprint",
+          "lap_number_final": "",
+          "location_final": "Turn 2",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "racing_incident",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 27 side of the three-car Sprint collision with Cars 11 and 31 at Turn 2; no driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2024-mia-8181b93a13ff-01",
+        "fields": {
+          "adjudication_id_final": "",
+          "incident_id_final": "",
+          "accused_driver_number_final": "31",
+          "affected_driver_numbers_final": "16",
+          "session_type_final": "Reconnaissance",
+          "lap_number_final": "",
+          "location_final": "Pit lane",
+          "incident_family_final": "pit_lane_procedure",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "10",
+          "penalty_points_final": "1",
+          "grid_places_final": "",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:pit_lane_procedure",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 31 left its garage without being released and collided with Car 16 on the reconnaissance lap; excluded pre-session pit-lane procedure. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2024-mia-86547ded7d12-01",
+        "fields": {
+          "adjudication_id_final": "adj-66a7d8add9666258",
+          "incident_id_final": "incident-group-86e2a514b5312efc",
+          "accused_driver_number_final": "18",
+          "affected_driver_numbers_final": "14|4|44",
+          "session_type_final": "Sprint",
+          "lap_number_final": "1",
+          "location_final": "Turn 1",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 18 side of the four-car, three-contact Sprint chain involving Cars 14, 18, 44, and 4; damage affected Cars 14 and 18 and Car 4 retired. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2024-mia-b115633c9ba0-01",
+        "fields": {
+          "adjudication_id_final": "adj-c88d0a0133c58194",
+          "incident_id_final": "incident-group-86e2a514b5312efc",
+          "accused_driver_number_final": "14",
+          "affected_driver_numbers_final": "18|4|44",
+          "session_type_final": "Sprint",
+          "lap_number_final": "1",
+          "location_final": "Turn 1",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 14 side of the four-car, three-contact Sprint chain involving Cars 14, 18, 44, and 4; no driver was predominantly to blame. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2024-mia-badde45f9141-01",
+        "fields": {
+          "adjudication_id_final": "adj-0a015cee0b31ad67",
+          "incident_id_final": "incident-group-86e2a514b5312efc",
+          "accused_driver_number_final": "44",
+          "affected_driver_numbers_final": "14|4|18",
+          "session_type_final": "Sprint",
+          "lap_number_final": "1",
+          "location_final": "Turn 1",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 44 side of the four-car, three-contact Sprint chain involving Cars 14, 18, 44, and 4; the sudden arrival of Car 44 contributed but no driver was predominantly to blame. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2024-can-2d45bb0945a9-01",
+        "fields": {
+          "adjudication_id_final": "adj-08975f5bf7e53df4",
+          "incident_id_final": "incident-group-1f0e1655ef842f90",
+          "accused_driver_number_final": "81",
+          "affected_driver_numbers_final": "63",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turns 13-14",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 81 adjudication for slight contact with Car 63 through Turns 13-14; no driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2024-can-546aad3f9319-01",
+        "fields": {
+          "adjudication_id_final": "adj-d710238ee5f893bf",
+          "incident_id_final": "incident-group-1f0e1655ef842f90",
+          "accused_driver_number_final": "63",
+          "affected_driver_numbers_final": "81",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turns 13-14",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Mirrored Car 63 adjudication for slight contact with Car 81 through Turns 13-14; no driver was predominantly at fault. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2024-hun-46b193d4af90-01",
+        "fields": {
+          "adjudication_id_final": "adj-c05dc23d16515f58",
+          "incident_id_final": "incident-src-c05dc23d16515f58",
+          "accused_driver_number_final": "1",
+          "affected_driver_numbers_final": "44",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 1",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 1 locked both fronts and collided with Car 44 at Turn 1; no driver was predominantly to blame. Car 23 was passed before the incident and is not an affected role. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2024-usa-1d5ba0527e94-01",
+        "fields": {
+          "adjudication_id_final": "adj-780b464e1e0142e6",
+          "incident_id_final": "incident-src-780b464e1e0142e6",
+          "accused_driver_number_final": "10",
+          "affected_driver_numbers_final": "23",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 15",
+          "incident_family_final": "gaining_advantage_off_track",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "5",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 10 left the track and returned ahead of Car 23 after losing the right to the corner; five-second penalty. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2024-mex-a4340456d96a-01",
+        "fields": {
+          "adjudication_id_final": "adj-692b411e9f958d1d",
+          "incident_id_final": "incident-src-692b411e9f958d1d",
+          "accused_driver_number_final": "11",
+          "affected_driver_numbers_final": "30",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turns 4-5",
+          "incident_family_final": "forcing_off_track",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "racing_incident",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 11's late Turn 4 move caused Car 30 to leave the track to avoid contact; Car 11 later conceded and the stewards called it a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2024-qat-ea0ded916e32-01",
+        "fields": {
+          "adjudication_id_final": "adj-244bac6c349c96be",
+          "incident_id_final": "incident-src-244bac6c349c96be",
+          "accused_driver_number_final": "30",
+          "affected_driver_numbers_final": "77",
+          "session_type_final": "Race",
+          "lap_number_final": "5",
+          "location_final": "Turn 1",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "10",
+          "penalty_points_final": "2",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Race incident: Car 30 understeered into Car 77 at Turn 1; FastF1 lap starts place the minute-rounded 19:12 FIA time at the start of lap 5. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2024-abu-62aed0693198-01",
+        "fields": {
+          "adjudication_id_final": "adj-5b76f9299c3d25a5",
+          "incident_id_final": "incident-src-5b76f9299c3d25a5",
+          "accused_driver_number_final": "77",
+          "affected_driver_numbers_final": "11",
+          "session_type_final": "Race",
+          "lap_number_final": "1",
+          "location_final": "Turn 6",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "time_penalty",
+          "penalty_seconds_final": "10",
+          "penalty_points_final": "2",
+          "grid_places_final": "",
+          "fault_language_final": "wholly_to_blame",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Race incident: Car 77 hit the rear-left wheel of Car 11 at Turn 6 on lap 1 and was wholly at fault; ten seconds and two penalty points. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2025-chn-c6a27ca62eb2-01",
+        "fields": {
+          "adjudication_id_final": "adj-00f21170a32794f2",
+          "incident_id_final": "incident-src-00f21170a32794f2",
+          "accused_driver_number_final": "30",
+          "affected_driver_numbers_final": "7",
+          "session_type_final": "Sprint",
+          "lap_number_final": "",
+          "location_final": "Turn 14",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 30 and Car 7 made minor contact at Turn 14 in the Sprint; the source says Car 30 had the right to the corner and took no further action. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2025-mco-6f59e264b0c0-01",
+        "fields": {
+          "adjudication_id_final": "",
+          "incident_id_final": "",
+          "accused_driver_number_final": "18",
+          "affected_driver_numbers_final": "16",
+          "session_type_final": "Practice 1",
+          "lap_number_final": "",
+          "location_final": "Turn 6",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "grid_penalty",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "1",
+          "grid_places_final": "1",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "out_of_scope_session",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Friday Practice 1 collision: Car 18 cut across Car 16, was wholly to blame, and caused confirmed damage; excluded by session while retaining the one-place grid penalty and point. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2025-esp-f89ab19eeac5-01",
+        "fields": {
+          "adjudication_id_final": "adj-6a1ad4e004abe2f1",
+          "incident_id_final": "incident-src-6a1ad4e004abe2f1",
+          "accused_driver_number_final": "30",
+          "affected_driver_numbers_final": "87",
+          "session_type_final": "Race",
+          "lap_number_final": "",
+          "location_final": "Turn 1",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "racing_incident",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Car 30 made minor contact with Car 87 and forced it onto the Turn 1 escape road; positions were retained and the stewards called it a racing incident. Pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2025-bel-91a490dae37f-01",
+        "fields": {
+          "adjudication_id_final": "",
+          "incident_id_final": "",
+          "accused_driver_number_final": "27",
+          "affected_driver_numbers_final": "18",
+          "session_type_final": "Qualifying",
+          "lap_number_final": "",
+          "location_final": "Pit lane",
+          "incident_family_final": "causing_collision",
+          "outcome_family_final": "no_further_action",
+          "penalty_seconds_final": "",
+          "penalty_points_final": "",
+          "grid_places_final": "",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "outside_secondary_offence_scope",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. Qualifying document: the competitor received a pit-lane queue reprimand, while the separate driver-collision allegation ended in no further action because neither driver was predominantly to blame; collisions are outside the secondary impeding-only population. Pending independent review."
+        }
+      }
+    ]
+  }
+}

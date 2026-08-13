@@ -1,3 +1,4 @@
+import hashlib
 import json
 from pathlib import Path
 
@@ -7,6 +8,7 @@ import pytest
 from f1stewards.review_explorer import (
     QA_EVIDENCE_FIELDS,
     QUEUE_SPECS,
+    REVIEW_CHAIN_MANIFEST_FILENAME,
     REVIEW_LEDGER_SCHEMA_VERSION,
     apply_review_ledger,
     build_review_explorer_payload,
@@ -191,6 +193,25 @@ def test_apply_ledger_changes_only_editable_fields_in_separate_workspace(
     tmp_path: Path,
 ) -> None:
     workspace = _write_workspace(tmp_path)
+    audit = workspace / "first_pass_audit.csv"
+    audit.write_text("queue_name,row_id\n", encoding="utf-8")
+    source_digest = workspace_input_sha256(workspace)
+    (workspace / "first_pass_manifest.json").write_text(
+        json.dumps(
+            {
+                "first_pass_id": "first-pass-test",
+                "workspace_id": workspace.name,
+                "output_workspace_sha256": source_digest,
+                "outputs": {
+                    "first_pass_audit.csv": {
+                        "sha256": hashlib.sha256(audit.read_bytes()).hexdigest(),
+                        "row_count": 0,
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
     ledger = tmp_path / "ledger.json"
     _write_ledger(
         ledger,
@@ -226,6 +247,13 @@ def test_apply_ledger_changes_only_editable_fields_in_separate_workspace(
     assert edited.loc[0, "coder_id"] == "reviewer-a"
     assert edited.loc[0, "title"] == source.loc[0, "title"]
     assert applied["adjudications"] == 2
+    assert (output / "first_pass_manifest.json").exists()
+    assert (output / "first_pass_audit.csv").exists()
+    chain = json.loads((output / REVIEW_CHAIN_MANIFEST_FILENAME).read_text(encoding="utf-8"))
+    assert chain["first_pass_id"] == "first-pass-test"
+    assert chain["base_workspace_sha256"] == source_digest
+    assert chain["current_workspace_sha256"] == workspace_input_sha256(output)
+    assert chain["steps"][0]["applied_field_counts"]["adjudications"] == 2
 
 
 def test_apply_ledger_rejects_stale_or_protected_edits(tmp_path: Path) -> None:

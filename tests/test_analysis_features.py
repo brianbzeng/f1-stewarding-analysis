@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import duckdb
@@ -194,6 +195,55 @@ def test_provisional_features_preserve_driver_roles_and_block_reporting(
     assert bool(feature["panel_context_complete"])
     assert feature["panel_data_status"] == "source_observed"
     assert len(build.driver_roles) == 2
+
+
+def test_pending_source_coding_enters_design_features_without_release(
+    tmp_path: Path,
+) -> None:
+    connection = _database(tmp_path)
+    documents, adjudications, qa, validation = _inputs()
+    adjudications.loc[0, "eligibility_suggestion"] = "manual_offence_review"
+    pending_fields = {
+        "adjudication_id_final": "adj-pending",
+        "incident_id_final": "incident-pending",
+        "accused_driver_number_final": "44",
+        "affected_driver_numbers_final": "33",
+        "session_type_final": "Race",
+        "incident_family_final": "forcing_off_track",
+        "outcome_family_final": "no_further_action",
+        "fault_language_final": "racing_incident",
+        "include_primary_final": "true",
+        "include_secondary_final": "false",
+        "coder_id": "source-reviewer",
+        "review_status": "single_coded_pending_human",
+    }
+    for field, value in pending_fields.items():
+        adjudications.loc[0, field] = value
+    try:
+        build = assemble_analysis_features(
+            connection,
+            documents,
+            adjudications,
+            qa,
+            workspace_id="workspace-pending",
+            workspace_input_sha256="d" * 64,
+            workspace_validation=validation,
+        )
+    finally:
+        connection.close()
+
+    assert len(build.features) == 1
+    feature = build.features.iloc[0]
+    assert feature["feature_label_status"] == "incomplete_human_coding"
+    assert feature["population_status"] == "source_coded_primary_pending_human"
+    assert feature["incident_family"] == "forcing_off_track"
+    assert feature["outcome_family"] == "no_further_action"
+    assert bool(feature["provisional_design_eligible"])
+    assert not bool(feature["model_eligible"])
+    assert not bool(feature["reporting_eligible"])
+    assert json.loads(feature["feature_provenance"])["label_basis"] == (
+        "single_coded_pending_human"
+    )
 
 
 def test_reviewed_features_use_final_outcome_and_materialize_release(

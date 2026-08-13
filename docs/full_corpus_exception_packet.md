@@ -1,7 +1,7 @@
 # Full-Corpus Exception Investigation Packet
 
-Status: content-addressed investigation packet generated; source review and independent disposition
-remain pending.
+Status: content-addressed descendant packet generated; targeted source coding is complete and
+independent disposition remains pending.
 
 ## Purpose
 
@@ -14,21 +14,22 @@ Generate or byte-verify it with:
 
 ```powershell
 f1stewards build-full-corpus-exception-packet `
-  data/manual/full_corpus_first_pass/full-coding-e0192ecbd9e4
+  data/manual/full_corpus_review_rounds/lineage_rebuild/recalled_versions/full-coding-e0192ecbd9e4
 ```
 
-The current packet is `exception-packet-b4c076afb79f`, schema
+The current packet is `exception-packet-2e9bc5621dfa`, schema
 `full-corpus-exception-packet-v1`, derived from `first-pass-5aa88d7f05b2` and workspace SHA-256
-`de816c98622f6b429529041ad616fe706cbfdf17e82d169d598aff45b6e7bca9`.
+`e1d4c4a969aee29b3db2a4f65e253e444c2e0c7d735cc3ec5451e3ec7b883f8f`. The verified review-chain
+manifest links that descendant back to the original first pass through all four applied ledgers.
 
 | Output | Rows | SHA-256 |
 |---|---:|---|
-| `investigation_queue.csv` | 582 | `a077ab241fc0da4508fcb6b1a417a0e1f20e4cdec2ec5e061922dcbf1feae28b` |
-| `queue_linkage.csv` | 682 | `7aed62bcab3493c87293204297ee536de2adfeb643f948e15c8e400ec534a8f2` |
+| `investigation_queue.csv` | 582 | `432d6ace0a2b73b12af432349130d83933957842fcd0d3e345c391031357c20d` |
+| `queue_linkage.csv` | 682 | `79c71e33eeb9c3b2620aa46bb04202b521b589cf7bbdfc7819233e2a14bb399d` |
 
 The derived files remain local under
-`data/manual/full_corpus_exception_packets/exception-packet-b4c076afb79f`; the committed generator,
-tests, and this release record reproduce them from the protected first-pass workspace.
+`data/manual/full_corpus_exception_packets/exception-packet-2e9bc5621dfa`; the committed generator,
+tests, and this release record reproduce them from the protected chained workspace.
 
 ## Workload de-duplication
 
@@ -104,13 +105,16 @@ no-action inclusion. All remain `single_coded_pending_human` pending independent
 
 The 18 analytical-scope conflicts have likewise been recorded through the versioned
 [scope-conflict ledger](analytical_scope_conflict_review.md): eight secondary Qualifying-impeding
-inclusions and ten exclusions. The original exception packet remains the immutable handoff from
-first-pass schema v3; the chained ledgers are the auditable resolution layer.
+inclusions and ten exclusions. The 61 manual-scope investigations then produce 52 primary
+inclusions and nine exclusions with mirrored and multi-car structure preserved. Finally, the four
+unavailable recalled Belgian versions receive archive-only exclusion dispositions without imputed
+outcomes. All four ledgers preserve `single_coded_pending_human`; the current packet is the auditable
+descendant handoff, not evidence of independent completion.
 
 ## Interpretation boundary
 
 The packet is an operational review control. It does not recover the four recalled Belgian source
-binaries, confirm any of the 486 proposed exclusions, resolve multi-driver splits, or authorize
+binaries, independently confirm any of the 486 proposed exclusions, or authorize
 consistency, nationality, competitive-impact, proportionality, or fairness findings. A reviewer must
 still record dispositions in the protected workspace and pass reconciliation and analytical-release
 controls.

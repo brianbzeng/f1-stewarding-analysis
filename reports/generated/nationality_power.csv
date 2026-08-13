@@ -1,0 +1,9 @@
+baseline_probability,target_risk_difference,target_exposure_log_odds,repetitions,successful_fits,successful_fit_fraction,simulation_fit_status,detection_power,target_power,power_target_met,monte_carlo_standard_error,median_estimated_log_odds,median_cluster_robust_se,exposed_rows,unexposed_rows,event_clusters,event_random_intercept_sd,interpretation_status
+0.5,0.05,0.20067069546215133,500,500,1.0,stable,0.092,0.8,False,0.012925633446759968,0.21223450707765046,0.35476076547425883,44,304,131,0.35,design_simulation_not_effect_estimate
+0.5,0.1,0.4054651081081643,500,500,1.0,stable,0.182,0.8,False,0.01725549187939886,0.4184642064870844,0.3563549062019245,44,304,131,0.35,design_simulation_not_effect_estimate
+0.5,0.15,0.6190392084062235,500,500,1.0,stable,0.436,0.8,False,0.02217674457624473,0.6527419418652958,0.36561743538010294,44,304,131,0.35,design_simulation_not_effect_estimate
+0.5,0.2,0.8472978603872034,500,500,1.0,stable,0.606,0.8,False,0.021852414054287,0.8406711035327625,0.37785916061550384,44,304,131,0.35,design_simulation_not_effect_estimate
+0.7,0.05,0.25131442828090633,500,500,1.0,stable,0.082,0.8,False,0.012269963325128565,0.24285560897644365,0.3959141966399168,44,304,131,0.35,design_simulation_not_effect_estimate
+0.7,0.1,0.5389965007326867,500,500,1.0,stable,0.258,0.8,False,0.019567115270269147,0.5591291377774998,0.427576775687938,44,304,131,0.35,design_simulation_not_effect_estimate
+0.7,0.15,0.8873031950009029,500,498,0.996,stable,0.528,0.8,False,0.022325590697672478,0.9351984420376125,0.4716733879297176,44,304,131,0.35,design_simulation_not_effect_estimate
+0.7,0.2,1.3499267169490148,500,496,0.992,stable,0.788,0.8,False,0.018278730809331373,1.4144631302478297,0.540832090750438,44,304,131,0.35,design_simulation_not_effect_estimate

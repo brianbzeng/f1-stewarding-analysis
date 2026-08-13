@@ -26,7 +26,7 @@ from f1stewards.coding_workspace import (
     validate_edited_full_corpus_coding_workspace,
 )
 
-FEATURE_SCHEMA_VERSION = "adjudication-analysis-features-v2"
+FEATURE_SCHEMA_VERSION = "adjudication-analysis-features-v3"
 COMPLETE_REVIEW_STATUSES = {"double_coded", "adjudicated"}
 SANCTION_OUTCOMES = {
     "warning",
@@ -134,9 +134,9 @@ def _review_complete(value: Any) -> bool:
     return _clean(value) in COMPLETE_REVIEW_STATUSES
 
 
-def _adjudication_final_complete(row: pd.Series) -> bool:
-    if not _review_complete(row["review_status"]):
-        return False
+def _adjudication_structurally_complete(row: pd.Series) -> bool:
+    """Return whether final fields form a usable coding record, independent of review status."""
+
     primary = _clean(row["include_primary_final"]).casefold()
     secondary = _clean(row["include_secondary_final"]).casefold()
     if primary not in {"true", "false"} or secondary not in {"true", "false"}:
@@ -161,6 +161,13 @@ def _adjudication_final_complete(row: pd.Series) -> bool:
             return False
         return not (outcome == "grid_penalty" and not _clean(row["grid_places_final"]))
     return bool(_clean(row["exclusion_reason_final"]) and _clean(row["coder_id"]))
+
+
+def _adjudication_final_complete(row: pd.Series) -> bool:
+    return bool(
+        _review_complete(row["review_status"])
+        and _adjudication_structurally_complete(row)
+    )
 
 
 def _document_final_complete(row: pd.Series) -> bool:
@@ -453,11 +460,17 @@ def assemble_analysis_features(
     )[:12]
 
     any_final = adjudications[FINAL_ADJUDICATION_FIELDS].ne("").any(axis=1)
+    structurally_complete = adjudications.apply(
+        _adjudication_structurally_complete, axis=1
+    )
     final_complete = adjudications.apply(_adjudication_final_complete, axis=1)
     final_primary = adjudications["include_primary_final"].str.casefold().eq("true")
     suggested_primary = adjudications["eligibility_suggestion"].eq("primary_candidate")
-    selected = adjudications.loc[suggested_primary | (final_complete & final_primary)].copy()
+    selected = adjudications.loc[
+        suggested_primary | (structurally_complete & final_primary)
+    ].copy()
     selected["_any_final"] = any_final.loc[selected.index]
+    selected["_structurally_complete"] = structurally_complete.loc[selected.index]
     selected["_final_complete"] = final_complete.loc[selected.index]
     selected["_final_primary"] = final_primary.loc[selected.index]
 
@@ -466,12 +479,16 @@ def assemble_analysis_features(
     for _, row in selected.iterrows():
         is_final_primary = bool(row["_final_complete"] and row["_final_primary"])
         is_final_excluded = bool(row["_final_complete"] and not row["_final_primary"])
+        use_final = bool(row["_structurally_complete"] and row["_final_primary"])
         if is_final_primary:
             label_status = "human_reviewed_final"
             population_status = "human_reviewed_primary"
         elif is_final_excluded:
             label_status = "human_reviewed_excluded"
             population_status = "human_reviewed_excluded"
+        elif use_final:
+            label_status = "incomplete_human_coding"
+            population_status = "source_coded_primary_pending_human"
         elif row["_any_final"]:
             label_status = "incomplete_human_coding"
             population_status = "incomplete_human_coding"
@@ -479,7 +496,6 @@ def assemble_analysis_features(
             label_status = "provisional_machine_suggestion"
             population_status = "provisional_primary_candidate"
 
-        use_final = is_final_primary
         session_type = _clean(
             row["session_type_final"] if use_final else row["session_type_suggestion"]
         )
@@ -550,6 +566,8 @@ def assemble_analysis_features(
                 driver_number=accused_number,
                 role_number_basis=(
                     "human_reviewed_final"
+                    if is_final_primary
+                    else "single_coded_pending_human"
                     if use_final
                     else _clean(row["driver_number_basis_suggestion"])
                 ),
@@ -570,6 +588,8 @@ def assemble_analysis_features(
                 driver_number=number,
                 role_number_basis=(
                     "human_reviewed_final"
+                    if is_final_primary
+                    else "single_coded_pending_human"
                     if use_final
                     else "machine_extracted_affected_number"
                 ),
@@ -601,7 +621,8 @@ def assemble_analysis_features(
             else "missing"
         )
         provisional_eligible = bool(
-            label_status == "provisional_machine_suggestion"
+            label_status
+            in {"provisional_machine_suggestion", "incomplete_human_coding"}
             and outcome_model_eligible
             and accused_match == "matched"
         )
@@ -692,11 +713,17 @@ def assemble_analysis_features(
                 "feature_provenance": json.dumps(
                     {
                         "label_basis": (
-                            "human_reviewed_final" if use_final else "machine_suggestion"
+                            "human_reviewed_final"
+                            if is_final_primary
+                            else "single_coded_pending_human"
+                            if use_final
+                            else "machine_suggestion"
                         ),
                         "identity_basis": "FastF1 classification plus sourced registry",
                         "affected_role_basis": (
                             "human_reviewed_final"
+                            if is_final_primary
+                            else "single_coded_pending_human"
                             if use_final
                             else "machine_extracted_review_aid"
                         ),

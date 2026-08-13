@@ -71,7 +71,7 @@ The full-corpus review console displays the available Fact, Infringement, Decisi
 next to the proposed exclusion and official FIA link. Section availability is 423 Fact, 424
 Infringement, 434 Decision, and 414 Reason records; nonstandard formats remain visibly incomplete.
 
-The content-addressed `exception-packet-b4c076afb79f` groups the 486 QA rows with overlapping
+The current content-addressed `exception-packet-2e9bc5621dfa` groups the 486 QA rows with overlapping
 document and adjudication exceptions. Four QA sources appear in all three queues, so one source
 investigation can inform all linked decisions without silently copying a QA disposition. The
 remaining 482 are QA-only investigations. Parser-warning exclusions that received a pending-human

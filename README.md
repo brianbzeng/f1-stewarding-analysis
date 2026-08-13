@@ -4,6 +4,15 @@ An auditable analysis of consistency, potential nationality effects, and competi
 
 This project treats stewarding decisions as regulatory evidence, not fan opinion. Its purpose is to determine whether formally adjudicated driving incidents receive comparable treatment after accounting for observable context, and to prioritize unusual decisions for human review. It does **not** claim that a statistical model can determine fault or prove misconduct.
 
+## Final report
+
+Read the recruiter-facing [report landing page](reports/README.md), open the
+[executable Jupyter report](notebooks/06_final_oversight_report.ipynb), or download the
+[code-free HTML edition](reports/the_cost_of_discretion.html). The central finding is that nominal
+penalty severity and realized competitive burden are different quantities; the independently
+reviewed pilot demonstrates that distinction, while the full-corpus consistency and nationality
+claims remain explicitly blocked by their evidence gates.
+
 ## Questions
 
 1. How predictable are penalty and no-further-action decisions from observable incident facts?
@@ -109,8 +118,9 @@ judgments unstarted. The generated
 [first-pass review console](explorer/full_corpus_first_pass_review.html) exposes those assignments
 without counting any as independent review.
 
-The content-addressed [exception investigation packet](docs/full_corpus_exception_packet.md)
-collapses the 682 unstarted queue rows to 582 unique FIA documents, eliminating 100 duplicate
+The current content-addressed [exception investigation packet](docs/full_corpus_exception_packet.md)
+is `exception-packet-2e9bc5621dfa`. It collapses the 682 unresolved independent-review queue rows to
+582 unique FIA documents, eliminating 100 duplicate
 source reviews. It gives every investigation a root cause, priority, linked queue IDs, official URL,
 available Fact/Decision/Reason evidence, and review question. The QA console now carries the same
 linked decision evidence for all 486 sampled exclusions.
@@ -126,6 +136,14 @@ cross-family/session decisions: eight secondary Qualifying-impeding inclusions a
 It also preserves a previously unlinked corrected Italian decision by coding its matching earlier
 version as superseded. The chained console now shows 1,938 document and 1,891 adjudication rows
 pending human confirmation, leaving 65 and 61 respectively unstarted.
+
+The follow-on 61-case manual-scope ledger records 52 source-coded primary inclusions and nine
+controlled exclusions, including mirrored and multi-car incident structure. A final archive-level
+ledger preserves the four unavailable recalled 2024 Belgian pit-lane-speeding versions without
+imputing their missing outcomes. The complete four-step review chain is content-addressed at
+workspace SHA-256 `e1d4c4a969aee29b3db2a4f65e253e444c2e0c7d735cc3ec5451e3ec7b883f8f`.
+Every source-coded record remains `single_coded_pending_human`; none is mislabeled as independent
+review.
 
 ## Pilot commands
 
@@ -207,7 +225,7 @@ statistical modeling; its protected machine-seed layer is complete and human dis
 
 The first full-corpus coding bridge is now reproducible and checksum-protected. Its document queue
 retains all 2,003 outcome labels, and its adjudication seed retains all 1,952 live,
-content-confirmed decisions. Audited deterministic rules currently prioritize 296 primary
+content-confirmed decisions. The initial audited deterministic rules prioritize 296 primary
 Race/Sprint candidates and 74 secondary qualifying-impeding candidates; 77 ambiguous session or
 offence-family records remain mandatory manual review rather than automatic conclusions. The counts
 are triage workload, not final study results. A deterministic 486-row sample spans all 272 observed
@@ -235,7 +253,7 @@ Panel identity is usable as adjustment context; steward-country comparisons rema
 
 The content-addressed [full-corpus coding workspace](docs/full_corpus_coding_workspace.md) now joins
 all 1,952 adjudication starters to protected source lineage and the complete timing-quality context.
-All 296 primary candidates resolve to a loaded Race/Sprint session and accused-driver
+All 296 machine-seed primary candidates resolve to a loaded Race/Sprint session and accused-driver
 classification. Exact-starter and edited-workspace validators separately protect reproducibility
 while permitting final fields and traceable one-to-many adjudication splits. Human disposition and
 independent review remain required before substantive modeling. The executed
@@ -252,27 +270,27 @@ paths and clearly out-of-scope parser-warning exclusions into disclosed editable
 never prefilling a parser-warning inclusion. It preserves every protected source column, uses
 source-unique provisional incident IDs to avoid false grouping, and extracts written fault language
 only from explicit phrases. All 19 edited-workspace controls pass. The resulting feature build,
-`features-99c7c3429c01`, contains 296 `incomplete_human_coding` primary rows after source coding the
-last parser exception; reporting eligibility remains zero.
+`features-8f436aaa3796`, contains 348 `incomplete_human_coding` primary rows after the complete
+source-coding chain; reporting eligibility remains zero.
 
 The [gated analysis feature release](docs/analysis_feature_release.md) materializes one
 adjudication-grain table and a separate accused/affected driver-role bridge in DuckDB. Its current
-build contains 296 provisional candidates and 580 role rows with complete sourced identity joins;
-ten ambiguous `other` outcomes remain outside the binary design set. All reporting flags remain
-false because document, adjudication, and exclusion-QA human review has not begun. Exact
-document-panel identity is now joined for all 296 candidate rows and hashed into the feature-build
+build contains 348 provisional candidates and 692 role rows with complete sourced identity joins;
+ten ambiguous `other` outcomes remain outside the binary design set. Half the candidates have a
+completed source-coding pass and half remain machine-assisted, but all reporting flags remain false
+because independent document, adjudication, and exclusion-QA review is incomplete. Exact
+document-panel identity is now joined for all 348 candidate rows and hashed into the feature-build
 lineage; steward-country exposure remains separately blocked by its evidence gate. The feature
 schema can therefore support model engineering and overlap diagnostics without leaking unreviewed
 suggestions into the eventual report.
 
-The [grouped validation and nationality design method](docs/model_validation_method.md) is now
-frozen in configuration and tested. Outcome validation enforces event-grouped folds and refuses
-the current unreviewed labels. The separate outcome-free notebook finds limited nationality
-support—40 British versus 256 other provisional accused-driver rows, no British exposure in 2018,
-and 78.0% estimated common support. Across 4,000 cluster-robust simulations, no assumed
-5–20 point difference reaches the predefined 80% power target. This is a design warning,
-not an effect estimate; absent material improvement after human coding, the nationality result will
-be reported as descriptive or inconclusive.
+The [grouped validation and nationality design method](docs/model_validation_method.md) is frozen in
+configuration and tested. Outcome validation enforces event-grouped folds and refuses the current
+unreviewed labels. The outcome-free notebook now finds 44 British versus 304 other provisional
+accused-driver rows across 131 events, 97.4% estimated common support, and a maximum weighted
+standardized difference of 0.040. Across 4,000 cluster-robust simulations, no assumed 5–20 point
+difference reaches the predefined 80% power target; the maximum is 78.8%. This is a design warning,
+not an effect estimate, so the final report labels nationality evidence inconclusive.
 
 Competitive-impact arithmetic now validates ordered same-lap classifications, preserves official
 order on exact ties, calculates standard Race/Sprint position points and podium/win changes, and
