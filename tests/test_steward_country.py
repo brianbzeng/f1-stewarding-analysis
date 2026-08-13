@@ -19,8 +19,8 @@ from f1stewards.warehouse import connect, initialize_database
 def test_country_evidence_preserves_dated_source_conflicts() -> None:
     evidence = load_steward_country_evidence()
 
-    assert len(evidence) == 75
-    assert evidence["steward_id"].nunique() == 68
+    assert len(evidence) == 88
+    assert evidence["steward_id"].nunique() == 81
     loic = evidence.loc[evidence["steward_id"].eq("loic_bacquelaine")]
     assert set(loic["analysis_country_code"]) == {"BEL", "LUX"}
     assert loic["observed_date"].nunique() >= 3
@@ -58,7 +58,7 @@ def test_country_evidence_audit_blocks_incomplete_and_conflicting_release(tmp_pa
 
     with connect(db_path) as connection:
         replace_steward_panel_frames(connection, panels)
-        assert replace_steward_country_evidence(connection, evidence) == 75
+        assert replace_steward_country_evidence(connection, evidence) == 88
         controls = steward_country_evidence_audit(connection)
         conflict = connection.sql(
             """

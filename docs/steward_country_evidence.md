@@ -37,7 +37,8 @@ Evidence dimensions are not interchangeable:
 
 - `fia_published_country_code`: an FIA list, event visa, or media kit prints a code beside the name;
 - `formula1_competition_nationality`: official Formula 1 standings print the former driver's code;
-- `fia_asn_affiliation`: an FIA biography ties an official to a national sporting authority; and
+- `fia_asn_affiliation`: an official FIA or ASN source ties an official to a national sporting
+  authority; and
 - `fia_biographical_country`: an FIA biography explicitly describes a country association.
 
 The first two are direct code evidence. ASN and biographical evidence can guide follow-up research,
@@ -47,12 +48,12 @@ but cannot by themselves satisfy the final direct-code control.
 
 | Diagnostic | Result |
 |---|---:|
-| Official-source evidence records | 75 |
+| Official-source evidence records | 88 |
 | Panel steward identities | 83 |
-| Stewards with any evidence | 68 |
+| Stewards with any evidence | 81 |
 | Stewards with direct FIA/F1 code evidence | 42 |
-| Stewards with one observed normalized code | 67 |
-| Stewards with no evidence yet | 15 |
+| Stewards with one observed normalized code | 80 |
+| Stewards with no evidence yet | 2 |
 | Unresolved source conflicts | 1 |
 
 This is research progress, not an analytical result. Coverage is deliberately counted at identity
