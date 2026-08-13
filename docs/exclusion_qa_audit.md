@@ -10,7 +10,7 @@ legacy wording, or an overly broad strict-liability pattern.
 
 The audit population is not chosen by fame or analyst judgment. `exclusion_qa_sample.csv` uses a
 frozen SHA-256 ordering within season, normalized session scope, and suggested offence-family
-strata. The current v4 seed selects 485 of 1,503 proposed exclusions and covers all 271 observed
+strata. The current v4 seed selects 486 of 1,505 proposed exclusions and covers all 272 observed
 strata.
 
 ## First diagnostic and correction
@@ -48,10 +48,18 @@ qualifying impeding must be explicit in the title, Fact, or Infringement text. R
 both the negative phrasing and procedural-context cases such as impeding at pit exit.
 
 Known Practice and other out-of-scope sessions now take precedence over family ambiguity, while an
-unknown session is never guessed from event context. After these corrections, 61 offence-family
+unknown session is never guessed from event context. After these corrections, 59 offence-family
 rows and 18 session rows remain manual rather than being forced into or out of scope. The resulting
-485-row exclusion sample contains 76 parser-warning documents that must be inspected from the
+486-row exclusion sample contains 77 parser-warning documents that must be inspected from the
 official PDF before their exclusions can be accepted.
+
+Recovery of the correct 2018 Brazilian archive exposed a different semantic false positive. The
+post-race Verstappen–Ocon garage ruling says that one driver made deliberate "physical contact"
+with another; a generic `contact with` pattern initially treated it as an on-track collision. The
+classifier now assigns explicit driver-to-driver physical contact to procedural/personnel review,
+while retaining car-contact and collision language in the primary driving-incident family. A
+regression test freezes that distinction. This moved one record out of the provisional primary
+population and triggered complete seed, QA-sample, workspace, feature, and notebook regeneration.
 
 This is a machine-assisted diagnostic result, not independent review agreement. No sample row is
 promoted to final exclusion merely because the regenerated screen found no conflict.

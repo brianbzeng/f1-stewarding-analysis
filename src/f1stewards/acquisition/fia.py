@@ -7,6 +7,7 @@ import binascii
 import hashlib
 import re
 import time
+import unicodedata
 from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
@@ -29,6 +30,7 @@ RECALLED_RE = re.compile(
 )
 DEFAULT_USER_AGENT = "f1-stewards-research/0.1 (portfolio research; low-rate requests)"
 LEGACY_DATE_RE = re.compile(r"(?:^|\s)(\d{2})\.(\d{2})(?:\s|$)")
+LEGACY_IDENTITY_STOPWORDS = {"formula", "one", "grand", "prix"}
 
 
 def sanitize_transport_url(url: str) -> str:
@@ -179,6 +181,37 @@ def _legacy_title(title: str, href: str) -> str:
     return title
 
 
+def _identity_tokens(value: str) -> set[str]:
+    ascii_value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode()
+    return {
+        token
+        for token in re.findall(r"[a-z0-9]+", ascii_value.casefold())
+        if token not in LEGACY_IDENTITY_STOPWORDS
+    }
+
+
+def validate_legacy_event_identity(html: str, event: PilotEvent, source_url: str) -> str:
+    """Reject a legacy timing page whose visible event identity does not match the catalog."""
+
+    soup = BeautifulSoup(html, "html.parser")
+    heading = soup.find("h1")
+    observed_name = " ".join(heading.get_text(" ", strip=True).split()) if heading else ""
+    expected_tokens = _identity_tokens(event.event_name)
+    observed_tokens = _identity_tokens(observed_name)
+    page_text = " ".join(soup.stripped_strings)
+    if not observed_name or not expected_tokens.issubset(observed_tokens):
+        raise ValueError(
+            f"Legacy FIA archive identity mismatch for {event.pilot_id}: expected "
+            f"{event.event_name!r}, observed {observed_name or '[missing h1]'!r} at {source_url}"
+        )
+    if str(event.season) not in page_text:
+        raise ValueError(
+            f"Legacy FIA archive season mismatch for {event.pilot_id}: expected "
+            f"{event.season} at {source_url}"
+        )
+    return observed_name
+
+
 def extract_legacy_document_links(
     html: str,
     event: PilotEvent,
@@ -208,6 +241,12 @@ def extract_legacy_document_links(
             continue
         seen_urls.add(document_url)
         title = _legacy_title(title, href)
+        document_class = classify_document(title, class_config)
+        # A few legacy index labels say "Summons" even though their official file name
+        # and PDF are the issued offence decision. Preserve the displayed title while
+        # using the stronger official-file signal for retrieval and content parsing.
+        if "offence" in href.casefold():
+            document_class = DocumentClass.STEWARD_DECISION
         parent_text = " ".join((anchor.find_parent("li") or anchor).stripped_strings)
         date_match = LEGACY_DATE_RE.search(parent_text)
         published_raw = (
@@ -225,7 +264,7 @@ def extract_legacy_document_links(
                 title=title,
                 document_url=document_url,
                 archive_url=archive_url,
-                document_class=classify_document(title, class_config),
+                document_class=document_class,
                 published_at_raw=published_raw,
                 published_at=None,
                 discovered_at=discovered_at,
@@ -268,13 +307,18 @@ def discover_event(
         else:
             timing_url = extract_legacy_timing_url(response.text, str(event.archive_url))
             timing_response = fetch_url(client, timing_url)
-        return extract_legacy_document_links(
+        validate_legacy_event_identity(timing_response.text, event, timing_url)
+        documents = extract_legacy_document_links(
             timing_response.text,
             event,
             class_config,
             archive_url=timing_url,
         )
-    return extract_document_links(response.text, event, class_config)
+    else:
+        documents = extract_document_links(response.text, event, class_config)
+    if not documents:
+        raise ValueError(f"No official FIA documents discovered for {event.pilot_id}")
+    return documents
 
 
 def _resolve_pdf_response(client: httpx.Client, document_url: str) -> httpx.Response:
@@ -426,11 +470,29 @@ def apply_document_lineage(
     return output
 
 
-def write_manifest(documents: Iterable[SourceDocument], path: Path) -> None:
+def write_manifest(
+    documents: Iterable[SourceDocument],
+    path: Path,
+    *,
+    replace_event_ids: set[str] | None = None,
+) -> None:
+    """Write lineage rows, optionally synchronizing complete event-level inventories."""
+
     path.parent.mkdir(parents=True, exist_ok=True)
     incoming = pd.DataFrame([document.model_dump(mode="json") for document in documents])
+    if incoming.empty:
+        raise ValueError("Cannot write an empty source-document manifest")
+    replacement_ids = set(replace_event_ids or ())
+    incoming_event_ids = set(incoming["pilot_id"].astype(str))
+    if missing := replacement_ids - incoming_event_ids:
+        raise ValueError(
+            "Cannot replace events without discovered documents: " + ", ".join(sorted(missing))
+        )
     if path.exists():
-        existing = pd.read_parquet(path).set_index("document_id")
+        existing = pd.read_parquet(path)
+        if replacement_ids:
+            existing = existing.loc[~existing["pilot_id"].astype(str).isin(replacement_ids)]
+        existing = existing.set_index("document_id")
         incoming = incoming.set_index("document_id")
         all_columns = list(dict.fromkeys([*existing.columns, *incoming.columns]))
         existing = existing.reindex(columns=all_columns)

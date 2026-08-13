@@ -16,6 +16,7 @@ from f1stewards.warehouse import (
     replace_claim_ledger,
     replace_international_sporting_code_issues,
     replace_sporting_regulation_issues,
+    synchronize_source_documents_for_events,
     upsert_pilot_events,
     upsert_regulatory_sources,
     upsert_source_documents,
@@ -116,3 +117,59 @@ def test_source_document_upsert_refreshes_document_class(tmp_path: Path) -> None
         ).fetchone()[0]
 
     assert stored_class == "steward_decision"
+
+
+def test_source_document_event_synchronization_removes_only_stale_rows(tmp_path: Path) -> None:
+    db_path = tmp_path / "test.duckdb"
+    event = load_pilot_events()[0]
+    base = SourceDocument(
+        document_id="kept-document",
+        pilot_id=event.pilot_id,
+        season=event.season,
+        event_name=event.event_name,
+        title="Kept decision",
+        document_url=f"{event.archive_url}#kept-document",
+        archive_url=event.archive_url,
+        document_class=DocumentClass.STEWARD_DECISION,
+        discovered_at=datetime(2026, 8, 12, tzinfo=UTC),
+    )
+    stale = SourceDocument.model_validate(
+        {
+            **base.model_dump(mode="json"),
+            "document_id": "stale-document",
+            "title": "Stale decision",
+            "document_url": f"{event.archive_url}#stale-document",
+        }
+    )
+    replacement = SourceDocument.model_validate(
+        {
+            **base.model_dump(mode="json"),
+            "document_id": "replacement-document",
+            "title": "Replacement decision",
+            "document_url": f"{event.archive_url}#replacement-document",
+        }
+    )
+
+    initialize_database(db_path)
+    with duckdb.connect(str(db_path)) as connection:
+        upsert_pilot_events(connection, [event])
+        upsert_source_documents(connection, [base, stale])
+        connection.execute(
+            "INSERT INTO curated.panels "
+            "(panel_id, event_id, panel_size, panel_source_document_id) "
+            "VALUES ('stale-source-panel', ?, 4, 'stale-document')",
+            [event.pilot_id],
+        )
+        synchronize_source_documents_for_events(
+            connection, {event.pilot_id}, [base, replacement]
+        )
+        stored = connection.sql(
+            "SELECT document_id FROM raw.source_documents ORDER BY document_id"
+        ).fetchall()
+        panel_source = connection.sql(
+            "SELECT panel_source_document_id FROM curated.panels "
+            "WHERE panel_id = 'stale-source-panel'"
+        ).fetchone()[0]
+
+    assert stored == [("kept-document",), ("replacement-document",)]
+    assert panel_source is None

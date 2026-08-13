@@ -200,6 +200,31 @@ def test_reason_text_can_identify_incident_without_triggering_damage_exclusions(
     assert row["eligibility_suggestion"] == "primary_candidate"
 
 
+def test_off_track_physical_contact_is_not_a_driving_collision() -> None:
+    population = pd.DataFrame(
+        [
+            outcome_row(
+                "garage-altercation",
+                title="Offence - Car 33 - Incident in the FIA garage",
+                fact_text=(
+                    "The driver of Car 33 made deliberate physical contact with the "
+                    "driver of Car 31 in the FIA garage."
+                ),
+                reason_text="The drivers were involved in a post-race altercation.",
+                decision_text="Two days of public service.",
+            )
+        ]
+    )
+    documents, candidates = build_full_corpus_coding_queues(
+        population, load_full_corpus_coding_settings()
+    )
+
+    row = documents.iloc[0]
+    assert row["offence_family_suggestion"] == "procedural_or_personnel"
+    assert row["eligibility_suggestion"] == "out_of_scope_suggestion"
+    assert candidates.iloc[0]["candidate_action_suggestion"] == "review_exclusion"
+
+
 def test_observed_out_of_scope_session_precedes_family_conflict() -> None:
     population = pd.DataFrame(
         [

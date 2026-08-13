@@ -9,7 +9,7 @@ status, stable event ID, guideline regime, archive system, and official FIA arch
 
 | Season | Events | FIA source records | Outcome labels | Recalled outcomes | Parsed live outcomes | Content-confirmed decisions | Full labeled template | Format review |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 2018 | 21 | 1,359 | 243 | 0 | 243 | 211 | 196 | 15 |
+| 2018 | 21 | 1,364 | 244 | 0 | 244 | 212 | 197 | 15 |
 | 2019 | 21 | 952 | 264 | 0 | 264 | 264 | 242 | 22 |
 | 2020 | 17 | 831 | 147 | 0 | 147 | 147 | 137 | 10 |
 | 2021 | 22 | 1,044 | 175 | 0 | 175 | 175 | 159 | 16 |
@@ -17,7 +17,7 @@ status, stable event ID, guideline regime, archive system, and official FIA arch
 | 2023 | 22 | 1,283 | 259 | 0 | 259 | 259 | 227 | 32 |
 | 2024 | 24 | 1,396 | 319 | 5 | 314 | 314 | 261 | 53 |
 | 2025 | 24 | 1,390 | 357 | 14 | 343 | 343 | 280 | 63 |
-| **Total** | **173** | **9,462** | **2,002** | **19** | **1,983** | **1,951** | **1,727** | **224** |
+| **Total** | **173** | **9,467** | **2,003** | **19** | **1,984** | **1,952** | **1,728** | **224** |
 
 These are evidence-population counts, not final analytical adjudication counts. They deliberately
 precede session, offence-family, document-version, referral, and eligibility rules.
@@ -31,10 +31,10 @@ is deliberately not used. A corpus-wide missed-outcome audit found no remaining 
 decision, infringement, offence, penalty, disqualification, reprimand, warning, fine, appeal, or
 Right of Review language.
 
-The 2018 archive demonstrates why title and content typing must remain distinct. Its 243 outcome
-labels resolve to 211 steward decisions, 29 summonses, two Race Director notes, and one Technical
+The 2018 archive demonstrates why title and content typing must remain distinct. Its 244 outcome
+labels resolve to 212 steward decisions, 29 summonses, two Race Director notes, and one Technical
 Delegate referral. The pipeline preserves both classifications rather than rewriting source
-history. Of the 211 actual decisions, 196 expose all four core labels; the remaining 15 are retained
+history. Of the 212 actual decisions, 197 expose all four core labels; the remaining 15 are retained
 for format review.
 
 The 2019 archive exposes one further source-system anomaly: an Australian Grand Prix file declares
@@ -90,7 +90,7 @@ valid document versions but require later analytical eligibility coding.
 
 Parser v4 recognizes the exact observed FIA heading typo `Infringment`, repairs the exact observed
 `InfringementBreach` extraction join, rejects lowercase prose fragments that resemble headings, and
-records missing infringement as a first-class warning. All 1,983 live outcome PDFs were parsed with
+records missing infringement as a first-class warning. All 1,984 live outcome PDFs were parsed with
 v4 and no parser execution failures.
 
 ## Corrected and recalled lineage
@@ -107,8 +107,12 @@ successor. Their contents are not inferred and they are excluded from analytical
 - For 2018, the collector follows the older event page to its Event & Timing Information page and
   extracts document cards. Those pages expose dates but not reliable publication times, so the
   pipeline records the source date string and does not invent timestamp precision.
-- Six early-2018 landing pages lost their timing-page handoff during an FIA site migration. Their
-  official timing URLs are explicit `archive_url_overrides` in `config/full_collection.yml`.
+- Seven 2018 landing pages lost or misdirect their timing-page handoff after FIA site migrations.
+  Their official timing URLs are explicit `archive_url_overrides` in
+  `config/full_collection.yml`. The Brazilian landing page currently redirects to the wrong event;
+  the override points to the FIA's official
+  [2018 Brazilian Event & Timing page](https://www.fia.com/events/fia-formula-one-world-championship/season-2018/eventtiming-information-19)
+  recovered through FIA site search.
 - Five 2021-2023 Mexico/Brazil archive pages require the FIA's historical event label rather than
   the corresponding FastF1 display name. Their transformations are explicit
   `archive_event_overrides` in the same configuration file.
@@ -122,16 +126,20 @@ Configuration, rather than hidden scraper branches, is the audit trail for these
 2. Expected event counts are fixed by season. Missing schedules, unexpected counts, duplicate
    event IDs, duplicate season/round pairs, missing pilot events, and orphan URL overrides fail
    catalog generation.
-3. `f1stewards study-discover` writes content-addressed source lineage to Parquet and DuckDB while
-   retaining an event-level retry queue. The default `decisions` profile retrieves the bounded
+3. `f1stewards study-discover` validates the season and event identity of every legacy timing page,
+   then writes content-addressed source lineage to Parquet and DuckDB while retaining an event-level
+   retry queue. A successful event refresh is a set synchronization: stale rows for that event are
+   removed without disturbing other events. The default `decisions` profile retrieves the bounded
    outcome set; broader adjudication and impact profiles are explicit in
    `config/evidence_profiles.yml`.
 4. `f1stewards study-inventory` reconciles document IDs and event coverage across the catalog,
-   Parquet manifest, DuckDB, and failure queue. It exits nonzero on any mismatch by default.
+   Parquet manifest, DuckDB, and failure queue. It also fails on binary checksums reused across
+   different events, which catches redirected-page contamination even when document IDs differ. It
+   exits nonzero on any mismatch by default.
 5. `f1stewards quality-check` requires every frozen event to resolve to source evidence and enforces
    source availability, corrected-document lineage, parser, and curated-data controls.
 
-At the 2026-08-12 checkpoint, all 173 events were covered; Parquet and DuckDB each contained 9,462
+At the 2026-08-12 checkpoint, all 173 events were covered; Parquet and DuckDB each contained 9,467
 unique source-document IDs; no catalog event was missing evidence; and the active discovery and
 retrieval failure counts were zero. Bounded outcome retrieval and parser-v4 content typing were
 complete for all eight seasons.
@@ -144,7 +152,7 @@ families, code multi-party relationships, and quantify all parsing, review, and 
 exclusions. Every later denominator must trace back to this frozen population and publish its
 attrition counts.
 
-The checksum-protected full-corpus seed now supplies that traceable bridge: 2,002 document-version
-review rows and 1,951 live decision seeds reconstruct exactly from the warehouse. Final inclusion,
+The checksum-protected full-corpus seed now supplies that traceable bridge: 2,003 document-version
+review rows and 1,952 live decision seeds reconstruct exactly from the warehouse. Final inclusion,
 accused-driver normalization, incident grouping, and independent review remain pending; see
 `docs/full_corpus_coding_workflow.md`.

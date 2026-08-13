@@ -14,9 +14,21 @@ INVENTORY_DISCREPANCY_KEYS = (
     "catalog_events_without_warehouse_documents",
     "manifest_unknown_event_ids",
     "warehouse_unknown_event_ids",
+    "manifest_cross_event_content_hashes",
+    "warehouse_cross_event_content_hashes",
     "active_discovery_failures",
     "active_retrieval_failures",
 )
+
+
+def _cross_event_content_hashes(frame: pd.DataFrame, event_column: str) -> int:
+    if "content_sha256" not in frame.columns:
+        return 0
+    hashed = frame.loc[frame["content_sha256"].notna(), ["content_sha256", event_column]].copy()
+    if hashed.empty:
+        return 0
+    event_counts = hashed.groupby("content_sha256")[event_column].nunique()
+    return int(event_counts.gt(1).sum())
 
 
 def reconcile_document_inventory(
@@ -54,6 +66,12 @@ def reconcile_document_inventory(
         "catalog_events_without_warehouse_documents": len(catalog_ids - warehouse_event_ids),
         "manifest_unknown_event_ids": len(manifest_event_ids - catalog_ids),
         "warehouse_unknown_event_ids": len(warehouse_event_ids - catalog_ids),
+        "manifest_cross_event_content_hashes": _cross_event_content_hashes(
+            manifest, "pilot_id"
+        ),
+        "warehouse_cross_event_content_hashes": _cross_event_content_hashes(
+            warehouse_documents, "event_id"
+        ),
         "active_discovery_failures": active_discovery_failures,
         "active_retrieval_failures": active_retrieval_failures,
     }

@@ -15,6 +15,7 @@ from f1stewards.acquisition.fia import (
     extract_legacy_document_links,
     extract_legacy_timing_url,
     sanitize_transport_url,
+    validate_legacy_event_identity,
     write_manifest,
 )
 from f1stewards.config import load_document_classes, load_pilot_events
@@ -116,12 +117,73 @@ def test_extract_legacy_event_timing_documents() -> None:
     assert all(str(record.archive_url) == timing_url for record in records)
 
 
+def test_legacy_offence_filename_overrides_mislabeled_summons_title() -> None:
+    timing_url = "https://www.fia.com/events/legacy/timing"
+    timing_html = """
+    <h1>Brazilian Grand Prix</h1><div>SEASON 2018</div>
+    <ul><li>11.11
+      <div class="for-documents"><a href="/sites/default/files/doc_35_-_offence.pdf">
+        <div class="title">Summons Doc35 - F.Alonso</div>
+      </a></div>
+    </li></ul>
+    """
+    event = load_pilot_events()[0].model_copy(
+        update={
+            "pilot_id": "2018-bra",
+            "season": 2018,
+            "event_name": "Brazilian Grand Prix",
+            "archive_system": "legacy_event_timing",
+            "season_slug": None,
+        }
+    )
+
+    records = extract_legacy_document_links(
+        timing_html,
+        event,
+        load_document_classes(),
+        archive_url=timing_url,
+    )
+
+    assert records[0].title == "Summons Doc35 - F.Alonso"
+    assert records[0].document_class == DocumentClass.STEWARD_DECISION
+
+
+def test_legacy_event_identity_rejects_cross_event_redirect() -> None:
+    event = load_pilot_events()[0].model_copy(
+        update={
+            "pilot_id": "2018-bra",
+            "season": 2018,
+            "event_name": "Brazilian Grand Prix",
+            "archive_system": "legacy_event_timing",
+            "season_slug": None,
+        }
+    )
+
+    assert (
+        validate_legacy_event_identity(
+            "<h1>Brazilian Grand Prix</h1><div>SEASON 2018</div>", event, "https://fia.test"
+        )
+        == "Brazilian Grand Prix"
+    )
+    try:
+        validate_legacy_event_identity(
+            "<h1>Abu Dhabi Grand Prix</h1><div>SEASON 2019</div>",
+            event,
+            "https://fia.test/wrong",
+        )
+    except ValueError as exc:
+        assert "identity mismatch" in str(exc)
+    else:
+        raise AssertionError("Cross-event legacy redirect must fail closed")
+
+
 def test_discover_event_accepts_direct_legacy_timing_page() -> None:
     timing_url = (
         "https://www.fia.com/events/fia-formula-one-world-championship/"
         "season-2018/eventtiming-information-4"
     )
     timing_html = """
+    <h1>Monaco Grand Prix</h1><div>SEASON 2018</div>
     <ul><li>27.05
       <div class="for-documents"><a href="/file/monaco-decision/download">
         <div class="title">Stewards Decision Doc42 - Car 7</div>
@@ -138,6 +200,7 @@ def test_discover_event_accepts_direct_legacy_timing_page() -> None:
         update={
             "pilot_id": "2018-mco",
             "season": 2018,
+            "event_name": "Monaco Grand Prix",
             "archive_url": timing_url,
             "archive_system": "legacy_event_timing",
             "season_slug": None,
@@ -226,6 +289,23 @@ def test_manifest_backfills_source_availability_for_legacy_rows(tmp_path: Path) 
     frame = pd.read_parquet(path)
 
     assert frame["source_availability_status"].tolist() == ["advertised", "advertised"]
+
+
+def test_manifest_event_replacement_removes_stale_rows(tmp_path: Path) -> None:
+    path = tmp_path / "manifest.parquet"
+    event = load_pilot_events()[0]
+    documents = extract_document_links(
+        (FIXTURES / "fia_archive.html").read_text(encoding="utf-8"),
+        event,
+        load_document_classes(),
+        discovered_at=datetime(2026, 8, 12, tzinfo=UTC),
+    )[:2]
+    write_manifest(documents, path)
+
+    write_manifest([documents[1]], path, replace_event_ids={event.pilot_id})
+    frame = pd.read_parquet(path)
+
+    assert frame["document_id"].tolist() == [documents[1].document_id]
 
 
 def test_retrieval_exception_preserves_broken_link_evidence() -> None:

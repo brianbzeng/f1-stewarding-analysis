@@ -13,6 +13,29 @@ LEFT JOIN raw.source_documents AS d USING (event_id)
 GROUP BY e.event_id, e.season
 HAVING count(d.document_id) = 0;
 
+-- One retrieved binary cannot be attributed to multiple race weekends.
+SELECT
+    content_sha256,
+    count(DISTINCT event_id) AS event_count,
+    string_agg(DISTINCT event_id, ', ' ORDER BY event_id) AS event_ids
+FROM raw.source_documents
+WHERE content_sha256 IS NOT NULL
+GROUP BY content_sha256
+HAVING count(DISTINCT event_id) > 1;
+
+-- Generated panel lineage must not survive removal of its source document.
+SELECT panel.document_id, panel.event_id
+FROM curated.document_panels AS panel
+LEFT JOIN raw.source_documents AS document USING (document_id)
+WHERE document.document_id IS NULL;
+
+SELECT panel.panel_id, panel.event_id, panel.panel_source_document_id
+FROM curated.panels AS panel
+LEFT JOIN raw.source_documents AS document
+    ON document.document_id = panel.panel_source_document_id
+WHERE panel.panel_source_document_id IS NOT NULL
+  AND document.document_id IS NULL;
+
 -- Parsed content types must remain in the documented source taxonomy.
 SELECT document_id, content_document_class, content_classification_basis
 FROM raw.document_text

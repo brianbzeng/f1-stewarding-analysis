@@ -150,32 +150,32 @@ avoids downloading summonses, classifications, notes, and circuit maps before th
 ## Project status
 
 The full 2018-2025 event inventory is complete. All 173 cataloged events have official FIA evidence:
-9,462 source-document records, including 2,002 outcome labels and 45 recalled notices across all
+9,467 source-document records, including 2,003 outcome labels and 45 recalled notices across all
 document classes. Nineteen recalls are outcome records: 15 link to verified corrected successors
-and four unavailable Belgian versions remain explicit exclusions. All 1,983 live outcome PDFs are
-retrieved and parsed with parser v4, yielding 1,951 content-confirmed steward decisions and zero
+and four unavailable Belgian versions remain explicit exclusions. All 1,984 live outcome PDFs are
+retrieved and parsed with parser v4, yielding 1,952 content-confirmed steward decisions and zero
 active discovery or retrieval failures. The frozen Parquet manifest and DuckDB lineage agree
 exactly. The next milestone is full-corpus analytical eligibility and adjudication coding before
 statistical modeling; its protected machine-seed layer is complete and human disposition remains.
 
 The first full-corpus coding bridge is now reproducible and checksum-protected. Its document queue
-retains all 2,002 outcome labels, and its adjudication seed retains all 1,951 live,
-content-confirmed decisions. Audited deterministic rules currently prioritize 295 primary
-Race/Sprint candidates and 74 secondary qualifying-impeding candidates; 79 ambiguous session or
+retains all 2,003 outcome labels, and its adjudication seed retains all 1,952 live,
+content-confirmed decisions. Audited deterministic rules currently prioritize 296 primary
+Race/Sprint candidates and 74 secondary qualifying-impeding candidates; 77 ambiguous session or
 offence-family records remain mandatory manual review rather than automatic conclusions. The counts
-are triage workload, not final study results. A deterministic 485-row sample spans all 271 observed
+are triage workload, not final study results. A deterministic 486-row sample spans all 272 observed
 season/session/family exclusion strata so proposed exclusions receive a reproducible false-exclusion
 audit. See [the full-corpus coding workflow](docs/full_corpus_coding_workflow.md).
 The [first exclusion-QA diagnostic](docs/exclusion_qa_audit.md) documents an actual 2021 session-
 terminology false-exclusion mechanism, the corrective regeneration, and the remaining human gate.
 The [full FastF1 collection method](docs/full_fastf1_collection.md) now covers all 197 expected
 Race/Sprint sessions: 3,938 classifications, 198,620 driver laps, and 16,039 Race Control messages.
-Strict completeness and 35 warehouse controls pass. All laps remain available for incident timing,
+Strict completeness and 38 warehouse controls pass. All laps remain available for incident timing,
 while 162,383 satisfy the conservative pace-model gate. Timestamp, normalization, and known
 historical source gaps remain explicit rather than imputed.
 
-The [steward-panel extraction](docs/steward_panel_extraction.md) now assigns all 1,951 live
-decisions at document grain: 1,935 signatures parse directly, 16 use a bounded single-panel event
+The [steward-panel extraction](docs/steward_panel_extraction.md) now assigns all 1,952 live
+decisions at document grain: 1,936 signatures parse directly, 16 use a bounded single-panel event
 consensus, and none remain unresolved. The resulting 181 panels preserve seven events with
 within-weekend substitutions and identify 83 stewards. Every extraction control passes; panel-
 nationality analysis remains explicitly blocked until all steward nationalities have source-backed
@@ -187,8 +187,8 @@ separate and exposes an official-source `BEL`/`LUX` conflict rather than forcing
 Panel identity is usable as adjustment context; steward-country comparisons remain blocked.
 
 The content-addressed [full-corpus coding workspace](docs/full_corpus_coding_workspace.md) now joins
-all 1,951 adjudication starters to protected source lineage and the complete timing-quality context.
-All 295 primary candidates resolve to a loaded Race/Sprint session and accused-driver
+all 1,952 adjudication starters to protected source lineage and the complete timing-quality context.
+All 296 primary candidates resolve to a loaded Race/Sprint session and accused-driver
 classification. Exact-starter and edited-workspace validators separately protect reproducibility
 while permitting final fields and traceable one-to-many adjudication splits. Human disposition and
 independent review remain required before substantive modeling. The executed
@@ -197,10 +197,10 @@ seasonal review workload, SQL candidate profile, timing coverage, and explicit b
 
 The [gated analysis feature release](docs/analysis_feature_release.md) materializes one
 adjudication-grain table and a separate accused/affected driver-role bridge in DuckDB. Its current
-build contains 295 provisional candidates and 578 role rows with complete sourced identity joins;
+build contains 296 provisional candidates and 580 role rows with complete sourced identity joins;
 ten ambiguous `other` outcomes remain outside the binary design set. All reporting flags remain
 false because document, adjudication, and exclusion-QA human review has not begun. Exact
-document-panel identity is now joined for all 295 candidate rows and hashed into the feature-build
+document-panel identity is now joined for all 296 candidate rows and hashed into the feature-build
 lineage; steward-country exposure remains separately blocked by its evidence gate. The feature
 schema can therefore support model engineering and overlap diagnostics without leaking unreviewed
 suggestions into the eventual report.
@@ -208,8 +208,8 @@ suggestions into the eventual report.
 The [grouped validation and nationality design method](docs/model_validation_method.md) is now
 frozen in configuration and tested. Outcome validation enforces event-grouped folds and refuses
 the current unreviewed labels. The separate outcome-free notebook finds limited nationality
-support—40 British versus 255 other provisional accused-driver rows, no British exposure in 2018,
-and 78.3% estimated common support. Across 4,000 stable cluster-robust simulations, no assumed
+support—40 British versus 256 other provisional accused-driver rows, no British exposure in 2018,
+and 78.0% estimated common support. Across 4,000 cluster-robust simulations, no assumed
 5–20 point difference reaches the predefined 80% power target. This is a design warning,
 not an effect estimate; absent material improvement after human coding, the nationality result will
 be reported as descriptive or inconclusive.

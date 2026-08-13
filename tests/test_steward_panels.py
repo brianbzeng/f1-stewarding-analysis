@@ -177,3 +177,45 @@ def test_replacement_preserves_sourced_steward_nationality(tmp_path) -> None:
     assert extraction["status"].eq("pass").all()
     release = controls.loc[controls["gate_type"].eq("analysis_release")]
     assert release["status"].eq("fail").all()
+
+
+def test_replacement_retires_unreferenced_stale_panel(tmp_path) -> None:
+    db_path = tmp_path / "stale-panel.duckdb"
+    initialize_database(db_path)
+    aliases = load_steward_name_aliases()
+    population = pd.DataFrame(
+        [
+            {
+                "document_id": "document-1",
+                "event_id": "event-1",
+                "raw_text": FOUR_MEMBER_SIGNATURE,
+            },
+            {
+                "document_id": "document-2",
+                "event_id": "event-1",
+                "raw_text": ALTERNATE_PANEL_SIGNATURE,
+            },
+        ]
+    )
+
+    with connect(db_path) as connection:
+        replace_steward_panel_frames(
+            connection, build_steward_panel_frames(population, aliases)
+        )
+        replace_steward_panel_frames(
+            connection, build_steward_panel_frames(population.iloc[:1], aliases)
+        )
+        active_panels = connection.sql(
+            "SELECT count(DISTINCT panel_id) FROM curated.document_panels"
+        ).fetchone()[0]
+        dormant_sources = connection.sql(
+            """
+            SELECT count(*)
+            FROM curated.panels
+            WHERE panel_id NOT IN (SELECT panel_id FROM curated.document_panels)
+              AND panel_source_document_id IS NOT NULL
+            """
+        ).fetchone()[0]
+
+    assert active_panels == 1
+    assert dormant_sources == 0

@@ -115,6 +115,7 @@ from f1stewards.warehouse import (
     replace_claim_ledger,
     replace_international_sporting_code_issues,
     replace_sporting_regulation_issues,
+    synchronize_source_documents_for_events,
     upsert_document_text,
     upsert_pilot_events,
     upsert_regulatory_sources,
@@ -755,13 +756,22 @@ def study_discover(
             all_documents.extend(documents)
 
     if all_documents:
-        write_manifest(all_documents, manifest_path)
+        successful_event_ids = {document.pilot_id for document in all_documents}
+        write_manifest(
+            all_documents,
+            manifest_path,
+            replace_event_ids=successful_event_ids,
+        )
     _write_discovery_failures(failures, attempted_event_ids, failure_path)
     initialize_database(db_path)
     with connect(db_path) as connection:
         upsert_study_events(connection, events)
         if all_documents:
-            upsert_source_documents(connection, all_documents)
+            synchronize_source_documents_for_events(
+                connection,
+                successful_event_ids,
+                all_documents,
+            )
     typer.echo(
         f"Wrote {len(all_documents)} lineage rows across {len(events)} events to "
         f"{manifest_path} and {db_path}; active discovery failures: {len(failures)}; "
@@ -849,7 +859,7 @@ def study_inventory(
             """
         ).df()
         warehouse_documents = connection.sql(
-            "SELECT document_id, event_id FROM raw.source_documents"
+            "SELECT document_id, event_id, content_sha256 FROM raw.source_documents"
         ).df()
         active_retrieval_failures = connection.sql(
             """

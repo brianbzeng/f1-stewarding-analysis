@@ -58,3 +58,28 @@ def test_inventory_reconciliation_reports_cross_artifact_drift() -> None:
     assert metrics["active_discovery_failures"] == 2
     assert metrics["active_retrieval_failures"] == 3
     assert not inventory_reconciliation_is_clean(metrics)
+
+
+def test_inventory_reconciliation_rejects_cross_event_binary_reuse() -> None:
+    manifest = pd.DataFrame(
+        {
+            "document_id": ["doc-1", "doc-2"],
+            "pilot_id": ["2018-bra", "2019-abu"],
+            "content_sha256": ["same-hash", "same-hash"],
+        }
+    )
+    warehouse = pd.DataFrame(
+        {
+            "document_id": ["doc-1", "doc-2"],
+            "event_id": ["2018-bra", "2019-abu"],
+            "content_sha256": ["same-hash", "same-hash"],
+        }
+    )
+
+    metrics = reconcile_document_inventory(
+        manifest, warehouse, {"2018-bra", "2019-abu"}
+    )
+
+    assert metrics["manifest_cross_event_content_hashes"] == 1
+    assert metrics["warehouse_cross_event_content_hashes"] == 1
+    assert not inventory_reconciliation_is_clean(metrics)

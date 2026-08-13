@@ -323,16 +323,28 @@ def replace_steward_panel_frames(
         connection.execute("ROLLBACK")
         raise
     else:
-        connection.execute(
-            """
-            DELETE FROM curated.panels
-            WHERE panel_id NOT IN (SELECT panel_id FROM panel_batch)
-              AND panel_id NOT IN (
-                  SELECT panel_id FROM curated.document_panels WHERE panel_id IS NOT NULL
-              )
-              AND panel_id NOT IN (SELECT panel_id FROM curated.panel_members)
-            """
-        )
+        active_panel_ids = set(frames.panels["panel_id"].astype(str))
+        stored_panel_ids = {
+            row[0] for row in connection.sql("SELECT panel_id FROM curated.panels").fetchall()
+        }
+        for panel_id in sorted(stored_panel_ids - active_panel_ids):
+            adjudication_references = connection.execute(
+                "SELECT count(*) FROM curated.adjudications WHERE panel_id = ?", [panel_id]
+            ).fetchone()[0]
+            if adjudication_references:
+                raise ValueError(
+                    f"Cannot remove stale panel {panel_id}: referenced by "
+                    f"{adjudication_references} curated adjudications"
+                )
+            # DuckDB 1.4.x can raise an internal optional-pointer error even when this
+            # foreign-key parent has no remaining references. Retain the dormant key,
+            # clear its obsolete source pointer, and derive every active panel measure
+            # from current document assignments.
+            connection.execute(
+                "UPDATE curated.panels SET panel_source_document_id = NULL "
+                "WHERE panel_id = ?",
+                [panel_id],
+            )
     finally:
         for name in batches:
             connection.unregister(name)

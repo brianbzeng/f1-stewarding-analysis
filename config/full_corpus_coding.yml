@@ -24,7 +24,7 @@ full_corpus_coding:
       - '\bcars?\s+\d{1,2}\s*(?:&|and)\s*(?:cars?\s+)?\d{1,2}\s+collided\b'
       - '\bcollision\s+with\s+car\b'
       - '\b(?:made|making)\s+contact\s+with\b'
-      - '\bcontact\s+(?:between|with)\b'
+      - '(?<!physical )\bcontact\s+(?:between|with)\b'
       - '\bcar\s+\d{1,2}\s+(?:hit|struck)\s+car\s+\d{1,2}\b'
     forcing_off_track:
       - '\bforc(?:e|ed|ing)\s+(?:another|an?\s+other|a)\s+driver\s+o(?:ff|f)(?:\s+of)?\s+the\s+track\b'
@@ -80,6 +80,7 @@ full_corpus_coding:
       - '\bchange\s+of\s+(?:the\s+)?floor\b'
       - '\bfloor\s+(?:has\s+been\s+|was\s+)?changed\b'
     procedural_or_personnel:
+      - '\bphysical\s+contact\s+with\s+(?:the\s+)?driver\b'
       - '\bcurfew\b'
       - '\bcufrew\b'
       - '\bpress\s+conference\b'

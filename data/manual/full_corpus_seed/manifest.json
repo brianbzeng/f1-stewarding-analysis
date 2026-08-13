@@ -1,17 +1,17 @@
 {
   "candidate_action_counts": {
-    "manual_scope_review": 63,
+    "manual_scope_review": 61,
     "manual_split_or_scope_review": 224,
-    "review_exclusion": 1296,
-    "review_primary_adjudication": 294,
+    "review_exclusion": 1298,
+    "review_primary_adjudication": 295,
     "review_secondary_adjudication": 74
   },
   "eligibility_suggestion_counts": {
     "content_exclusion_suggestion": 32,
-    "manual_offence_review": 61,
+    "manual_offence_review": 59,
     "manual_session_review": 18,
-    "out_of_scope_suggestion": 1503,
-    "primary_candidate": 295,
+    "out_of_scope_suggestion": 1505,
+    "primary_candidate": 296,
     "secondary_candidate": 74,
     "version_exclusion_suggestion": 15,
     "version_resolution_required": 4
@@ -19,37 +19,37 @@
   "exclusion_quality_control": {
     "maximum_per_stratum": 8,
     "minimum_per_stratum": 2,
-    "population_rows": 1503,
-    "sample_rows": 485,
-    "strata": 271,
+    "population_rows": 1505,
+    "sample_rows": 486,
+    "strata": 272,
     "target_fraction": 0.1
   },
   "interpretation_boundary": "Machine suggestions prioritize manual review and are not final eligibility, fault, consistency, or fairness findings.",
   "outputs": {
     "adjudication_seed_queue.csv": {
-      "row_count": 1951,
-      "sha256": "328567007a60b20a5a52071cfb40ad7593661b6642840f9e920fc3ef389a5add"
+      "row_count": 1952,
+      "sha256": "8c55560914dac36844b0538350b24c61cd60479f8453f3435e441b9b1df134ba"
     },
     "document_review_queue.csv": {
-      "row_count": 2002,
-      "sha256": "885a6914bd80fd0aed1c855b0979bfdd552bc5aec5364498bd6929952a6a90bb"
+      "row_count": 2003,
+      "sha256": "0f44b5423669097253cf644e1ed244f1a910f193f452cb4f57b229aebaa692b1"
     },
     "exclusion_qa_sample.csv": {
-      "row_count": 485,
-      "sha256": "e27751f19e19b9152e9a14d4af78cb96bfbec97b4c2e4bf408ef953e8ae10d30"
+      "row_count": 486,
+      "sha256": "2228198960c403b3ac41f495c754284fa2d2c319b4d28333447cd3fa7aba843b"
     }
   },
   "schema_version": "full_corpus_coding_v4",
-  "settings_sha256": "b85e4fd0180a12d561da6be1958bff1aac6fb4a5973f70c182730a51f09c2806",
+  "settings_sha256": "55e53188916fab71dec8efe4aefdea291d1d1276d842eda844fe86b3f4ecdd68",
   "source_counts": {
-    "archive_outcome_labels": 2002,
-    "content_confirmed_decisions": 1951,
+    "archive_outcome_labels": 2003,
+    "content_confirmed_decisions": 1952,
     "corrected_successors": 15,
-    "live_content_confirmed_decisions": 1951,
+    "live_content_confirmed_decisions": 1952,
     "parser_review_required": 224,
     "recalled_linked_predecessors": 15,
     "recalled_outcome_labels": 19,
     "recalled_unresolved": 4
   },
-  "source_population_sha256": "0b4eba85c8d225c2e89bc87bfc49b660e03d5d58666e03bfad799af8c7ecddd6"
+  "source_population_sha256": "2ab7d931dea06f205d6e6e7b37068fe3c62e8337b2cb8f4ecc1910578d7b98d2"
 }

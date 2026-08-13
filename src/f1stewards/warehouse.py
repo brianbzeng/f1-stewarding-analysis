@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from contextlib import suppress
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -281,6 +282,122 @@ def upsert_source_documents(
         """
     )
     connection.unregister("document_batch")
+
+
+def synchronize_source_documents_for_events(
+    connection: duckdb.DuckDBPyConnection,
+    event_ids: set[str],
+    documents: list[SourceDocument],
+) -> None:
+    """Make selected event inventories exact while preserving unchanged parsed documents."""
+
+    if not event_ids:
+        upsert_source_documents(connection, documents)
+        return
+    document_event_ids = {document.pilot_id for document in documents}
+    if unexpected := document_event_ids - event_ids:
+        raise ValueError(
+            "Source-document batch contains events outside replacement scope: "
+            + ", ".join(sorted(unexpected))
+        )
+    if missing := event_ids - document_event_ids:
+        raise ValueError(
+            "Cannot synchronize events without discovered documents: "
+            + ", ".join(sorted(missing))
+        )
+
+    incoming_ids = {document.document_id for document in documents}
+    placeholders = ", ".join("?" for _ in event_ids)
+    prior_rows = connection.execute(
+        f"SELECT document_id FROM raw.source_documents WHERE event_id IN ({placeholders})",  # noqa: S608
+        sorted(event_ids),
+    ).fetchall()
+    stale_ids = {row[0] for row in prior_rows} - incoming_ids
+    if not stale_ids:
+        upsert_source_documents(connection, documents)
+        return
+
+    stale_frame = pd.DataFrame({"document_id": sorted(stale_ids)})
+    connection.register("stale_source_document_ids", stale_frame)
+    try:
+        protected_reference_count = connection.sql(
+            """
+            SELECT count(*)
+            FROM (
+                SELECT source_document_id AS document_id FROM curated.incidents
+                UNION ALL
+                SELECT decision_document_id FROM curated.adjudications
+                UNION ALL
+                SELECT source_document_id FROM curated.harm_assessments
+                UNION ALL
+                SELECT classification_source_document_id FROM curated.harm_assessments
+                UNION ALL
+                SELECT source_document_id FROM curated.incident_locations
+                UNION ALL
+                SELECT source_document_id FROM curated.incident_relations
+                UNION ALL
+                SELECT source_document_id FROM curated.cross_event_sanction_effects
+            ) AS reference
+            JOIN stale_source_document_ids USING (document_id)
+            """
+        ).fetchone()[0]
+        if protected_reference_count:
+            raise ValueError(
+                f"Refusing to remove {len(stale_ids)} stale source documents because "
+                f"{protected_reference_count} curated references require manual migration"
+            )
+
+        affected_feature_builds = connection.sql(
+            """
+            SELECT DISTINCT feature_build_id
+            FROM analysis.adjudication_features
+            JOIN stale_source_document_ids USING (document_id)
+            """
+        ).df()
+        # DuckDB cannot delete a referenced child and its parent in one transaction.
+        # Commit generated/parsed child invalidation first; a failed second phase leaves
+        # the old source inventory visible and therefore detectable by reconciliation.
+        connection.execute("BEGIN TRANSACTION")
+        if not affected_feature_builds.empty:
+            connection.register("affected_feature_build_ids", affected_feature_builds)
+            for table in (
+                "analysis.adjudication_driver_roles",
+                "analysis.feature_release_controls",
+                "analysis.adjudication_features",
+                "metadata.analysis_feature_builds",
+            ):
+                connection.execute(
+                    f"DELETE FROM {table} WHERE feature_build_id IN "  # noqa: S608
+                    "(SELECT feature_build_id FROM affected_feature_build_ids)"
+                )
+            connection.unregister("affected_feature_build_ids")
+        connection.execute(
+            "DELETE FROM curated.document_panels WHERE document_id IN "
+            "(SELECT document_id FROM stale_source_document_ids)"
+        )
+        connection.execute(
+            "UPDATE curated.panels SET panel_source_document_id = NULL "
+            "WHERE panel_source_document_id IN "
+            "(SELECT document_id FROM stale_source_document_ids)"
+        )
+        connection.execute(
+            "DELETE FROM raw.document_text WHERE document_id IN "
+            "(SELECT document_id FROM stale_source_document_ids)"
+        )
+        connection.execute("COMMIT")
+        connection.execute("BEGIN TRANSACTION")
+        connection.execute(
+            "DELETE FROM raw.source_documents WHERE document_id IN "
+            "(SELECT document_id FROM stale_source_document_ids)"
+        )
+        upsert_source_documents(connection, documents)
+        connection.execute("COMMIT")
+    except Exception:
+        with suppress(duckdb.TransactionException):
+            connection.execute("ROLLBACK")
+        raise
+    finally:
+        connection.unregister("stale_source_document_ids")
 
 
 def upsert_document_text(

@@ -14,9 +14,9 @@ The protected seed bundle is in `data/manual/full_corpus_seed/`:
 
 | File | Unit | Frozen rows | Purpose |
 |---|---:|---:|---|
-| `document_review_queue.csv` | one FIA archive outcome label | 2,002 | version, content, session, offence-family, and eligibility review |
-| `adjudication_seed_queue.csv` | one live content-confirmed decision document | 1,951 | source-rich starting rows that may be split, grouped, or excluded after review |
-| `exclusion_qa_sample.csv` | one proposed exclusion selected by frozen hash | 485 | stratified false-exclusion audit across season, session scope, and offence family |
+| `document_review_queue.csv` | one FIA archive outcome label | 2,003 | version, content, session, offence-family, and eligibility review |
+| `adjudication_seed_queue.csv` | one live content-confirmed decision document | 1,952 | source-rich starting rows that may be split, grouped, or excluded after review |
+| `exclusion_qa_sample.csv` | one proposed exclusion selected by frozen hash | 486 | stratified false-exclusion audit across season, session scope, and offence family |
 | `manifest.json` | one seed release | 1 | source/config hashes, output hashes, row counts, and suggestion counts |
 
 Run:
@@ -41,14 +41,14 @@ files from DuckDB and fails if any byte differs.
 
 ## Denominator and attrition contract
 
-The document queue retains all 2,002 FIA archive labels classified as outcomes:
+The document queue retains all 2,003 FIA archive labels classified as outcomes:
 
-- 1,951 live PDFs content-confirmed as steward decisions;
+- 1,952 live PDFs content-confirmed as steward decisions;
 - 32 live labels whose bodies are summonses, Race Director notes, or another non-decision type;
 - 15 recalled labels with a verified corrected successor; and
 - 4 recalled Belgian pit-speeding labels with no recoverable successor.
 
-Only the 1,951 live, content-confirmed decisions seed possible adjudication rows. This is not the
+Only the 1,952 live, content-confirmed decisions seed possible adjudication rows. This is not the
 final study population: session, offence family, document format, accused-driver unit, and referral
 eligibility still require review.
 
@@ -85,11 +85,11 @@ Current review triage is:
 
 | Suggestion | Rows | Meaning |
 |---|---:|---|
-| `primary_candidate` | 295 | Race/Sprint source matched one and only one primary family |
+| `primary_candidate` | 296 | Race/Sprint source matched one and only one primary family |
 | `secondary_candidate` | 74 | qualifying source explicitly matched qualifying impeding |
-| `manual_offence_review` | 61 | unclassified or analytically conflicting family language |
+| `manual_offence_review` | 59 | unclassified or analytically conflicting family language |
 | `manual_session_review` | 18 | no reliable session label and no higher-priority version/content disposition |
-| `out_of_scope_suggestion` | 1,503 | recognized exclusion or out-of-scope session |
+| `out_of_scope_suggestion` | 1,505 | recognized exclusion or out-of-scope session |
 | `content_exclusion_suggestion` | 32 | archive label is not a decision when its body is inspected |
 | `version_exclusion_suggestion` | 15 | recalled predecessor has a linked live successor |
 | `version_resolution_required` | 4 | recalled version has no recoverable successor |
@@ -119,7 +119,7 @@ exclusion, with every matched family retained for audit.
    successor becomes the source document; the predecessor remains provenance.
 7. Independently review inclusion, incident grouping, offence family, outcome, and highlighted case
    studies. Record disagreement rather than silently overwriting the first code.
-8. Publish an attrition table from 2,002 labels to final adjudications, with a count and reason for
+8. Publish an attrition table from 2,003 labels to final adjudications, with a count and reason for
    every exclusion stage.
 
 If a parsed driver heading is unavailable, schema v4 may suggest the first explicit `Car N`
@@ -131,7 +131,7 @@ Schema v4 also separates protected machine suggestions from reviewer-correctable
 `fault_language_final` fields. A corrected outcome can therefore never silently inherit an
 incorrect parsed punishment amount.
 
-The frozen rules select 485 of the 1,503 out-of-scope suggestions across all 271 observed
+The frozen rules select 486 of the 1,505 out-of-scope suggestions across all 272 observed
 season/session/family strata. Selection uses a documented SHA-256 ordering, a 10% target, at least
 two rows per non-singleton stratum, and at most eight rows per stratum. This is a review workload,
 not a statistical estimate of an error rate. Any discovered

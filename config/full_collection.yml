@@ -93,3 +93,6 @@ full_collection:
     2018-esp: https://www.fia.com/events/fia-formula-one-world-championship/season-2018/eventtiming-information-3
     2018-mco: https://www.fia.com/events/fia-formula-one-world-championship/season-2018/eventtiming-information-4
     2018-can: https://www.fia.com/events/fia-formula-one-world-championship/season-2018/eventtiming-information-5
+    # The event landing page currently redirects to 2019 Abu Dhabi. FIA's own
+    # site-search index preserves the complete Brazil archive at this route.
+    2018-bra: https://www.fia.com/events/fia-formula-one-world-championship/season-2018/eventtiming-information-19

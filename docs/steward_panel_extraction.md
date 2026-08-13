@@ -45,8 +45,8 @@ them.
 
 | Control or diagnostic | Result |
 |---|---:|
-| Live decision documents | 1,951 |
-| Direct exact signature parses | 1,935 |
+| Live decision documents | 1,952 |
+| Direct exact signature parses | 1,936 |
 | Direct parse rate | 99.18% |
 | Single-panel event-consensus assignments | 16 |
 | Unresolved document assignments | 0 |
