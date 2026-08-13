@@ -182,7 +182,7 @@ nationality analysis remains explicitly blocked until all steward nationalities 
 lineage.
 
 The follow-on [steward-country evidence ledger](docs/steward_country_evidence.md) currently holds
-53 dated official-source records for 46 of the 83 stewards. It keeps raw and normalized codes
+75 dated official-source records for 68 of the 83 stewards. It keeps raw and normalized codes
 separate and exposes an official-source `BEL`/`LUX` conflict rather than forcing a static value.
 Panel identity is usable as adjustment context; steward-country comparisons remain blocked.
 
