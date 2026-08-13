@@ -1,0 +1,29 @@
+event_country_label,f1_country_code,source_type,source_url,source_note
+Abu Dhabi,UAE,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Abu Dhabi events are mapped to the United Arab Emirates.
+Australia,AUS,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Austria,AUT,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Azerbaijan,AZE,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Bahrain,BHR,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Belgium,BEL,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Brazil,BRA,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Canada,CAN,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+China,CHN,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+France,FRA,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Germany,GER,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Great Britain,GBR,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Historical event-country label normalized to the British driver code.
+Hungary,HUN,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Italy,ITA,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Japan,JPN,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Mexico,MEX,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Monaco,MON,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Netherlands,NED,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Portugal,POR,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Qatar,QAT,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Russia,RUS,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Saudi Arabia,KSA,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Singapore,SGP,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Spain,ESP,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+Turkey,TUR,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.
+United Arab Emirates,UAE,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Modern event-country label normalized to the F1 country-code vocabulary.
+United Kingdom,GBR,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Modern event-country label normalized to the British driver code.
+United States,USA,controlled_crosswalk,https://www.formula1.com/en/results/2025/races,Event-country label normalized to the F1 country-code vocabulary.

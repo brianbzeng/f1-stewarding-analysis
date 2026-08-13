@@ -70,6 +70,12 @@ from f1stewards.manual import (
     IndependentReviewRecord,
 )
 from f1stewards.models import DocumentClass
+from f1stewards.nationality import (
+    load_driver_nationality_registry,
+    load_event_country_crosswalk,
+    nationality_audit,
+    replace_nationality_registries,
+)
 from f1stewards.parsing.decision import parse_decision_pdf
 from f1stewards.readiness import (
     evaluate_pilot_readiness,
@@ -197,6 +203,8 @@ def init_db(
     regulatory_sources = load_regulatory_sources()
     sporting_regulation_issues = load_sporting_regulation_issues()
     international_sporting_code_issues = load_international_sporting_code_issues()
+    drivers = load_driver_nationality_registry()
+    event_countries = load_event_country_crosswalk()
     with connect(db_path) as connection:
         upsert_pilot_events(connection, events)
         upsert_regulatory_sources(connection, regulatory_sources)
@@ -206,12 +214,16 @@ def init_db(
         code_issue_count = replace_international_sporting_code_issues(
             connection, international_sporting_code_issues
         )
+        driver_count, country_count = replace_nationality_registries(
+            connection, drivers, event_countries
+        )
         claim_count = replace_claim_ledger(connection)
     typer.echo(
         f"Initialized {db_path} with {len(events)} pilot events and "
         f"{len(regulatory_sources)} event-linked regulatory sources; loaded "
         f"{issue_count} Sporting Regulation issues, {code_issue_count} International "
-        f"Sporting Code issues, and {claim_count} report claims"
+        f"Sporting Code issues, {driver_count} driver identities, {country_count} event-country "
+        f"mappings, and {claim_count} report claims"
     )
 
 
@@ -272,6 +284,8 @@ def init_study_db(
     initialize_database(db_path)
     events = load_study_events(catalog_path)
     regulatory_sources = load_regulatory_sources()
+    drivers = load_driver_nationality_registry()
+    event_countries = load_event_country_crosswalk()
     with connect(db_path) as connection:
         upsert_study_events(connection, events)
         upsert_regulatory_sources(connection, regulatory_sources)
@@ -281,12 +295,50 @@ def init_study_db(
         code_issue_count = replace_international_sporting_code_issues(
             connection, load_international_sporting_code_issues()
         )
+        driver_count, country_count = replace_nationality_registries(
+            connection, drivers, event_countries
+        )
         claim_count = replace_claim_ledger(connection)
     typer.echo(
         f"Initialized {db_path} with {len(events)} study events; loaded {issue_count} "
-        f"Sporting Regulation issues, {code_issue_count} Code issues, and "
+        f"Sporting Regulation issues, {code_issue_count} Code issues, "
+        f"{driver_count} driver identities, {country_count} event-country mappings, and "
         f"{claim_count} report claims"
     )
+
+
+@app.command("load-nationality-registry")
+def load_nationality_registry_command(
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Replace sourced driver-nationality and controlled event-country dimensions."""
+
+    initialize_database(db_path)
+    drivers = load_driver_nationality_registry()
+    event_countries = load_event_country_crosswalk()
+    with connect(db_path) as connection:
+        driver_count, country_count = replace_nationality_registries(
+            connection, drivers, event_countries
+        )
+    typer.echo(
+        f"Loaded {driver_count} driver identities and {country_count} event-country mappings"
+    )
+
+
+@app.command("nationality-audit")
+def nationality_audit_command(
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+    strict: Annotated[
+        bool, typer.Option(help="Exit nonzero when any identity control fails.")
+    ] = False,
+) -> None:
+    """Audit identity coverage, source lineage, and observed-country conflicts."""
+
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        controls = nationality_audit(connection)
+    typer.echo(controls.to_string(index=False))
+    if strict and not controls["status"].eq("pass").all():
+        raise typer.Exit(code=1)
 
 
 @app.command("claim-audit")
