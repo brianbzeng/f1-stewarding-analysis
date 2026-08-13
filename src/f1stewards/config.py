@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import re
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -49,6 +50,70 @@ def load_full_collection_settings(path: Path | None = None) -> dict[str, Any]:
     expected = settings.get("expected_event_counts")
     if not isinstance(expected, dict) or {int(year) for year in expected} != set(seasons):
         raise ValueError("Expected event counts must cover every study season")
+    return settings
+
+
+def load_full_corpus_coding_settings(path: Path | None = None) -> dict[str, Any]:
+    """Load and validate the frozen machine-suggestion rules for full-corpus coding."""
+
+    config_path = path or PROJECT_ROOT / "config" / "full_corpus_coding.yml"
+    payload = load_yaml(config_path)
+    settings = payload.get("full_corpus_coding")
+    if not isinstance(settings, dict):
+        raise ValueError(f"Missing full_corpus_coding mapping in {config_path}")
+
+    required = {
+        "schema_version",
+        "source_document_class",
+        "primary_sessions",
+        "secondary_sessions",
+        "primary_incident_patterns",
+        "secondary_incident_patterns",
+        "excluded_offence_patterns",
+    }
+    if missing := required - set(settings):
+        raise ValueError(
+            f"Full-corpus coding settings are missing: {', '.join(sorted(missing))}"
+        )
+
+    expected_primary = {
+        "causing_collision",
+        "forcing_off_track",
+        "gaining_advantage_off_track",
+        "unsafe_rejoin",
+        "moving_under_braking",
+        "multiple_defensive_moves",
+    }
+    primary_patterns = settings["primary_incident_patterns"]
+    if not isinstance(primary_patterns, dict) or set(primary_patterns) != expected_primary:
+        raise ValueError("Primary incident patterns must match the frozen protocol families")
+    for group_name in (
+        "primary_incident_patterns",
+        "secondary_incident_patterns",
+        "excluded_offence_patterns",
+    ):
+        group = settings[group_name]
+        if not isinstance(group, dict) or not group:
+            raise ValueError(f"{group_name} must be a non-empty mapping")
+        for family, patterns in group.items():
+            if not isinstance(patterns, list) or not patterns or not all(
+                isinstance(pattern, str) and pattern for pattern in patterns
+            ):
+                raise ValueError(f"{group_name}.{family} must contain regex strings")
+            for pattern in patterns:
+                try:
+                    re.compile(pattern)
+                except re.error as exc:
+                    raise ValueError(
+                        f"{group_name}.{family} contains invalid regex {pattern!r}"
+                    ) from exc
+
+    primary_sessions = settings["primary_sessions"]
+    secondary_sessions = settings["secondary_sessions"]
+    if primary_sessions != ["Race", "Sprint"]:
+        raise ValueError("Primary sessions must remain Race and Sprint")
+    if not isinstance(secondary_sessions, list) or "Qualifying" not in secondary_sessions:
+        raise ValueError("Secondary sessions must include Qualifying")
     return settings
 
 

@@ -8,6 +8,7 @@ from f1stewards.config import (
     load_document_lineage,
     load_evidence_profiles,
     load_full_collection_settings,
+    load_full_corpus_coding_settings,
     load_international_sporting_code_issues,
     load_regulatory_sources,
     load_retrieval_exceptions,
@@ -75,6 +76,22 @@ def test_full_collection_settings_cover_completed_study_seasons() -> None:
     assert sum(settings["expected_event_counts"].values()) == 173
     assert settings["season_slugs"][2025] == "season-2025-2071"
     assert settings["pilot_event_ids"] == ["2019-aut", "2023-abu", "2025-aut"]
+
+
+def test_full_corpus_coding_settings_match_frozen_primary_scope() -> None:
+    settings = load_full_corpus_coding_settings()
+
+    assert settings["schema_version"] == "full_corpus_coding_v1"
+    assert settings["primary_sessions"] == ["Race", "Sprint"]
+    assert set(settings["primary_incident_patterns"]) == {
+        "causing_collision",
+        "forcing_off_track",
+        "gaining_advantage_off_track",
+        "unsafe_rejoin",
+        "moving_under_braking",
+        "multiple_defensive_moves",
+    }
+    assert "qualifying_impeding" in settings["secondary_incident_patterns"]
 
 
 def test_evidence_profiles_bound_retrieval_scope() -> None:

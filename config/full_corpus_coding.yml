@@ -1,0 +1,115 @@
+full_corpus_coding:
+  schema_version: full_corpus_coding_v1
+  source_document_class: steward_decision
+
+  primary_sessions:
+    - Race
+    - Sprint
+
+  secondary_sessions:
+    - Qualifying
+    - Sprint Qualifying
+    - Sprint Shootout
+
+  primary_incident_patterns:
+    causing_collision:
+      - '\bcaus(?:e|ed|ing)\s+(?:a\s+)?collision\b'
+      - '\bcollid(?:e|ed|ing)\s+with\b'
+      - '\bcollision\s+with\s+car\b'
+    forcing_off_track:
+      - '\bforc(?:e|ed|ing)\s+(?:another|an?\s+other|a)\s+driver\s+o(?:ff|f)(?:\s+of)?\s+the\s+track\b'
+      - '\bforc(?:e|ed|ing)\s+car\s+\d{1,2}\s+off(?:\s+of)?\s+(?:the\s+)?track\b'
+      - '\bfail(?:ed|ure)?\s+to\s+leave\s+(?:at\s+least\s+)?(?:a\s+)?car(?:s|\s+width)?\b'
+    gaining_advantage_off_track:
+      - '\bleav(?:e|es|ing|left)\s+the\s+track\s+and\s+gain(?:ed|ing|s)?\b'
+      - '\boff\s+the\s+track\s+and\s+gain(?:ed|ing|s)?\s+(?:a\s+)?(?:lasting\s+)?advantage\b'
+      - '\bgain(?:ed|ing)\s+(?:a\s+)?(?:lasting\s+)?advantage\s+(?:by|while|after)\s+leav(?:e|ing|left)\b'
+    unsafe_rejoin:
+      - '\bunsafe\s+re[- ]?join(?:ed|ing)?\b'
+      - '\bre[- ]?join(?:ed|ing)?\s+(?:the\s+)?track\s+(?:in\s+an?\s+)?unsafe\b'
+      - '\bre[- ]?join(?:ed|ing)?\s+unsafely\b'
+    moving_under_braking:
+      - '\bmov(?:e|ed|ing)\s+under\s+braking\b'
+      - '\bchange(?:d|ing)?\s+direction\s+(?:in|under)\s+the\s+braking\b'
+    multiple_defensive_moves:
+      - '\bmore\s+than\s+one\s+change\s+of\s+direction\b'
+      - '\bmultiple\s+defensive\s+moves?\b'
+
+  secondary_incident_patterns:
+    qualifying_impeding:
+      - '\bimped(?:e|ed|ing|iment)\b'
+
+  excluded_offence_patterns:
+    pit_lane_speeding:
+      - '\bpit\s+lane\s+speed(?:ing|\s+limit)\b'
+    technical_nonconformity:
+      - '\btechnical\s+non[- ]?compliance\b'
+      - '\btechnical\s+non[- ]?conformity\b'
+      - '\bcar\s+weight\b'
+      - '\bplank\s+assembly\b'
+      - '\bfuel\s+sample\b'
+    component_or_allocation:
+      - '\bpower\s+unit\b'
+      - '\bgearbox\b'
+      - '\bsurvival\s+cell\b'
+      - '\breplacement\s+component\b'
+    parc_ferme_or_setup:
+      - '\bparc\s+ferm[eé]\b'
+      - '\bchanges?\s+made\s+during\s+parc\b'
+    procedural_or_personnel:
+      - '\bcurfew\b'
+      - '\bpress\s+conference\b'
+      - '\bteam\s+personnel\b'
+      - '\bdriver\s+change\b'
+      - '\bwithdrawal\s+from\s+the\s+event\b'
+    start_or_grid_permission:
+      - '\bpermission\s+to\s+start\b'
+      - '\bfailure\s+to\s+set\s+a\s+time\s+in\s+qualifying\b'
+      - '\bformation\s+of\s+the\s+grid\b'
+    protest_review_or_governance:
+      - '\bprotest\b'
+      - '\bright\s+of\s+review\b'
+      - '\breview\s+of\s+decision\b'
+      - '\bappeal\b'
+    routine_track_limits:
+      - '\btrack\s+limits?\b'
+      - '\bleaving\s+the\s+track\s+without\s+a\s+justifiable\s+reason\b'
+    lap_time_or_delta_procedure:
+      - '\bdeleted\s+lap\s+times?\b'
+      - '\bsc2[-–]sc1\s+times?\b'
+      - '\bfailing\s+to\s+set\s+(?:a\s+)?(?:lap\s+)?time\s+(?:with|within|in)\b'
+    pit_lane_procedure:
+      - '\bunsafe\s+release\b'
+      - '\breleased?\s+in\s+an?\s+unsafe\s+condition\b'
+      - '\bpit\s+(?:entry|exit|lane\s+incident|lane\s+infringement)\b'
+      - '\bcrossing\s+the\s+(?:line\s+at\s+)?pit\s+(?:entry|exit)\b'
+    neutralization_or_flag_procedure:
+      - '\bsafety\s+car\s+procedure\b'
+      - '\b(?:virtual\s+)?safety\s+car\s+infringement\b'
+      - '\bbehind\s+the\s+safety\s+car\b'
+      - '\bovertaking\s+(?:under|during).*safety\s+car\b'
+      - '\bovertaking\s+.*under\s+(?:a\s+)?vsc\b'
+      - '\b(?:yellow|red|blue)\s+flags?\b'
+      - '\bdouble\s+waved\s+yellow\b'
+      - '\bfail(?:ed|ing|ure)?\s+to\s+slow\s+(?:for|under)\s+(?:double\s+)?yellow\b'
+      - '\bignoring\s+blue\s+flags?\b'
+    start_procedure:
+      - '\bfalse\s+start\b'
+      - '\bincorrect\s+starting\s+(?:position|location)\b'
+      - '\bstart(?:ing)?\s+procedure\b'
+      - '\baborted\s+start\s+incident\b'
+      - '\bmoved\s+before\s+(?:the\s+)?start\s+signal\b'
+    race_direction_or_slow_driving:
+      - '\bfail(?:ed|ing|ure)?\s+to\s+(?:follow|comply\s+with)\s+(?:the\s+)?race\s+director'
+      - '\bdriving\s+unnecessar(?:ily|y)\s+slow(?:ly)?\b'
+      - '\berratic\s+driving\b'
+    sanction_service:
+      - '\bfailure\s+to\s+serve\s+a\s+penalty\b'
+    tyre_fuel_or_scrutineering:
+      - '\btyre\s+(?:pressure|return|returns|checks?|fitted)\b'
+      - '\bweigh(?:ing|bridge)\b'
+      - '\brear\s+wing\b'
+      - '\bfront\s+wing\b'
+      - '\bdrs\s+(?:infringement|technical|assembly)?\b'
+      - '\bfuel\b'
+      - '\btechnical\s+regulations?\b'

@@ -1,0 +1,43 @@
+{
+  "candidate_action_counts": {
+    "manual_scope_review": 381,
+    "manual_split_or_scope_review": 302,
+    "review_exclusion": 954,
+    "review_primary_adjudication": 248,
+    "review_secondary_adjudication": 66
+  },
+  "eligibility_suggestion_counts": {
+    "content_exclusion_suggestion": 32,
+    "manual_offence_review": 388,
+    "manual_session_review": 66,
+    "out_of_scope_suggestion": 1181,
+    "primary_candidate": 250,
+    "secondary_candidate": 66,
+    "version_exclusion_suggestion": 15,
+    "version_resolution_required": 4
+  },
+  "interpretation_boundary": "Machine suggestions prioritize manual review and are not final eligibility, fault, consistency, or fairness findings.",
+  "outputs": {
+    "adjudication_seed_queue.csv": {
+      "row_count": 1951,
+      "sha256": "6b85d8c589ce1c709e2f56db0dfeb2d0d48fbd8829dc528ec0fd8d8b40a1e7cf"
+    },
+    "document_review_queue.csv": {
+      "row_count": 2002,
+      "sha256": "cd0d42861eadf490265a1ebbea033635bf7bbdf447fded692fcc29cba6c201fc"
+    }
+  },
+  "schema_version": "full_corpus_coding_v1",
+  "settings_sha256": "c337f10482ec6929346779466f82cf746305733ef7ea410ea97318d073f3970d",
+  "source_counts": {
+    "archive_outcome_labels": 2002,
+    "content_confirmed_decisions": 1951,
+    "corrected_successors": 15,
+    "live_content_confirmed_decisions": 1951,
+    "parser_review_required": 224,
+    "recalled_linked_predecessors": 15,
+    "recalled_outcome_labels": 19,
+    "recalled_unresolved": 4
+  },
+  "source_population_sha256": "0b4eba85c8d225c2e89bc87bfc49b660e03d5d58666e03bfad799af8c7ecddd6"
+}

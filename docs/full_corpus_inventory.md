@@ -143,3 +143,8 @@ resolve document versions, separate summonses from outcomes, restrict sessions a
 families, code multi-party relationships, and quantify all parsing, review, and eligibility
 exclusions. Every later denominator must trace back to this frozen population and publish its
 attrition counts.
+
+The checksum-protected full-corpus seed now supplies that traceable bridge: 2,002 document-version
+review rows and 1,951 live decision seeds reconstruct exactly from the warehouse. Final inclusion,
+accused-driver normalization, incident grouping, and independent review remain pending; see
+`docs/full_corpus_coding_workflow.md`.

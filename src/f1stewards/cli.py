@@ -22,6 +22,12 @@ from f1stewards.acquisition.fia import (
     write_manifest,
 )
 from f1stewards.catalog import build_study_event_catalog, write_study_event_catalog
+from f1stewards.coding_queue import (
+    audit_full_corpus_seed_bundle,
+    build_full_corpus_coding_queues,
+    load_outcome_document_population,
+    write_full_corpus_seed_bundle,
+)
 from f1stewards.config import (
     PROJECT_ROOT,
     load_analysis_thresholds,
@@ -29,6 +35,7 @@ from f1stewards.config import (
     load_document_lineage,
     load_evidence_profiles,
     load_full_collection_settings,
+    load_full_corpus_coding_settings,
     load_international_sporting_code_issues,
     load_pilot_events,
     load_regulatory_sources,
@@ -941,6 +948,83 @@ def build_coding_queue(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     queue.to_csv(output_path, index=False)
     typer.echo(f"Wrote {len(queue)} candidate document versions to {output_path}")
+
+
+@app.command("build-full-coding-queues")
+def build_full_coding_queues(
+    output_directory: Annotated[
+        Path, typer.Option(help="Protected full-corpus seed-bundle directory.")
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_seed",
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+    settings_path: Annotated[
+        Path, typer.Option(help="Frozen machine-suggestion rules.")
+    ] = PROJECT_ROOT / "config" / "full_corpus_coding.yml",
+    overwrite: Annotated[
+        bool,
+        typer.Option(
+            help="Replace a differing seed bundle after an intentional source/config change."
+        ),
+    ] = False,
+) -> None:
+    """Build denominator-preserving document and adjudication seed queues."""
+
+    settings = load_full_corpus_coding_settings(settings_path)
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        population = load_outcome_document_population(
+            connection, settings["source_document_class"]
+        )
+    documents, candidates = build_full_corpus_coding_queues(population, settings)
+    manifest, statuses = write_full_corpus_seed_bundle(
+        population,
+        documents,
+        candidates,
+        output_directory,
+        settings,
+        settings_path,
+        overwrite=overwrite,
+    )
+    typer.echo(
+        f"Full-corpus seed bundle at {output_directory}: "
+        f"{len(documents)} outcome labels, {len(candidates)} live decision seeds"
+    )
+    typer.echo(
+        "Files: " + ", ".join(f"{name}={status}" for name, status in statuses.items())
+    )
+    typer.echo(
+        "Eligibility suggestions:\n"
+        + pd.Series(manifest["eligibility_suggestion_counts"], name="documents").to_string()
+    )
+
+
+@app.command("audit-full-coding-queues")
+def audit_full_coding_queues(
+    output_directory: Annotated[
+        Path, typer.Option(help="Full-corpus seed-bundle directory.")
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_seed",
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+    settings_path: Annotated[
+        Path, typer.Option(help="Frozen machine-suggestion rules.")
+    ] = PROJECT_ROOT / "config" / "full_corpus_coding.yml",
+) -> None:
+    """Verify that stored seed queues exactly reproduce from the current source warehouse."""
+
+    settings = load_full_corpus_coding_settings(settings_path)
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        population = load_outcome_document_population(
+            connection, settings["source_document_class"]
+        )
+    documents, candidates = build_full_corpus_coding_queues(population, settings)
+    audit = audit_full_corpus_seed_bundle(
+        population,
+        documents,
+        candidates,
+        output_directory,
+        settings,
+        settings_path,
+    )
+    typer.echo(audit.to_string(index=False))
+    if not audit["status"].eq("pass").all():
+        raise typer.Exit(code=1)
 
 
 @app.command("parser-audit")

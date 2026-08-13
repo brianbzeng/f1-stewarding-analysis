@@ -4,6 +4,10 @@ The coding queue is generated from parsed official FIA documents; analysts do no
 interesting decisions from memory. One queue row represents one **document version**, not
 necessarily one final adjudication. Recalled, corrected, and superseding documents stay visible.
 
+The pilot workflow below remains the independently reviewed feasibility release. The full-study
+seed and denominator-preserving review sequence are documented separately in
+`docs/full_corpus_coding_workflow.md`.
+
 Three files have different purposes:
 
 | File | Meaning |

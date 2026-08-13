@@ -121,6 +121,8 @@ f1stewards init-study-db
 f1stewards study-discover
 f1stewards study-discover --download --download-profile decisions
 f1stewards study-inventory
+f1stewards build-full-coding-queues
+f1stewards audit-full-coding-queues
 ```
 
 `build-study-catalog` freezes FastF1 schedules into stable event IDs and FIA archive targets;
@@ -150,7 +152,14 @@ and four unavailable Belgian versions remain explicit exclusions. All 1,983 live
 retrieved and parsed with parser v4, yielding 1,951 content-confirmed steward decisions and zero
 active discovery or retrieval failures. The frozen Parquet manifest and DuckDB lineage agree
 exactly. The next milestone is full-corpus analytical eligibility and adjudication coding before
-statistical modeling.
+statistical modeling; its protected machine-seed layer is complete and human disposition remains.
+
+The first full-corpus coding bridge is now reproducible and checksum-protected. Its document queue
+retains all 2,002 outcome labels, and its adjudication seed retains all 1,951 live,
+content-confirmed decisions. Deterministic rules currently prioritize 250 primary Race/Sprint
+candidates and 66 secondary qualifying-impeding candidates; 454 ambiguous session or offence-family
+records remain mandatory manual review rather than automatic conclusions. The counts are triage
+workload, not final study results. See [the full-corpus coding workflow](docs/full_corpus_coding_workflow.md).
 
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active
