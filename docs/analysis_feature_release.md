@@ -10,8 +10,10 @@ f1stewards build-analysis-features `
   data/manual/full_corpus_first_pass/full-coding-e0192ecbd9e4
 ```
 
-The current content-addressed build is `features-9c870436c35e`. It uses machine-assisted first pass
-`first-pass-5aa88d7f05b2` over workspace `full-coding-e0192ecbd9e4`, the sourced 43-driver
+The current content-addressed build is `features-8f34710dfddc`. It uses machine-assisted first pass
+`first-pass-5aa88d7f05b2` plus the 17-case
+[parser-format source review](parser_format_source_review.md) over workspace
+`full-coding-e0192ecbd9e4`, the sourced 43-driver
 nationality registry, the controlled 28-label
 event-country crosswalk, all 3,938 Race/Sprint classifications, and the complete decision-document
 panel assignment register. The panel register contributes its own SHA-256 lineage field to the
@@ -54,9 +56,10 @@ The current gated build contains:
 These are workload and design-coverage counts. They are not sanction rates, nationality effects,
 or evidence of bias.
 
-Of the 296 provisional primary candidates, 295 now contain disclosed machine-assisted first-pass
-fields and are labeled `incomplete_human_coding`; the single parser-review candidate remains
-`provisional_machine_suggestion`. No first-pass row is relabeled `human_reviewed_final`.
+All 296 provisional primary candidates now contain disclosed machine-assisted or source-reviewed
+fields and are labeled `incomplete_human_coding`. The previously untouched parser candidate is the
+2025 Hungarian no-action adjudication; its official-source fields are recorded but remain pending
+independent review. No row is relabeled `human_reviewed_final`.
 
 ## Label separation
 

@@ -100,9 +100,11 @@ All 19 edited-workspace controls pass: exact schemas, complete protected row ide
 lineage mismatches, complete seed coverage, unique instance and populated final IDs, mutually
 exclusive inclusion flags, and valid corrected sanction/fault/status fields.
 
-The derived feature build is `features-9c870436c35e`, with 295 rows labeled
-`incomplete_human_coding` and one untouched parser case labeled
-`provisional_machine_suggestion`. All document, adjudication, exclusion-QA, population, and
+The immediate first-pass feature build was `features-9c870436c35e`, with 295 rows labeled
+`incomplete_human_coding` and one untouched parser case. The subsequent versioned
+[parser-format source review](parser_format_source_review.md) resolves that operational exception
+as a pending-human Hungarian no-action inclusion and produces `features-8f34710dfddc`, with all 296
+rows labeled `incomplete_human_coding`. All document, adjudication, exclusion-QA, population, and
 analytical-release gates remain failed as intended. There are zero `human_reviewed_final` and zero
 reporting-eligible rows.
 

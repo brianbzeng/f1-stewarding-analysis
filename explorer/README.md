@@ -47,12 +47,13 @@ browser cannot create supported one-to-many adjudication splits; use the documen
 procedure and rebuild the console for those cases.
 
 `full_corpus_first_pass_review.html` is the same review interface rebuilt over conservative first
-pass `first-pass-5aa88d7f05b2`. It shows 1,903 document and 1,856 adjudication rows as
-`single_coded_pending_human`, while 100 document exceptions, 96 adjudication exceptions, and all
-486 exclusion-QA checks remain unstarted. The first pass may route a parser-warning source only to
-a pending-human exclusion; all warning-bearing inclusions remain unresolved. It is the operational
-starting point for source-level review; `full_corpus_review.html` remains the untouched-starter
-reference.
+pass `first-pass-5aa88d7f05b2` plus the versioned 17-case parser-format source-review ledger. It
+shows 1,920 document and 1,873 adjudication rows as `single_coded_pending_human`, while 83 document
+exceptions, 79 adjudication exceptions, and all 486 exclusion-QA checks remain unstarted. The first
+pass may route a parser-warning source only to a pending-human exclusion; the separately recorded
+Hungarian inclusion is explicitly source-coded and still pending independent review. It is the
+operational starting point for continued review; `full_corpus_review.html` remains the
+untouched-starter reference.
 
 Both full-corpus consoles attach protected adjudication evidence to all 486 exclusion-QA rows by
 exact `document_id`. The build fails if a QA source is missing or if duplicated split instances

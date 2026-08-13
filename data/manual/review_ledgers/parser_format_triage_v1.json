@@ -1,0 +1,495 @@
+{
+  "schema_version": "full-corpus-review-ledger-v1",
+  "workspace_id": "full-coding-e0192ecbd9e4",
+  "source_workspace_sha256": "de816c98622f6b429529041ad616fe706cbfdf17e82d169d598aff45b6e7bca9",
+  "review_basis": "Official FIA source-level coding of the 17 parser/nonstandard-format investigations remaining after first-pass schema v3 triage. These are single-coded pending-human records, not independent review.",
+  "changes": {
+    "documents": [
+      {
+        "row_id": "document-review-fia-2018-aze-01d45674ddbf",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "start_or_grid_permission",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source grants Car 8 permission to start the race after no qualifying time; administrative start permission, not an in-scope driving adjudication."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-aze-7ced5a76447f",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "start_or_grid_permission",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source grants Car 28 permission to start after missing the 107 percent qualifying threshold; administrative start permission."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-esp-86ab12b5e575",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "start_or_grid_permission",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source grants Car 28 permission to start after no qualifying time; administrative start permission."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-mco-f53de0ea5a20",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "start_or_grid_permission",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source grants Car 33 permission to start after no qualifying time; administrative start permission."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-can-8e092dad6cfe",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "start_or_grid_permission",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source grants Car 8 permission to start after no qualifying time; administrative start permission."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-gbr-3afad1f750b0",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "tyre_fuel_or_scrutineering",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:tyre_fuel_or_scrutineering",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source permits Car 8 to be re-scrutineered after a survival-cell change before Practice 3; no driving allegation."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-gbr-7f1f5d5345bf",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "start_or_grid_permission",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source combines re-scrutineering with permission for Car 28 to start from the pit lane; both matters are administrative and excluded."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-gbr-c740c244f0ef",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "start_or_grid_permission",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source grants Car 18 permission to start after no qualifying time; administrative start permission."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-ita-70e050f0f722",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "protest_review_or_governance",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:protest_review_or_governance",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source adjudicates Renault's technical protest against Haas Car 8; it is a protest/technical-compliance decision, not an in-scope driving incident."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-usa-7eb99cf7fd4a",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "procedural_or_personnel",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:procedural_or_personnel",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source permits Racing Point Force India to restore its original drivers for Practice 1; personnel administration only."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2018-mex-99de20d0a0ec",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "tyre_fuel_or_scrutineering",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:tyre_fuel_or_scrutineering",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source settles a Mercedes technical-compliance question concerning rear-wheel spacer cooling; no driver conduct allegation."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-aze-47bf3859de6d",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "start_or_grid_permission",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source permits Car 10 to start from the pit lane after qualifying disqualification; administrative grid/start disposition."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-aze-7ef5cb4e2e61",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "start_or_grid_permission",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source permits Car 7 to start from the back after qualifying disqualification; administrative grid/start disposition."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2019-bel-2d29cbfc6f0a",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "procedural_or_personnel",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:procedural_or_personnel",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source replaces the named Deputy Medical Delegate for the event; event-personnel administration only."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2020-sty-df0a103a4d99",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "out_of_scope",
+          "offence_family_final": "procedural_or_personnel",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:procedural_or_personnel",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source cancels Practice 3 for weather and safety; session administration, not a driver adjudication."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2021-sao-9803ae1b1b2a",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "start_or_grid_permission",
+          "eligibility_final": "exclude",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official source grants Car 44 permission to start the 2021 Sprint Qualifying session; administrative start permission, not a driving allegation."
+        }
+      },
+      {
+        "row_id": "document-review-fia-2025-hun-f1ff0743742b",
+        "fields": {
+          "version_status_final": "effective",
+          "session_scope_final": "primary",
+          "offence_family_final": "forcing_off_track",
+          "eligibility_final": "include",
+          "exclusion_reason_final": "",
+          "reviewer_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "review_notes": "Official decision adjudicates alleged forcing off track by Car 1 against Car 44 in the Race and takes no further action; included as an in-scope no-action adjudication pending independent review."
+        }
+      }
+    ],
+    "adjudications": [
+      {
+        "row_id": "adjudication-seed-fia-2018-aze-01d45674ddbf-01",
+        "fields": {
+          "session_type_final": "Race",
+          "incident_family_final": "start_or_grid_permission",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; administrative permission for Car 8 to start, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-aze-7ced5a76447f-01",
+        "fields": {
+          "session_type_final": "Race",
+          "incident_family_final": "start_or_grid_permission",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; administrative permission for Car 28 to start, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-esp-86ab12b5e575-01",
+        "fields": {
+          "session_type_final": "Race",
+          "incident_family_final": "start_or_grid_permission",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; administrative permission for Car 28 to start, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-mco-f53de0ea5a20-01",
+        "fields": {
+          "session_type_final": "Race",
+          "incident_family_final": "start_or_grid_permission",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; administrative permission for Car 33 to start, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-can-8e092dad6cfe-01",
+        "fields": {
+          "session_type_final": "Race",
+          "incident_family_final": "start_or_grid_permission",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; administrative permission for Car 8 to start, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-gbr-3afad1f750b0-01",
+        "fields": {
+          "session_type_final": "Practice",
+          "incident_family_final": "tyre_fuel_or_scrutineering",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:tyre_fuel_or_scrutineering",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; survival-cell re-scrutineering permission before Practice 3, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-gbr-7f1f5d5345bf-01",
+        "fields": {
+          "session_type_final": "Race",
+          "incident_family_final": "start_or_grid_permission",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; combined re-scrutineering and pit-lane start permission, both administrative, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-gbr-c740c244f0ef-01",
+        "fields": {
+          "session_type_final": "Race",
+          "incident_family_final": "start_or_grid_permission",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; administrative permission for Car 18 to start, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-ita-70e050f0f722-01",
+        "fields": {
+          "session_type_final": "Race",
+          "incident_family_final": "protest_review_or_governance",
+          "outcome_family_final": "disqualification",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:protest_review_or_governance",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Renault technical protest against Haas Car 8, not an in-scope driving incident, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-usa-7eb99cf7fd4a-01",
+        "fields": {
+          "session_type_final": "Practice",
+          "incident_family_final": "procedural_or_personnel",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:procedural_or_personnel",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Practice 1 driver-lineup permission, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2018-mex-99de20d0a0ec-01",
+        "fields": {
+          "session_type_final": "Other",
+          "incident_family_final": "tyre_fuel_or_scrutineering",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:tyre_fuel_or_scrutineering",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Mercedes technical-compliance ruling, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-aze-47bf3859de6d-01",
+        "fields": {
+          "session_type_final": "Race",
+          "incident_family_final": "start_or_grid_permission",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Car 10 start/pit-lane disposition after qualifying disqualification, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-aze-7ef5cb4e2e61-01",
+        "fields": {
+          "session_type_final": "Race",
+          "incident_family_final": "start_or_grid_permission",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Car 7 back-of-grid start disposition after qualifying disqualification, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2019-bel-2d29cbfc6f0a-01",
+        "fields": {
+          "session_type_final": "Other",
+          "incident_family_final": "procedural_or_personnel",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:procedural_or_personnel",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Deputy Medical Delegate replacement, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2020-sty-df0a103a4d99-01",
+        "fields": {
+          "session_type_final": "Practice",
+          "incident_family_final": "procedural_or_personnel",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:procedural_or_personnel",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; Practice 3 cancellation for weather and safety, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2021-sao-9803ae1b1b2a-01",
+        "fields": {
+          "accused_driver_number_final": "44",
+          "session_type_final": "Sprint",
+          "incident_family_final": "start_or_grid_permission",
+          "outcome_family_final": "other",
+          "fault_language_final": "not_applicable",
+          "include_primary_final": "false",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "excluded_offence_family:start_or_grid_permission",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed; permission for Car 44 to start 2021 Sprint Qualifying, pending independent review."
+        }
+      },
+      {
+        "row_id": "adjudication-seed-fia-2025-hun-f1ff0743742b-01",
+        "fields": {
+          "adjudication_id_final": "adj-f09cc8aab8d224ac",
+          "incident_id_final": "incident-src-f09cc8aab8d224ac",
+          "accused_driver_number_final": "1",
+          "affected_driver_numbers_final": "44",
+          "session_type_final": "Race",
+          "lap_number_final": "29",
+          "location_final": "Turn 4",
+          "incident_family_final": "forcing_off_track",
+          "outcome_family_final": "no_further_action",
+          "fault_language_final": "no_conclusion",
+          "include_primary_final": "true",
+          "include_secondary_final": "false",
+          "exclusion_reason_final": "",
+          "coder_id": "codex_source_review_v1",
+          "review_status": "single_coded_pending_human",
+          "coding_notes": "Official FIA source reviewed. No further action: stewards found no contact and no forcing off track. FastF1 corroborates Turn 4 on lap 29 via Car 44's 15:42:56 deleted-lap message and both drivers' lap starts. Pending independent review."
+        }
+      }
+    ]
+  }
+}

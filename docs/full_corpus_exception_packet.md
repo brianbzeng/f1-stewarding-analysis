@@ -98,8 +98,9 @@ clearing their parser warnings or their sampled QA obligations. It never routes 
 source to inclusion. The remaining 17 are the useful investigation set: 15 nonstandard legacy
 administrative decisions with unresolved session labels, the 2021 São Paulo permission for Car 44
 to start Sprint Qualifying, and the 2025 Hungarian no-further-action decision concerning alleged
-forcing off track. Their official text has been recovered and inspected, but their worklist final
-fields remain unstarted pending recorded source disposition and independent review.
+forcing off track. Their official text has now been coded through the versioned
+[parser-format source-review ledger](parser_format_source_review.md): 16 exclusions and one primary
+no-action inclusion. All remain `single_coded_pending_human` pending independent review.
 
 ## Interpretation boundary
 

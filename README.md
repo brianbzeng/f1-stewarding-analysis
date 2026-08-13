@@ -115,6 +115,12 @@ source reviews. It gives every investigation a root cause, priority, linked queu
 available Fact/Decision/Reason evidence, and review question. The QA console now carries the same
 linked decision evidence for all 486 sampled exclusions.
 
+The subsequent [parser-format source review](docs/parser_format_source_review.md) records final
+fields for the 17 remaining nonstandard-format investigations: 16 controlled exclusions and one
+included Hungarian no-action adjudication. Its versioned ledger changes no protected field and
+keeps every row `single_coded_pending_human`; the review console now shows 1,920 document and 1,873
+adjudication rows pending human confirmation, with 83 and 79 respectively still unstarted.
+
 ## Pilot commands
 
 ```powershell
@@ -240,8 +246,8 @@ paths and clearly out-of-scope parser-warning exclusions into disclosed editable
 never prefilling a parser-warning inclusion. It preserves every protected source column, uses
 source-unique provisional incident IDs to avoid false grouping, and extracts written fault language
 only from explicit phrases. All 19 edited-workspace controls pass. The resulting feature build,
-`features-9c870436c35e`, contains 295 `incomplete_human_coding` primary rows and one
-untouched provisional parser exception; reporting eligibility remains zero.
+`features-8f34710dfddc`, contains 296 `incomplete_human_coding` primary rows after source coding the
+last parser exception; reporting eligibility remains zero.
 
 The [gated analysis feature release](docs/analysis_feature_release.md) materializes one
 adjudication-grain table and a separate accused/affected driver-role bridge in DuckDB. Its current
