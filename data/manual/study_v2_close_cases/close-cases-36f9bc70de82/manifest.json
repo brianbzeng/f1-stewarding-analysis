@@ -1,0 +1,38 @@
+{
+  "case_count": 346,
+  "created_at": "2026-08-13T22:28:14.245483+00:00",
+  "edges_sha256": "3c51ee0a24df45d40bf72df0855ef0f45f1cc4b2a59d62828800f14f3e602d09",
+  "human_context_review_complete": false,
+  "limitation": "Neighbor outcomes are attached only after outcome-blind matching. Current context fields are machine-extracted candidates, so these outputs demonstrate feasibility and cannot support inconsistency claims.",
+  "minimum_neighbors": 5,
+  "neighbor_edge_count": 1655,
+  "outcome_fields_excluded_from_primary_match": [
+    "damage",
+    "fault_language",
+    "finish_position",
+    "grid_places",
+    "outcome_family",
+    "penalty_points",
+    "penalty_seconds",
+    "retirement",
+    "sanction_outcome"
+  ],
+  "parent_context_run": "incident-context-a1de9ac2c8ea",
+  "pre_review_minimum_support_count": 317,
+  "primary_distance_fields": [
+    "attacker_line_candidate",
+    "overlap_candidate",
+    "first_lap_candidate",
+    "wet_track_candidate",
+    "safety_car_restart_candidate"
+  ],
+  "primary_exact_fields": [
+    "incident_family",
+    "session_type",
+    "guideline_regime"
+  ],
+  "release_status": "withheld_pending_reviewed_context",
+  "run_id": "close-cases-36f9bc70de82",
+  "schema_version": "study-v2-close-case-matching-v1",
+  "summary_sha256": "91c28341928b51643d801a1c67170a4801699a1eea66b7d559a3d7e9cc57bd88"
+}

@@ -1,0 +1,72 @@
+damage_evidence_seed:
+  schema_version: damage_evidence_seed_v1
+  researched_at: 2026-08-13
+  records:
+    - evidence_id: seed-2019-bhr-car55-formula1
+      event_id: 2019-bhr
+      participant_driver_number: 55
+      counterpart_driver_numbers: [33]
+      source_owner: Formula 1
+      source_grade: A3
+      source_title: Sainz angry about missed opportunity following Verstappen clash
+      source_url: https://www.formula1.com/en/latest/article/sainz-angry-about-missed-opportunity-following-verstappen-clash.7oZK6qytjq6aq4HeYkF06e
+      published_date: 2019-03-31
+      damage_state: confirmed
+      damaged_components: [front_right_tyre, front_wing]
+      incident_causality_explicit: true
+      repair_action: pit_stop_after_puncture
+      incident_responsive_stop: true
+      incident_caused_retirement: false
+      evidence_summary: Contact produced a front-right puncture and a slow return to the pits; a later gearbox issue caused the retirement.
+      model_research_status: source_reviewed_pending_independent_human
+    - evidence_id: seed-2023-jpn-car77-formula1
+      event_id: 2023-jpn
+      participant_driver_number: 77
+      counterpart_driver_numbers: [2]
+      source_owner: Formula 1
+      source_grade: A3
+      source_title: Bottas reflects on early lap collisions in Japan
+      source_url: https://www.formula1.com/en/latest/article/bottas-reflects-on-early-lap-collisions-in-japan-that-forced-him-to-retire.2FmrPBKleMeXb60mO9hj3T.2FmrPBKleMeXb60mO9hj3T
+      published_date: 2023-09-26
+      damage_state: confirmed
+      damaged_components: [suspension, sidepod]
+      incident_causality_explicit: true
+      repair_action: attempted_to_continue
+      incident_responsive_stop: false
+      incident_caused_retirement: true
+      evidence_summary: Bottas attributed suspension and sidepod damage, an undriveable car, and retirement to the Sargeant collision.
+      model_research_status: source_reviewed_pending_independent_human
+    - evidence_id: seed-2023-jpn-car2-williams
+      event_id: 2023-jpn
+      participant_driver_number: 2
+      counterpart_driver_numbers: [77]
+      source_owner: Williams Racing
+      source_grade: A2
+      source_title: 2023 Japanese Grand Prix
+      source_url: https://www.williamsf1.com/posts/05f49fb5-62ac-4308-b14d-52f8959cfee8/2023-japanese-grand-prix
+      published_date: 2023-09-24
+      damage_state: confirmed
+      damaged_components: [unspecified_collision_damage]
+      incident_causality_explicit: true
+      repair_action: retired
+      incident_responsive_stop: false
+      incident_caused_retirement: true
+      evidence_summary: Williams reported that Sargeant retired following the contact with Bottas.
+      model_research_status: source_reviewed_pending_independent_human
+    - evidence_id: seed-2024-mia-car81-formula1
+      event_id: 2024-mia
+      participant_driver_number: 81
+      counterpart_driver_numbers: [55]
+      source_owner: Formula 1
+      source_grade: A3
+      source_title: Sainz hit with five-second time penalty after collision with Piastri
+      source_url: https://www.formula1.com/en/latest/article/sainz-hit-with-five-second-time-penalty-after-collision-with-piastri-in.3D1JHk6lYz0GzKch77GcrZ
+      published_date: 2024-05-06
+      damage_state: confirmed
+      damaged_components: [front_wing]
+      incident_causality_explicit: true
+      repair_action: front_wing_change
+      incident_responsive_stop: true
+      incident_caused_retirement: false
+      evidence_summary: Formula 1 explicitly linked the Sainz contact to Piastri front-wing damage, a forced stop, and a drop down the order.
+      model_research_status: source_reviewed_pending_independent_human

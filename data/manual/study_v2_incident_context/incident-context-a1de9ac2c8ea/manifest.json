@@ -1,0 +1,15 @@
+{
+  "case_count": 346,
+  "created_at": "2026-08-13T22:27:49.412121+00:00",
+  "current_exact_lap_count": 31,
+  "human_validation_complete": false,
+  "limitation": "Context extraction preserves explicit source phrases but does not resolve actor-specific geometry. Race Control message laps are upper bounds unless the incident lap is explicit.",
+  "machine_context_fields_are_final": false,
+  "new_clock_single_lap_candidates": 143,
+  "new_race_control_explicit_lap_candidates": 12,
+  "parent_clock_run": "incident-clock-3dc8bb350308",
+  "parent_referral_run": "referrals-5d0559ad2878",
+  "run_id": "incident-context-a1de9ac2c8ea",
+  "schema_version": "study-v2-incident-context-v1",
+  "sha256": "a1de9ac2c8ea8514489c79eae6ccbd66201d76de798d95a56b73f30e715712e1"
+}

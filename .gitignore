@@ -58,6 +58,9 @@ reports/generated/**
 !reports/generated/model_reviewed_season_outcomes.csv
 !reports/generated/grouped_model_metrics.csv
 !reports/generated/grouped_model_leave_one_season_out.csv
+!reports/generated/study_v2/
+!reports/generated/study_v2/*.png
+!reports/generated/study_v2/completion_audit.csv
 
 # OS/editor
 .DS_Store

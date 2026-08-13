@@ -1,0 +1,12 @@
+{
+  "british_accused_rows": 44,
+  "created_at": "2026-08-13T22:40:43.536241+00:00",
+  "formal_effect_release_gate": false,
+  "gate_reason": "minimum_exposed_sample_not_met|target_power_not_met|independent_human_review_incomplete",
+  "guardrail": "The observed outcome is used only for transparent descriptive rates. Overlap and power diagnostics are outcome-free, and no adjusted nationality effect is fitted or released while the prespecified gate fails.",
+  "multiplicity_method_if_gate_passes": "benjamini_hochberg",
+  "release_status": "inconclusive_design_gate",
+  "rows": 346,
+  "run_id": "nationality-diagnostic-2b1b0ffdd961",
+  "schema_version": "study-v2-nationality-diagnostic-v1"
+}

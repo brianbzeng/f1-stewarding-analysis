@@ -1,0 +1,127 @@
+study_v2:
+  schema_version: study_v2_v1
+  protocol_frozen_at: 2026-08-13
+  study_seasons: [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+  parent_model_review_run: model-review-3dacc1268f13
+  parent_feature_build: features-57542b24ea9f
+
+  estimands:
+    conduct_consistency:
+      question: Do comparable driving acts receive comparable steward findings and sanctions?
+      primary_outcome: sanction_outcome
+      exclude_post_incident_harm_from_predictors: true
+    consequence_burden:
+      question: What observable burden did an incident impose on each participant?
+      primary_outcomes:
+        - position_change
+        - repair_stop
+        - retirement
+        - persistent_pace_change
+    sanction_burden:
+      question: What competitive burden did the sanction actually impose on the accused driver?
+      primary_outcomes:
+        - time
+        - grid_positions
+        - classification_positions
+        - championship_points
+    distributive_fairness:
+      question: How do reviewed consequence and sanction burdens compare when fault is established?
+      prohibit_composite_fairness_score: true
+      require_fault_established: true
+      require_reviewed_harm_evidence: true
+
+  human_review:
+    blind_to_model_final_fields: true
+    reviewer_a:
+      review_all_elevated_risk_documents: true
+      review_all_included_multi_party_documents: true
+      clean_exclusion_sample_size: 150
+    reviewer_b:
+      review_all_high_risk_inclusions: true
+      stratified_exclusion_sample_size: 100
+      review_all_published_case_studies: true
+    sample_hash_salt: study-v2-human-review-2026-08-13
+    disagreement_requires_reconciliation: true
+    sample_review_does_not_upgrade_entire_corpus: true
+
+  referral_funnel:
+    source_table: raw.fastf1_session_race_control_messages
+    episode_gap_seconds: 900
+    link_max_time_gap_seconds: 1200
+    statuses:
+      - noted
+      - investigation
+      - post_session_investigation
+      - no_investigation
+      - no_further_action
+      - sanction_announced
+    preserve_multi_car_incidents: true
+    unmatched_episodes_must_remain_visible: true
+    unmatched_decisions_must_remain_visible: true
+
+  incident_timing:
+    source_priority:
+      - fia_decision_explicit_lap
+      - race_control_explicit_lap
+      - fia_incident_clock_to_lap_interval
+      - reviewed_video
+    maximum_clock_match_error_seconds: 120
+    inferred_timing_requires_basis: true
+
+  close_case_matching:
+    exact_match_fields:
+      - incident_family
+      - session_type
+      - guideline_regime
+    distance_fields:
+      - attacker_line_candidate
+      - overlap_candidate
+      - first_lap_candidate
+      - wet_track_candidate
+      - safety_car_restart_candidate
+    conditional_sanction_exact_fields:
+      - fault_language
+    minimum_neighbors: 5
+    prohibit_outcome_derived_match_fields: true
+    freeze_match_rules_before_reviewing_anomalies: true
+
+  damage_harm:
+    population: reportable_collision_cases
+    minimum_clean_laps_each_side: 5
+    sensitivity_clean_laps_each_side: [3, 8]
+    evidence_confirmation_grades: [A1, A2, A3]
+    timing_patterns_are_screening_only: true
+    source_claim_requires_url_and_retrieval_date: true
+    incident_causality_requires_explicit_source_link: true
+    repair_stop_requires_source_or_reviewed_timing_link: true
+    persistent_pace_requires_reference_driver: true
+    exclude_pit_sc_vsc_weather_transition_laps: true
+    no_damage_inference_from_slow_lap_alone: true
+    benefit_requires_reviewed_counterfactual: true
+
+  nationality:
+    role: secondary_gated_diagnostic
+    minimum_british_accused_cases: 98
+    target_risk_difference: 0.15
+    minimum_common_support_fraction: 0.90
+    maximum_weighted_abs_smd: 0.10
+    minimum_exposed_effective_sample_size: 30
+    require_overlap_and_power_gate: true
+    multiplicity_method: benjamini_hochberg
+
+  release:
+    independent_human_review_required_for_human_label: true
+    model_review_must_remain_disclosed: true
+    unresolved_human_fields_must_remain_visible: true
+    notebook_sequence: [7, 8, 9, 10, 11, 12]
+    artifacts:
+      human_review: data/manual/study_v2_review_packets/study-v2-review-7cb1b29b5251
+      referral: data/manual/study_v2_referrals/referrals-5d0559ad2878
+      incident_clock: data/manual/study_v2_incident_clock/incident-clock-3dc8bb350308
+      incident_context: data/manual/study_v2_incident_context/incident-context-a1de9ac2c8ea
+      close_cases: data/manual/study_v2_close_cases/close-cases-36f9bc70de82
+      damage: data/manual/study_v2_damage/damage-screening-66381b550583
+      layers: data/manual/study_v2_layers/study-v2-layers-a9b8ff776470
+      nationality: data/manual/study_v2_nationality/nationality-diagnostic-2b1b0ffdd961
+      report_notebook: notebooks/12_study_v2_report.ipynb
+      report_html: reports/the_cost_of_discretion_study_v2.html

@@ -1,0 +1,163 @@
+damage_evidence_sources:
+  schema_version: damage_sources_v1
+  frozen_at: 2026-08-13
+  grades:
+    A1:
+      label: official_regulatory_or_timing
+      allowed_claims:
+        - official_incident_description
+        - official_classification
+        - official_lap_or_pit_timing
+        - official_steward_finding
+      limitations: Steward decisions do not consistently describe mechanical damage or its pace cost.
+    A2:
+      label: first_party_team_or_driver
+      allowed_claims:
+        - named_damaged_component
+        - repair_or_retirement_reason
+        - team_estimated_pace_cost
+        - incident_linked_pit_stop
+      limitations: Competitors are interested parties; corroborate timing and classification claims.
+    A3:
+      label: official_championship_editorial
+      allowed_claims:
+        - reported_damage
+        - reported_repair_stop
+        - attributed_team_or_driver_estimate
+      limitations: Editorial summaries can compress causality; retain attribution and seek A1/A2 support.
+    B1:
+      label: official_tyre_supplier
+      allowed_claims:
+        - tyre_failure_assessment
+        - compound_and_strategy_context
+      limitations: Useful for tyre mechanisms, not a general source for car damage or blame.
+    C:
+      label: accredited_secondary_reporting
+      allowed_claims:
+        - discovery_lead
+        - attributed_quote_when_primary_is_unavailable
+      limitations: Cannot independently confirm a reportable damage claim when a primary source exists.
+    D:
+      label: visual_or_unverified
+      allowed_claims:
+        - review_lead
+      limitations: Images, broadcasts, social media, and timing patterns require documented human review.
+
+  registries:
+    - source_id: fia_event_timing
+      grade: A1
+      owner: FIA
+      base_url: https://www.fia.com/events/fia-formula-one-world-championship
+      evidence_types: [classification, lap_analysis, pit_stop_summary, steward_documents]
+      retrieval: event_page
+      reliability_note: Controlling source for official results and regulatory documents.
+    - source_id: fia_regulations
+      grade: A1
+      owner: FIA
+      base_url: https://www.fia.com/regulation/category/110
+      evidence_types: [sporting_regulations, driving_standards, penalty_guidelines]
+      retrieval: document_catalog
+      reliability_note: Use the issue effective for the incident date.
+    - source_id: formula1_editorial
+      grade: A3
+      owner: Formula One
+      base_url: https://www.formula1.com/en/latest
+      evidence_types: [race_report, official_interview, team_quotes, damage_report]
+      retrieval: article_search
+      reliability_note: Preserve quoted attribution; corroborate timing against FIA or FastF1.
+    - source_id: pirelli_motorsport
+      grade: B1
+      owner: Pirelli
+      base_url: https://press.pirelli.com/formula-1/
+      evidence_types: [tyre_analysis, compound_context, failure_assessment]
+      retrieval: event_article
+      reliability_note: Primary source for supplier tyre findings, not steward responsibility.
+    - source_id: mercedes_team
+      grade: A2
+      owner: Mercedes-AMG PETRONAS F1 Team
+      base_url: https://www.mercedesamgf1.com/news
+      evidence_types: [race_report, engineer_quote, driver_quote, damage_cost]
+      retrieval: site_search
+      reliability_note: First-party technical evidence; interested-party limitation applies.
+    - source_id: mclaren_team
+      grade: A2
+      owner: McLaren Racing
+      base_url: https://www.mclaren.com/racing/formula-1/
+      evidence_types: [race_report, pit_stop_duration, driver_quote, team_quote]
+      retrieval: season_event_path
+      reliability_note: Race reports often publish stop lap and duration alongside damage descriptions.
+    - source_id: red_bull_team
+      grade: A2
+      owner: Oracle Red Bull Racing
+      base_url: https://www.redbullracing.com/int-en
+      evidence_types: [race_report, driver_quote, damage_description]
+      retrieval: site_search
+      reliability_note: First-party technical evidence; interested-party limitation applies.
+    - source_id: ferrari_team
+      grade: A2
+      owner: Scuderia Ferrari
+      base_url: https://www.ferrari.com/en-EN/formula1
+      evidence_types: [race_report, driver_quote, team_quote]
+      retrieval: site_search
+      reliability_note: Archive discoverability varies; use stable article URLs where available.
+    - source_id: aston_martin_team
+      grade: A2
+      owner: Aston Martin Aramco F1 Team
+      base_url: https://www.astonmartinf1.com/en-GB/news
+      evidence_types: [race_report, driver_quote, team_quote]
+      retrieval: site_search
+      reliability_note: First-party account; verify observed timing separately.
+    - source_id: alpine_team
+      grade: A2
+      owner: BWT Alpine Formula One Team
+      base_url: https://www.alpinef1.com/news
+      evidence_types: [race_recap, driver_quote, damage_description]
+      retrieval: site_search
+      reliability_note: Recaps can explicitly connect contact, puncture, stop, and finishing harm.
+    - source_id: williams_team
+      grade: A2
+      owner: Williams Racing
+      base_url: https://www.williamsf1.com/posts
+      evidence_types: [race_report, engineer_quote, damage_description]
+      retrieval: site_search
+      reliability_note: Technical staff quotes can distinguish replaceable wing from persistent floor damage.
+    - source_id: haas_team
+      grade: A2
+      owner: Haas F1 Team
+      base_url: https://www.haasf1team.com/news
+      evidence_types: [race_recap, driver_quote, retirement_reason]
+      retrieval: site_search
+      reliability_note: Some historical reports resolve to team-hosted PDFs.
+    - source_id: sauber_team
+      grade: A2
+      owner: Sauber Motorsport
+      base_url: https://www.sauber-group.com/motorsport
+      evidence_types: [race_report, driver_quote, team_quote]
+      retrieval: site_search
+      reliability_note: Branding and domains changed during the study period; preserve the retrieved URL.
+    - source_id: racing_bulls_team
+      grade: A2
+      owner: Racing Bulls
+      base_url: https://www.visacashapprb.com/en
+      evidence_types: [race_report, driver_quote, team_quote]
+      retrieval: site_search
+      reliability_note: Branding and domains changed during the study period; older AlphaTauri/Toro Rosso archives may require discovery.
+
+  adjudication_rules:
+    confirmed_damage:
+      minimum_sources: 1
+      accepted_grades: [A1, A2, A3]
+      explicit_component_or_damage_statement_required: true
+    quantified_pace_cost:
+      minimum_sources: 1
+      accepted_grades: [A2, A3]
+      explicit_attribution_required: true
+      timing_validation_required: true
+    incident_caused_retirement:
+      minimum_sources: 1
+      accepted_grades: [A1, A2, A3]
+      explicit_causal_language_required: true
+      official_classification_validation_required: true
+    no_confirmed_damage:
+      absence_of_reporting_is_not_evidence: true
+      explicit_source_statement_or_review_required: true

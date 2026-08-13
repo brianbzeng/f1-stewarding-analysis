@@ -70,7 +70,7 @@ def test_schema_and_pilot_upsert(tmp_path: Path) -> None:
     assert count == 3
     assert source_count == 11
     assert link_count == 11
-    assert claim_count == 14
+    assert claim_count == 18
     assert issue_count == 65
     assert code_issue_count == 9
     assert selected == [
@@ -112,8 +112,7 @@ def test_source_document_upsert_refreshes_document_class(tmp_path: Path) -> None
             [document.model_copy(update={"document_class": DocumentClass.STEWARD_DECISION})],
         )
         stored_class = connection.sql(
-            "SELECT document_class FROM raw.source_documents "
-            "WHERE document_id = 'test-document'"
+            "SELECT document_class FROM raw.source_documents WHERE document_id = 'test-document'"
         ).fetchone()[0]
 
     assert stored_class == "steward_decision"
@@ -160,9 +159,7 @@ def test_source_document_event_synchronization_removes_only_stale_rows(tmp_path:
             "VALUES ('stale-source-panel', ?, 4, 'stale-document')",
             [event.pilot_id],
         )
-        synchronize_source_documents_for_events(
-            connection, {event.pilot_id}, [base, replacement]
-        )
+        synchronize_source_documents_for_events(connection, {event.pilot_id}, [base, replacement])
         stored = connection.sql(
             "SELECT document_id FROM raw.source_documents ORDER BY document_id"
         ).fetchall()

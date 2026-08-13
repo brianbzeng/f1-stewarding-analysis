@@ -1,0 +1,19 @@
+{
+  "created_at": "2026-08-13T22:13:45.710615+00:00",
+  "episode_count": 966,
+  "episodes_sha256": "4f34f05c7367b51ed03a505d5986cc2fa24114349addb1a70d5d2026ecada7df",
+  "high_confidence_link_count": 174,
+  "human_validation_complete": false,
+  "limitation": "The feed observes public process messages, not every on-track incident or every internal referral. Algorithmic episodes and links require validation before inference.",
+  "links_sha256": "91a2d332e38d51ce8412c21417583424190a3e4fae480673b5d2677c8551e20c",
+  "parsed_message_count": 1815,
+  "parsed_messages_sha256": "5515622bfab0c4d28a9fbff3892133bc2c2d4e7278f50427bfbb3d91e5881fe6",
+  "pending_link_count": 157,
+  "primary_adjudication_count": 346,
+  "run_id": "referrals-5d0559ad2878",
+  "schema_version": "study-v2-referral-funnel-v1",
+  "source_scope": "public Formula 1 timing-feed messages accessed through FastF1",
+  "source_table": "raw.fastf1_session_race_control_messages",
+  "unmatched_adjudication_count": 15,
+  "unmatched_episode_count": 684
+}

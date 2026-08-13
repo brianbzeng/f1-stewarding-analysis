@@ -1,0 +1,17 @@
+{
+  "case_count": 346,
+  "created_at": "2026-08-13T22:27:11.356874+00:00",
+  "human_validation_complete": false,
+  "known_validation_case_count": 31,
+  "known_validation_contained_count": 31,
+  "known_validation_containment_rate": 1.0,
+  "limitation": "Minute-only FIA clocks define a one-minute uncertainty window and often overlap two driver laps. Single-lap mappings remain candidates until source validation.",
+  "mapped_case_count": 338,
+  "pre_start_tolerance_seconds": 300,
+  "run_id": "incident-clock-3dc8bb350308",
+  "schema_version": "study-v2-incident-clock-v1",
+  "sha256": "3dc8bb350308e76a1d29a7d1c09e6022e1ab95cb9a2eccf8bc8bc1fb9b840dbd",
+  "single_lap_case_count": 174,
+  "two_lap_window_count": 164,
+  "unmapped_case_count": 8
+}

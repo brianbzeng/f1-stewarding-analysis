@@ -5,6 +5,10 @@
 Read the completed report as an [executable Jupyter notebook](../notebooks/06_final_oversight_report.ipynb)
 or a [code-free HTML report](the_cost_of_discretion.html).
 
+The follow-on [Study v2 report](the_cost_of_discretion_study_v2.html) and its
+[executable notebook](../notebooks/12_study_v2_report.ipynb) implement the improvement roadmap while
+keeping unfinished human-review gates visible.
+
 ### Main finding
 
 The penalty written in a stewarding decision is not always what it costs on track. The report keeps
@@ -56,14 +60,25 @@ The result is **inconclusive**. It is not evidence of either bias or no bias.
 
 ![Simulation shows inadequate power for subtle nationality effects](generated/nationality_power.png)
 
-### Best ways to strengthen the study
+### Study v2 implementation
 
-1. Independently audit the highest-risk documents, multi-car cases, and a fresh exclusion sample.
-2. Use Race Control messages to study the path from an incident being noted to a formal decision.
-3. Compare close source-based case pairs using responsibility, position return, and mitigation.
-4. Keep decision consistency separate from harm and penalty cost.
-5. Estimate lasting damage on a representative collision sample with clean-lap controls.
-6. Keep nationality secondary unless a larger sample can detect a meaningful difference.
+The next version now has executable scaffolding for all six recommendations:
+
+1. Blinded independent-review packets contain 496 Reviewer A and 158 Reviewer B assignments.
+2. The public Race Control feed yields 966 episodes and 174 high-confidence decision links.
+3. Outcome-blind matching gives at least five close neighbors to 317 of 346 cases.
+4. Conduct, participant harm, and sanction burden are stored in separate tables and units.
+5. Driver-specific timing gives 240 single-lap harm mappings and 28 estimable teammate-relative
+   pace screens; these remain source-research leads, not confirmed damage effects.
+6. Nationality remains gated and inconclusive: the British-accused cell is 44 versus the frozen
+   minimum of 98, and the 15-point power target is not met.
+
+Human review has not been filled in. The proportionality release therefore remains at zero instead
+of turning unreviewed timing or model labels into a fairness verdict.
+
+The machine-verifiable [Study v2 completion audit](generated/study_v2/completion_audit.csv) checks
+25 protocol, artifact, gate, notebook, and report controls. It does not substitute for the queued
+independent review.
 
 ### Portfolio evidence
 

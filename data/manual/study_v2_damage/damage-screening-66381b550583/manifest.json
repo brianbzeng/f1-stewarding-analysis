@@ -1,0 +1,24 @@
+{
+  "candidate_incident_count": 193,
+  "collision_decision_rows": 233,
+  "created_at": "2026-08-13T22:30:15.232824+00:00",
+  "evidence_seed_sha256": "27afd3a720ebe0819adf21b2f2ffd18f2712d80dfafc297cb0ed798dacc2645b",
+  "independent_damage_review_complete": false,
+  "limitation": "Retirement status, pit timing, and pace patterns prioritize source research. They do not confirm damage, causality, a forced stop, or a no-incident counterfactual.",
+  "model_researched_evidence_rows": 4,
+  "parent_context_run": "incident-context-a1de9ac2c8ea",
+  "parent_referral_run": "referrals-5d0559ad2878",
+  "participant_count_by_priority": {
+    "high": 115,
+    "low": 199,
+    "medium": 97
+  },
+  "participant_record_count": 411,
+  "participant_rows_with_incident_lap": 240,
+  "persistent_pace_primary_eligible_rows": 52,
+  "release_status": "descriptive_screening_pending_independent_review",
+  "research_queue_sha256": "292ff54d3f2a5a576289a312e94b380dbc8e7fc7d49eb5f698b88c477233b43a",
+  "run_id": "damage-screening-66381b550583",
+  "schema_version": "study-v2-damage-screening-v1",
+  "screening_sha256": "402a47bbbb99a3d533f9b252beda0cbfe039b09b544cb76cb4d1e484d90e9aa6"
+}

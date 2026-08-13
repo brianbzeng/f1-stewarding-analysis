@@ -1,0 +1,22 @@
+{
+  "blind_to_model_final_fields": true,
+  "created_at": "2026-08-13T23:01:10.688929+00:00",
+  "elevated_risk_documents": 346,
+  "high_risk_inclusions": 49,
+  "instructions": "docs/study_v2_human_review_guide.md",
+  "missing_source_text_rows_a": 0,
+  "missing_source_text_rows_b": 0,
+  "packet_id": "study-v2-review-7cb1b29b5251",
+  "parent_feature_build": "features-57542b24ea9f",
+  "parent_model_review_run": "model-review-3dacc1268f13",
+  "protocol_frozen_at": "2026-08-13",
+  "reconciliation_sha256": "a18075ab154c1becd87c84f63a1db9e91218d21449e457fdebb59f9ac5480586",
+  "release_note": "Reviewing sampled records validates those records and audit error rates; it does not upgrade the unreviewed corpus to human_reviewed_final.",
+  "reviewer_a_clean_exclusion_sample": 150,
+  "reviewer_a_rows": 496,
+  "reviewer_a_sha256": "7fdb93b7a5dc66f20d55334a3b32b99dd8d7eee3bd3b272029d59c6f8e4ea34c",
+  "reviewer_b_exclusion_sample": 100,
+  "reviewer_b_rows": 158,
+  "reviewer_b_sha256": "bd3a7c34743fab7ed5e9a0aae8d96d18a27f0852f04f29baf0c3e8dbc387ac5e",
+  "schema_version": "study-v2-human-review-packet-v1"
+}

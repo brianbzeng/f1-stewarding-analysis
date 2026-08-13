@@ -73,9 +73,7 @@ def load_full_corpus_coding_settings(path: Path | None = None) -> dict[str, Any]
         "excluded_offence_patterns",
     }
     if missing := required - set(settings):
-        raise ValueError(
-            f"Full-corpus coding settings are missing: {', '.join(sorted(missing))}"
-        )
+        raise ValueError(f"Full-corpus coding settings are missing: {', '.join(sorted(missing))}")
 
     expected_primary = {
         "causing_collision",
@@ -97,8 +95,10 @@ def load_full_corpus_coding_settings(path: Path | None = None) -> dict[str, Any]
         if not isinstance(group, dict) or not group:
             raise ValueError(f"{group_name} must be a non-empty mapping")
         for family, patterns in group.items():
-            if not isinstance(patterns, list) or not patterns or not all(
-                isinstance(pattern, str) and pattern for pattern in patterns
+            if (
+                not isinstance(patterns, list)
+                or not patterns
+                or not all(isinstance(pattern, str) and pattern for pattern in patterns)
             ):
                 raise ValueError(f"{group_name}.{family} must contain regex strings")
             for pattern in patterns:
@@ -296,12 +296,222 @@ def load_analysis_thresholds(path: Path | None = None) -> dict[str, Any]:
     mappable = thresholds["guideline_conformance"].get("minimum_mappable_fraction")
     agreement = thresholds["guideline_conformance"].get("minimum_independent_agreement")
     valid_fractions = all(
-        isinstance(value, float | int) and 0 <= value <= 1
-        for value in [mappable, agreement]
+        isinstance(value, float | int) and 0 <= value <= 1 for value in [mappable, agreement]
     )
     if not valid_fractions:
         raise ValueError("Guideline threshold fractions must be between zero and one")
     return thresholds
+
+
+def load_study_v2_settings(path: Path | None = None) -> dict[str, Any]:
+    """Load the frozen Study v2 design and enforce its anti-circularity safeguards."""
+
+    config_path = path or PROJECT_ROOT / "config" / "study_v2.yml"
+    payload = load_yaml(config_path)
+    settings = payload.get("study_v2")
+    if not isinstance(settings, dict):
+        raise ValueError(f"Missing study_v2 mapping in {config_path}")
+
+    required = {
+        "schema_version",
+        "protocol_frozen_at",
+        "study_seasons",
+        "parent_model_review_run",
+        "parent_feature_build",
+        "estimands",
+        "human_review",
+        "referral_funnel",
+        "incident_timing",
+        "close_case_matching",
+        "damage_harm",
+        "nationality",
+        "release",
+    }
+    if missing := required - set(settings):
+        raise ValueError(f"Study v2 settings are missing: {', '.join(sorted(missing))}")
+    if settings["schema_version"] != "study_v2_v1":
+        raise ValueError("Study v2 schema_version must remain study_v2_v1")
+    if settings["study_seasons"] != list(range(2018, 2026)):
+        raise ValueError("Study v2 must cover completed seasons 2018 through 2025")
+
+    estimands = settings["estimands"]
+    expected_estimands = {
+        "conduct_consistency",
+        "consequence_burden",
+        "sanction_burden",
+        "distributive_fairness",
+    }
+    if not isinstance(estimands, dict) or set(estimands) != expected_estimands:
+        raise ValueError("Study v2 estimands must keep the four frozen analytical layers")
+    if (
+        estimands["conduct_consistency"].get("exclude_post_incident_harm_from_predictors")
+        is not True
+    ):
+        raise ValueError("Conduct models must exclude post-incident harm predictors")
+    fairness = estimands["distributive_fairness"]
+    if any(
+        fairness.get(field) is not True
+        for field in (
+            "prohibit_composite_fairness_score",
+            "require_fault_established",
+            "require_reviewed_harm_evidence",
+        )
+    ):
+        raise ValueError("Distributive-fairness safeguards cannot be relaxed")
+
+    review = settings["human_review"]
+    if review.get("blind_to_model_final_fields") is not True:
+        raise ValueError("Study v2 human review must remain blind to model final fields")
+    if review.get("sample_review_does_not_upgrade_entire_corpus") is not True:
+        raise ValueError("Sample review cannot upgrade the entire corpus")
+    if review.get("disagreement_requires_reconciliation") is not True:
+        raise ValueError("Human-review disagreements must require reconciliation")
+    if not isinstance(review.get("sample_hash_salt"), str) or not review["sample_hash_salt"]:
+        raise ValueError("Study v2 human review requires a deterministic sample salt")
+
+    funnel = settings["referral_funnel"]
+    if funnel.get("source_table") != "raw.fastf1_session_race_control_messages":
+        raise ValueError("Referral episodes must use the session-keyed Race Control source")
+    if any(
+        funnel.get(field) is not True
+        for field in ("preserve_multi_car_incidents", "unmatched_episodes_must_remain_visible")
+    ):
+        raise ValueError("Referral funnel must preserve multi-car and unmatched episodes")
+
+    matching = settings["close_case_matching"]
+    if matching.get("prohibit_outcome_derived_match_fields") is not True:
+        raise ValueError("Close-case matching cannot use outcome-derived fields")
+    forbidden_primary_match_fields = {
+        "fault_language",
+        "outcome_family",
+        "penalty_seconds",
+        "penalty_points",
+        "grid_places",
+        "damage",
+        "retirement",
+        "finish_position",
+    }
+    if forbidden_primary_match_fields & set(matching.get("distance_fields", [])):
+        raise ValueError("Primary close-case distance fields contain post-decision outcomes")
+    if matching.get("conditional_sanction_exact_fields") != ["fault_language"]:
+        raise ValueError("Fault language is permitted only in the conditional sanction match")
+    if int(matching.get("minimum_neighbors", 0)) < 2:
+        raise ValueError("Close-case matching requires at least two neighbors")
+
+    harm = settings["damage_harm"]
+    if any(
+        harm.get(field) is not True
+        for field in (
+            "timing_patterns_are_screening_only",
+            "incident_causality_requires_explicit_source_link",
+            "no_damage_inference_from_slow_lap_alone",
+        )
+    ):
+        raise ValueError("Damage/harm evidence safeguards cannot be relaxed")
+    if harm.get("minimum_clean_laps_each_side") != 5:
+        raise ValueError("Primary persistent-pace window must remain five clean laps per side")
+    nationality = settings["nationality"]
+    if not 0 < float(nationality.get("minimum_common_support_fraction", 0)) <= 1:
+        raise ValueError("Nationality common-support threshold must be in (0, 1]")
+    if not 0 < float(nationality.get("maximum_weighted_abs_smd", 0)) <= 0.25:
+        raise ValueError("Nationality weighted-balance threshold must be in (0, 0.25]")
+    if int(nationality.get("minimum_exposed_effective_sample_size", 0)) < 20:
+        raise ValueError("Nationality exposed effective sample size threshold is too small")
+    release = settings["release"]
+    expected_artifacts = {
+        "human_review",
+        "referral",
+        "incident_clock",
+        "incident_context",
+        "close_cases",
+        "damage",
+        "layers",
+        "nationality",
+        "report_notebook",
+        "report_html",
+    }
+    artifacts = release.get("artifacts")
+    if not isinstance(artifacts, dict) or set(artifacts) != expected_artifacts:
+        raise ValueError("Study v2 release artifacts must name every frozen output")
+    if not all(
+        isinstance(path, str) and path and not Path(path).is_absolute()
+        for path in artifacts.values()
+    ):
+        raise ValueError("Study v2 release artifact paths must be nonempty and relative")
+    return settings
+
+
+def load_damage_evidence_sources(path: Path | None = None) -> dict[str, Any]:
+    """Load and validate the source hierarchy used for damage and harm claims."""
+
+    config_path = path or PROJECT_ROOT / "config" / "damage_evidence_sources.yml"
+    payload = load_yaml(config_path)
+    settings = payload.get("damage_evidence_sources")
+    if not isinstance(settings, dict):
+        raise ValueError(f"Missing damage_evidence_sources mapping in {config_path}")
+    required = {"schema_version", "frozen_at", "grades", "registries", "adjudication_rules"}
+    if missing := required - set(settings):
+        raise ValueError(f"Damage source settings are missing: {', '.join(sorted(missing))}")
+    if settings["schema_version"] != "damage_sources_v1":
+        raise ValueError("Damage source schema_version must remain damage_sources_v1")
+
+    grades = settings["grades"]
+    if not isinstance(grades, dict) or set(grades) != {"A1", "A2", "A3", "B1", "C", "D"}:
+        raise ValueError("Damage evidence grades must match the frozen hierarchy")
+    for grade, rule in grades.items():
+        if not isinstance(rule, dict):
+            raise ValueError(f"Damage evidence grade {grade} must be a mapping")
+        claims = rule.get("allowed_claims")
+        if (
+            not isinstance(claims, list)
+            or not claims
+            or not all(isinstance(claim, str) and claim for claim in claims)
+        ):
+            raise ValueError(f"Damage evidence grade {grade} needs allowed_claims")
+        if not isinstance(rule.get("limitations"), str) or not rule["limitations"]:
+            raise ValueError(f"Damage evidence grade {grade} needs limitations")
+
+    registries = settings["registries"]
+    if not isinstance(registries, list) or not registries:
+        raise ValueError("Damage source registry must be a non-empty list")
+    source_ids: list[str] = []
+    for source in registries:
+        if not isinstance(source, dict):
+            raise ValueError("Each damage source must be a mapping")
+        required_source = {
+            "source_id",
+            "grade",
+            "owner",
+            "base_url",
+            "evidence_types",
+            "retrieval",
+            "reliability_note",
+        }
+        if missing := required_source - set(source):
+            raise ValueError(f"Damage source is missing: {', '.join(sorted(missing))}")
+        if source["grade"] not in grades:
+            raise ValueError(f"Unknown damage evidence grade {source['grade']}")
+        if not str(source["base_url"]).startswith("https://"):
+            raise ValueError("Damage source base_url must use HTTPS")
+        source_ids.append(str(source["source_id"]))
+    if len(source_ids) != len(set(source_ids)):
+        raise ValueError("Damage source_id values must be unique")
+
+    confirmation = settings["adjudication_rules"].get("confirmed_damage")
+    if (
+        not isinstance(confirmation, dict)
+        or confirmation.get("explicit_component_or_damage_statement_required") is not True
+    ):
+        raise ValueError("Confirmed damage requires an explicit source statement")
+    if set(confirmation.get("accepted_grades", [])) - {"A1", "A2", "A3"}:
+        raise ValueError("Confirmed damage cannot rely on lower-grade sources")
+    no_damage = settings["adjudication_rules"].get("no_confirmed_damage")
+    if (
+        not isinstance(no_damage, dict)
+        or no_damage.get("absence_of_reporting_is_not_evidence") is not True
+    ):
+        raise ValueError("Silence cannot be treated as evidence of no damage")
+    return settings
 
 
 def load_outcome_model_spec(path: Path | None = None) -> dict[str, Any]:
@@ -374,11 +584,7 @@ def load_outcome_model_spec(path: Path | None = None) -> dict[str, Any]:
     if exposure != "british_accused_driver" or exposure in nationality_covariates:
         raise ValueError("The primary nationality exposure must be separate from covariates")
     clip = nationality.get("propensity_clip")
-    if (
-        not isinstance(clip, list)
-        or len(clip) != 2
-        or not 0 < float(clip[0]) < float(clip[1]) < 1
-    ):
+    if not isinstance(clip, list) or len(clip) != 2 or not 0 < float(clip[0]) < float(clip[1]) < 1:
         raise ValueError("propensity_clip must contain increasing probabilities inside (0, 1)")
     simulation = nationality.get("simulation_power")
     if not isinstance(simulation, dict):
@@ -477,9 +683,7 @@ def select_sporting_regulation(
     event_date: date,
 ) -> SportingRegulationIssue:
     candidates = [
-        issue
-        for issue in issues
-        if issue.season == season and issue.publication_date <= event_date
+        issue for issue in issues if issue.season == season and issue.publication_date <= event_date
     ]
     if not candidates:
         raise ValueError(f"No {season} Sporting Regulation issue available by {event_date}")
@@ -514,8 +718,7 @@ def select_international_sporting_code(
     candidates = [
         issue
         for issue in issues
-        if issue.season == season
-        and issue.effective_from <= event_date <= issue.effective_through
+        if issue.season == season and issue.effective_from <= event_date <= issue.effective_through
     ]
     if not candidates:
         raise ValueError(f"No {season} International Sporting Code issue covers {event_date}")

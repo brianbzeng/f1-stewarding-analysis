@@ -63,6 +63,10 @@ The collector will identify and retain:
 | [OpenF1](https://openf1.org/docs/) | Secondary validation for timing, position, and race control from 2023 | Unofficial; not a primary source |
 | [Formula 1 official race reporting](https://www.formula1.com/en/latest/all) | Race narrative, official interviews, damage reports, and incident sequencing | Secondary to FIA findings; narrative claims require explicit attribution |
 
+The expanded damage-source hierarchy, team archive routes, allowed claim types, and case-level
+collection rules are frozen in `config/damage_evidence_sources.yml` and documented in
+`docs/damage_evidence_source_method.md`. Source silence is never evidence of no damage.
+
 ## Completeness-only references
 
 The [F1 Penalties Dashboard](https://github.com/j5t3313/F1_Penalties_Dashboard) may be used to identify possible missing records from 2020-2025. Any record added after that comparison must be independently verified against an FIA document.

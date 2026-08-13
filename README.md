@@ -14,6 +14,14 @@ reviewed pilot demonstrates that distinction. A disclosed GPT-5.6 Sol review rel
 cases for descriptive analysis; the report does not present that model review as independent human
 assurance. The broad consistency model is weak and the nationality result remains inconclusive.
 
+The follow-on [Study v2 progress report](reports/the_cost_of_discretion_study_v2.html) implements
+the original report's six improvement recommendations. Its executable sequence is notebooks
+[07](notebooks/07_study_v2_protocol_and_review.ipynb) through
+[12](notebooks/12_study_v2_report.ipynb). It adds a risk-based human-review packet, a public Race
+Control referral funnel, validated incident-lap windows, outcome-blind close-case matching,
+driver-level harm records, damage-source research, and a gated nationality diagnostic. Results that
+still need human judgment remain withheld.
+
 ## Questions
 
 1. How predictable are penalty and no-further-action decisions from observable incident facts?
@@ -118,6 +126,28 @@ the apply command writes a separate workspace and reruns protected-lineage valid
 The disclosed [GPT-5.6 Sol review protocol](docs/model_review_protocol.md) maps the 4,441 queue
 obligations to 2,003 unique FIA records, records source-backed corrections, and writes a separate
 content-addressed workspace. It is a model-led second pass, not independent human review.
+
+## Study v2 commands
+
+```powershell
+python scripts/build_study_v2_review_packet.py
+python scripts/build_study_v2_referral_funnel.py
+python scripts/build_study_v2_incident_clock.py
+python scripts/build_study_v2_incident_context.py
+python scripts/build_study_v2_close_cases.py
+python scripts/build_study_v2_damage_screening.py
+python scripts/build_study_v2_layers.py
+python scripts/build_study_v2_nationality.py
+python scripts/build_study_v2_notebooks.py
+python scripts/audit_study_v2_completion.py
+```
+
+The [Study v2 protocol](docs/study_v2_protocol.md) is the controlling design. The human review and
+damage-evidence worklists are intentionally unfinished so an independent reviewer can complete them
+without seeing model answers. The final command writes a requirement-level
+[completion audit](reports/generated/study_v2/completion_audit.csv) and fails if any frozen artifact,
+gate, notebook, or report phase is missing. The notebook command builds and executes notebooks
+07-12 and exports the integrated HTML report in one reproducible step.
 
 The conservative [machine-assisted first pass](docs/full_corpus_first_pass.md) prepopulates 1,903
 document dispositions and 1,856 adjudication rows as `single_coded_pending_human`. This includes

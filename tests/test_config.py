@@ -5,6 +5,7 @@ import pytest
 
 from f1stewards.config import (
     load_analysis_thresholds,
+    load_damage_evidence_sources,
     load_document_lineage,
     load_evidence_profiles,
     load_full_collection_settings,
@@ -14,6 +15,7 @@ from f1stewards.config import (
     load_regulatory_sources,
     load_retrieval_exceptions,
     load_sporting_regulation_issues,
+    load_study_v2_settings,
     select_international_sporting_code,
     select_sporting_regulation,
 )
@@ -59,15 +61,43 @@ def test_analysis_thresholds_cover_all_planned_components() -> None:
     assert thresholds["competitive_impact"]["mechanical_same_lap_only"] is True
     assert thresholds["victim_harm"]["minimum_clean_laps_each_side"] == 5
     assert thresholds["victim_harm"]["prohibit_cross_unit_composite_score"] is True
+    assert thresholds["competitive_impact"]["next_event_grid_start_effect_tier"] == "mechanical"
     assert (
-        thresholds["competitive_impact"]["next_event_grid_start_effect_tier"]
-        == "mechanical"
-    )
-    assert (
-        thresholds["competitive_impact"]["next_event_finish_effect_default_tier"]
-        == "not_estimable"
+        thresholds["competitive_impact"]["next_event_finish_effect_default_tier"] == "not_estimable"
     )
     assert thresholds["incident_context"]["fault_attribution_is_edge_specific"] is True
+
+
+def test_study_v2_freezes_separate_estimands_and_review_safeguards() -> None:
+    settings = load_study_v2_settings()
+
+    assert settings["study_seasons"] == list(range(2018, 2026))
+    assert settings["parent_model_review_run"] == "model-review-3dacc1268f13"
+    assert settings["human_review"]["blind_to_model_final_fields"] is True
+    assert settings["referral_funnel"]["preserve_multi_car_incidents"] is True
+    assert settings["close_case_matching"]["prohibit_outcome_derived_match_fields"] is True
+    assert settings["damage_harm"]["timing_patterns_are_screening_only"] is True
+    assert settings["nationality"]["minimum_common_support_fraction"] == 0.90
+    assert settings["nationality"]["maximum_weighted_abs_smd"] == 0.10
+    assert (
+        settings["estimands"]["distributive_fairness"]["prohibit_composite_fairness_score"] is True
+    )
+
+
+def test_damage_source_hierarchy_limits_reportable_claims() -> None:
+    settings = load_damage_evidence_sources()
+
+    assert set(settings["grades"]) == {"A1", "A2", "A3", "B1", "C", "D"}
+    registry = {source["source_id"]: source for source in settings["registries"]}
+    assert registry["fia_event_timing"]["grade"] == "A1"
+    assert registry["mercedes_team"]["grade"] == "A2"
+    assert registry["formula1_editorial"]["grade"] == "A3"
+    assert (
+        settings["adjudication_rules"]["no_confirmed_damage"][
+            "absence_of_reporting_is_not_evidence"
+        ]
+        is True
+    )
 
 
 def test_full_collection_settings_cover_completed_study_seasons() -> None:
@@ -176,18 +206,14 @@ def test_sporting_regulation_selection_uses_event_date_and_precedence(
     event_date: date,
     expected_source_id: str,
 ) -> None:
-    selected = select_sporting_regulation(
-        load_sporting_regulation_issues(), season, event_date
-    )
+    selected = select_sporting_regulation(load_sporting_regulation_issues(), season, event_date)
 
     assert selected.source_id == expected_source_id
 
 
 def test_sporting_regulation_selection_rejects_date_before_catalog() -> None:
     with pytest.raises(ValueError, match="No 2018 Sporting Regulation issue"):
-        select_sporting_regulation(
-            load_sporting_regulation_issues(), 2018, date(2017, 1, 1)
-        )
+        select_sporting_regulation(load_sporting_regulation_issues(), 2018, date(2017, 1, 1))
 
 
 def test_international_sporting_code_catalog_covers_study_period() -> None:

@@ -1,0 +1,16 @@
+{
+  "close_case_edges": 1655,
+  "close_case_edges_with_different_sanction": 752,
+  "conduct_rows": 346,
+  "consequence_rows": 411,
+  "created_at": "2026-08-13T22:34:52.657600+00:00",
+  "guardrail": "Conduct, consequence, and sanction stay in separate units. No composite fairness score is calculated. Pace estimates are research screens until damage and context are independently reviewed.",
+  "human_review_complete": false,
+  "pace_screen_estimable_rows": 28,
+  "pace_screen_rows": 52,
+  "proportionality_release_rows": 0,
+  "release_status": "descriptive_scaffolding_pending_independent_review",
+  "run_id": "study-v2-layers-a9b8ff776470",
+  "sanction_rows": 346,
+  "schema_version": "study-v2-layers-v1"
+}
