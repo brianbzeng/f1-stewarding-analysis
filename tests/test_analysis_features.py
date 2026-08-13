@@ -51,6 +51,30 @@ def _database(tmp_path: Path) -> duckdb.DuckDBPyConnection:
             ('2019-gbr', 'Race', 33, 'Max Verstappen', 'VER', 'NED', now())
         """
     )
+    connection.execute(
+        """
+        INSERT INTO curated.stewards (steward_id, full_name) VALUES
+            ('steward-1', 'Steward One'),
+            ('steward-2', 'Steward Two'),
+            ('steward-3', 'Steward Three'),
+            ('steward-4', 'Steward Four');
+        INSERT INTO curated.panels (
+            panel_id, event_id, panel_size, panel_source_document_id
+        ) VALUES ('panel-test', '2019-gbr', 4, 'doc-1');
+        INSERT INTO curated.panel_members (
+            panel_id, steward_id, member_sequence
+        ) VALUES
+            ('panel-test', 'steward-1', 1),
+            ('panel-test', 'steward-2', 2),
+            ('panel-test', 'steward-3', 3),
+            ('panel-test', 'steward-4', 4);
+        INSERT INTO curated.document_panels VALUES (
+            'doc-1', '2019-gbr', 'panel-test', 'document_signature_exact',
+            'exact', 4, 'Steward One | Steward Two | Steward Three | Steward Four',
+            'test-parser-v1'
+        );
+        """
+    )
     return connection
 
 
@@ -163,6 +187,12 @@ def test_provisional_features_preserve_driver_roles_and_block_reporting(
     assert bool(feature["british_accused_driver"])
     assert bool(feature["home_race_accused"])
     assert feature["principal_affected_driver_id"] == "ver"
+    assert feature["panel_id"] == "panel-test"
+    assert feature["panel_assignment_basis"] == "document_signature_exact"
+    assert feature["panel_signature_parse_status"] == "exact"
+    assert feature["panel_size"] == 4
+    assert bool(feature["panel_context_complete"])
+    assert feature["panel_data_status"] == "source_observed"
     assert len(build.driver_roles) == 2
 
 
@@ -184,7 +214,8 @@ def test_reviewed_features_use_final_outcome_and_materialize_release(
         replace_analysis_feature_build(connection, build)
         stored = connection.sql(
             """
-            SELECT outcome_family, sanction_outcome, penalty_seconds, reporting_eligible
+            SELECT outcome_family, sanction_outcome, penalty_seconds, reporting_eligible,
+                   panel_id, panel_context_complete
             FROM analysis.v_latest_adjudication_features
             """
         ).fetchone()
@@ -193,4 +224,66 @@ def test_reviewed_features_use_final_outcome_and_materialize_release(
 
     assert build.release_status == "reportable_human_reviewed"
     assert build.controls["status"].eq("pass").all()
-    assert stored == ("no_further_action", False, None, True)
+    assert stored == ("no_further_action", False, None, True, "panel-test", True)
+
+
+def test_panel_provenance_changes_build_identity_and_missing_context_blocks_release(
+    tmp_path: Path,
+) -> None:
+    connection = _database(tmp_path)
+    try:
+        documents, adjudications, qa, validation = _inputs(final=True)
+        exact = assemble_analysis_features(
+            connection,
+            documents,
+            adjudications,
+            qa,
+            workspace_id="workspace-panel-lineage",
+            workspace_input_sha256="c" * 64,
+            workspace_validation=validation,
+        )
+        connection.execute(
+            """
+            UPDATE curated.document_panels
+            SET assignment_basis = 'single_event_panel_consensus',
+                signature_parse_status = 'event_consensus',
+                extracted_member_count = 0,
+                raw_signature_lines = NULL
+            WHERE document_id = 'doc-1'
+            """
+        )
+        consensus = assemble_analysis_features(
+            connection,
+            documents,
+            adjudications,
+            qa,
+            workspace_id="workspace-panel-lineage",
+            workspace_input_sha256="c" * 64,
+            workspace_validation=validation,
+        )
+        connection.execute("DELETE FROM curated.document_panels WHERE document_id = 'doc-1'")
+        missing = assemble_analysis_features(
+            connection,
+            documents,
+            adjudications,
+            qa,
+            workspace_id="workspace-panel-lineage",
+            workspace_input_sha256="c" * 64,
+            workspace_validation=validation,
+        )
+    finally:
+        connection.close()
+
+    assert exact.feature_build_id != consensus.feature_build_id
+    assert consensus.features.iloc[0]["panel_data_status"] == "derived"
+    assert consensus.features.iloc[0]["panel_assignment_basis"] == (
+        "single_event_panel_consensus"
+    )
+    assert missing.features.iloc[0]["panel_data_status"] == "unavailable"
+    assert not bool(missing.features.iloc[0]["panel_context_complete"])
+    panel_control = missing.controls.set_index("control").loc[
+        "selected_candidate_panel_identity_complete"
+    ]
+    assert panel_control["status"] == "fail"
+    assert missing.release_status == "blocked_pending_human_review"
+    assert not bool(missing.features.iloc[0]["reporting_eligible"])

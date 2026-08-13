@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS metadata.analysis_feature_builds (
     workspace_id VARCHAR NOT NULL,
     workspace_input_sha256 VARCHAR NOT NULL,
     nationality_registry_sha256 VARCHAR NOT NULL,
+    panel_assignments_sha256 VARCHAR NOT NULL,
     built_at_utc TIMESTAMPTZ NOT NULL,
     release_status VARCHAR NOT NULL CHECK (
         release_status IN ('blocked_pending_human_review', 'reportable_human_reviewed')
@@ -60,10 +61,34 @@ CREATE TABLE IF NOT EXISTS analysis.adjudication_features (
     parser_review_required BOOLEAN NOT NULL,
     timing_session_loaded BOOLEAN NOT NULL,
     accused_driver_result_present BOOLEAN NOT NULL,
+    panel_id VARCHAR,
+    panel_assignment_basis VARCHAR,
+    panel_signature_parse_status VARCHAR,
+    panel_size INTEGER,
+    panel_context_complete BOOLEAN,
     panel_data_status VARCHAR NOT NULL,
     feature_provenance VARCHAR NOT NULL,
     PRIMARY KEY (feature_build_id, adjudication_instance_id)
 );
+
+-- Forward-compatible additions for warehouses created before panel extraction was implemented.
+ALTER TABLE metadata.analysis_feature_builds
+ADD COLUMN IF NOT EXISTS panel_assignments_sha256 VARCHAR;
+
+ALTER TABLE analysis.adjudication_features
+ADD COLUMN IF NOT EXISTS panel_id VARCHAR;
+
+ALTER TABLE analysis.adjudication_features
+ADD COLUMN IF NOT EXISTS panel_assignment_basis VARCHAR;
+
+ALTER TABLE analysis.adjudication_features
+ADD COLUMN IF NOT EXISTS panel_signature_parse_status VARCHAR;
+
+ALTER TABLE analysis.adjudication_features
+ADD COLUMN IF NOT EXISTS panel_size INTEGER;
+
+ALTER TABLE analysis.adjudication_features
+ADD COLUMN IF NOT EXISTS panel_context_complete BOOLEAN;
 
 CREATE TABLE IF NOT EXISTS analysis.adjudication_driver_roles (
     feature_build_id VARCHAR NOT NULL,

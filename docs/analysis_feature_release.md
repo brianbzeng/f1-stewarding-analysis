@@ -10,16 +10,20 @@ f1stewards build-analysis-features `
   data/manual/full_corpus_workspaces/full-coding-4b0c0d5ddd72
 ```
 
-The current content-addressed build is `features-416a202a8006`. It uses workspace
+The current content-addressed build is `features-841556c32f1f`. It uses workspace
 `full-coding-4b0c0d5ddd72`, the sourced 43-driver nationality registry, the controlled 28-label
-event-country crosswalk, and all 3,938 Race/Sprint classifications.
+event-country crosswalk, all 3,938 Race/Sprint classifications, and the complete decision-document
+panel assignment register. The panel register contributes its own SHA-256 lineage field to the
+feature-build identity.
 
 ## Two analytical grains
 
 `analysis.adjudication_features` has one row per candidate accused-driver adjudication. It stores
 the proposed or reviewed session, incident family, outcome, sanction amounts, accused-driver
 identity, nationality, home-race exposure, affected-role summary, timing availability, and the
-provenance of each field.
+provenance of each field. `panel_id` is an adjustment key; `panel_assignment_basis`,
+`panel_signature_parse_status`, `panel_size`, and `panel_data_status` distinguish source-observed
+signatures from the tightly constrained event-consensus fallback.
 
 `analysis.adjudication_driver_roles` has one row per accused or affected driver within that
 adjudication. This bridge prevents a four-car incident from being reduced to a false two-driver
@@ -41,6 +45,10 @@ The current provisional build contains:
 | Suggested British accused-driver exposures | 34 |
 | Suggested accused-driver home-race exposures | 12 |
 | Reporting-eligible rows | 0 |
+| Rows with complete document-panel context | 260 |
+| Distinct panels represented | 114 |
+| Exact document-signature panel assignments | 260 |
+| Four-member / five-member panel rows | 251 / 9 |
 
 These are workload and design-coverage counts. They are not sanction rates, nationality effects,
 or evidence of bias.
@@ -61,7 +69,7 @@ parsed punishment.
 
 ## Release controls
 
-`analysis.feature_release_controls` records eight fail-fast checks. The current workspace passes
+`analysis.feature_release_controls` records nine fail-fast checks. The current workspace passes
 all 19 lineage and editing controls, but correctly fails these substantive gates:
 
 - 0 of 2,002 document dispositions independently reviewed;
@@ -83,10 +91,9 @@ The structure supports the planned adjusted analyses while preserving the study'
 - home-race exposure uses a published code crosswalk rather than names;
 - multi-car incidents retain every affected role;
 - unmapped outcomes remain null rather than being guessed into sanction/no-sanction; and
-- panel exposure remains `not_collected` in this frozen first feature build. Document-level panel
-  signatures now have complete assignment coverage, but the feature is not releasable until the 83
-  steward nationalities have source-backed lineage and a subsequent feature build joins the panel
-  dimension.
+- exact panel identity is available as a non-nationality adjustment dimension for every candidate;
+  panel-country exposure remains withheld until all 83 steward identities have source-backed,
+  temporally coherent country evidence.
 
 Grouped validation, overlap diagnostics, and outcome-free simulation power are implemented in
 [`model_validation_method.md`](model_validation_method.md). Substantive estimates stay suppressed

@@ -196,10 +196,12 @@ independent review remain required before substantive modeling. The executed
 seasonal review workload, SQL candidate profile, timing coverage, and explicit blocked model gate.
 
 The [gated analysis feature release](docs/analysis_feature_release.md) materializes one
-adjudication-grain table and a separate accused/affected driver-role bridge in DuckDB. Its first
+adjudication-grain table and a separate accused/affected driver-role bridge in DuckDB. Its current
 build contains 260 provisional candidates and 503 role rows with complete sourced identity joins;
 eight ambiguous `other` outcomes remain outside the binary design set. All reporting flags remain
-false because document, adjudication, and exclusion-QA human review has not begun. The feature
+false because document, adjudication, and exclusion-QA human review has not begun. Exact
+document-panel identity is now joined for all 260 candidate rows and hashed into the feature-build
+lineage; steward-country exposure remains separately blocked by its evidence gate. The feature
 schema can therefore support model engineering and overlap diagnostics without leaking unreviewed
 suggestions into the eventual report.
 

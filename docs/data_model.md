@@ -97,6 +97,12 @@ is permitted only when all directly parsed documents identify one panel. Signatu
 infer a chair or driver-steward role. See
 [`steward_panel_extraction.md`](steward_panel_extraction.md).
 
+The gated adjudication feature layer carries `panel_id`, panel size, assignment basis, parse status,
+and a source-observed/derived status. Its build identifier hashes the complete document-panel
+assignment register, and a release control fails if any selected adjudication lacks panel context.
+Steward-country exposure is intentionally a separate, later feature because panel identity is
+complete while country attribution is not.
+
 `steward_country_evidence` retains the source code separately from the normalized analysis code and
 does not update a static nationality. Conflicting observations stay visible until they can be
 resolved into dated intervals or excluded from that analysis. See

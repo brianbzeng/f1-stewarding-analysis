@@ -26,7 +26,7 @@ from f1stewards.coding_workspace import (
     validate_edited_full_corpus_coding_workspace,
 )
 
-FEATURE_SCHEMA_VERSION = "adjudication-analysis-features-v1"
+FEATURE_SCHEMA_VERSION = "adjudication-analysis-features-v2"
 COMPLETE_REVIEW_STATUSES = {"double_coded", "adjudicated"}
 SANCTION_OUTCOMES = {
     "warning",
@@ -82,6 +82,7 @@ class AnalysisFeatureBuild:
     workspace_id: str
     workspace_input_sha256: str
     nationality_registry_sha256: str
+    panel_assignments_sha256: str
     built_at_utc: datetime
     release_status: str
     features: pd.DataFrame
@@ -242,6 +243,37 @@ def _identity_registry_digest(connection: duckdb.DuckDBPyConnection) -> str:
     return _sha256(_canonical_csv(registry) + b"\n" + _canonical_csv(countries))
 
 
+def _panel_context_frame(connection: duckdb.DuckDBPyConnection) -> pd.DataFrame:
+    panels = connection.sql(
+        """
+        SELECT
+            document_id,
+            event_id,
+            panel_id,
+            assignment_basis,
+            signature_parse_status,
+            extracted_member_count,
+            panel_size
+        FROM analysis.v_document_panel_composition
+        ORDER BY document_id
+        """
+    ).df()
+    if panels["document_id"].duplicated().any():
+        raise ValueError("Document-panel context must be unique by document_id")
+    return panels
+
+
+def _panel_context_digest(panels: pd.DataFrame) -> str:
+    return _sha256(_canonical_csv(panels))
+
+
+def _panel_lookup(panels: pd.DataFrame) -> dict[str, dict[str, Any]]:
+    return {
+        str(row.document_id): row._asdict()
+        for row in panels.itertuples(index=False)
+    }
+
+
 def _identity_lookup(identities: pd.DataFrame) -> dict[tuple[str, str, int], dict[str, Any]]:
     if identities.duplicated(["event_id", "session_type", "driver_number"]).any():
         raise ValueError("FastF1 identity grain is not unique by event, session, and car number")
@@ -301,6 +333,7 @@ def _release_controls(
     adjudication_complete = int(adjudications.apply(_adjudication_final_complete, axis=1).sum())
     qa_complete = int(exclusion_qa.apply(_qa_final_complete, axis=1).sum())
     final_primary = features[features["population_status"].eq("human_reviewed_primary")]
+    panel_context_missing = int((~features["panel_context_complete"].astype(bool)).sum())
     identity_missing = int(
         final_primary["accused_identity_match_status"].ne("matched").sum()
     )
@@ -319,6 +352,13 @@ def _release_controls(
             document_complete,
             len(documents),
             "Every archive outcome label needs an independently reviewed final disposition.",
+        ),
+        (
+            "selected_candidate_panel_identity_complete",
+            panel_context_missing == 0,
+            panel_context_missing,
+            0,
+            "Every selected adjudication must join one evidence-based document panel identity.",
         ),
         (
             "adjudication_coding_complete",
@@ -397,6 +437,9 @@ def assemble_analysis_features(
     identities = _identity_frame(connection)
     identity_lookup = _identity_lookup(identities)
     registry_digest = _identity_registry_digest(connection)
+    panels = _panel_context_frame(connection)
+    panel_lookup = _panel_lookup(panels)
+    panel_digest = _panel_context_digest(panels)
     feature_build_id = "features-" + _sha256(
         (
             FEATURE_SCHEMA_VERSION
@@ -404,6 +447,8 @@ def assemble_analysis_features(
             + workspace_input_sha256
             + "\n"
             + registry_digest
+            + "\n"
+            + panel_digest
         ).encode("utf-8")
     )[:12]
 
@@ -464,6 +509,34 @@ def assemble_analysis_features(
         outcome_model_eligible = outcome_family in MODEL_OUTCOMES
         instance_id = _clean(row["adjudication_instance_id"])
         event_id = _clean(row["event_id"])
+        document_id = _clean(row["document_id"])
+        panel = panel_lookup.get(document_id)
+        if panel and _clean(panel["event_id"]) != event_id:
+            raise ValueError(
+                "Document-panel event mismatch: "
+                f"document_id={document_id}, feature_event={event_id}, "
+                f"panel_event={_clean(panel['event_id'])}"
+            )
+        panel_id = _clean(panel["panel_id"]) if panel else ""
+        panel_assignment_basis = _clean(panel["assignment_basis"]) if panel else ""
+        panel_signature_status = (
+            _clean(panel["signature_parse_status"]) if panel else ""
+        )
+        panel_size = _integer(panel["panel_size"]) if panel else None
+        panel_context_complete = bool(
+            panel_id
+            and panel_size is not None
+            and panel_assignment_basis
+            in {"document_signature_exact", "single_event_panel_consensus"}
+            and panel_signature_status in {"exact", "event_consensus"}
+        )
+        panel_data_status = (
+            "source_observed"
+            if panel_assignment_basis == "document_signature_exact"
+            else "derived"
+            if panel_assignment_basis == "single_event_panel_consensus"
+            else "unavailable"
+        )
         accused_role = None
         if accused_number is not None:
             accused_role = _role_payload(
@@ -545,7 +618,7 @@ def assemble_analysis_features(
                 "adjudication_seed_id": _clean(row["adjudication_seed_id"]),
                 "adjudication_id": _clean(row["adjudication_id_final"]) or None,
                 "incident_id": _clean(row["incident_id_final"]) or None,
-                "document_id": _clean(row["document_id"]),
+                "document_id": document_id,
                 "source_url": _clean(row["source_url"]),
                 "event_id": event_id,
                 "season": _integer(row["season"]),
@@ -610,7 +683,12 @@ def assemble_analysis_features(
                 "accused_driver_result_present": _bool(
                     row["accused_driver_result_present_suggestion"]
                 ),
-                "panel_data_status": "not_collected",
+                "panel_id": panel_id or None,
+                "panel_assignment_basis": panel_assignment_basis or None,
+                "panel_signature_parse_status": panel_signature_status or None,
+                "panel_size": panel_size,
+                "panel_context_complete": panel_context_complete,
+                "panel_data_status": panel_data_status,
                 "feature_provenance": json.dumps(
                     {
                         "label_basis": (
@@ -621,6 +699,14 @@ def assemble_analysis_features(
                             "human_reviewed_final"
                             if use_final
                             else "machine_extracted_review_aid"
+                        ),
+                        "panel_basis": panel_assignment_basis or "not_available",
+                        "panel_identity_basis": (
+                            "official_decision_signature"
+                            if panel_data_status == "source_observed"
+                            else "single_panel_event_consensus"
+                            if panel_data_status == "derived"
+                            else "not_available"
                         ),
                     },
                     sort_keys=True,
@@ -647,6 +733,7 @@ def assemble_analysis_features(
         workspace_id=workspace_id,
         workspace_input_sha256=workspace_input_sha256,
         nationality_registry_sha256=registry_digest,
+        panel_assignments_sha256=panel_digest,
         built_at_utc=built_at,
         release_status=release_status,
         features=features,
@@ -723,6 +810,7 @@ def replace_analysis_feature_build(
                 "workspace_id": build.workspace_id,
                 "workspace_input_sha256": build.workspace_input_sha256,
                 "nationality_registry_sha256": build.nationality_registry_sha256,
+                "panel_assignments_sha256": build.panel_assignments_sha256,
                 "built_at_utc": build.built_at_utc,
                 "release_status": build.release_status,
                 "adjudication_rows": len(build.features),
