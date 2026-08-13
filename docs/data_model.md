@@ -19,6 +19,7 @@ The warehouse separates source documents, incidents, adjudications, people, rule
 | `panels` | one distinct steward-panel composition at one event |
 | `panel_members` | one steward membership in one panel |
 | `document_panels` | one evidence-based panel assignment for one decision document |
+| `steward_country_evidence` | one dated official-source country observation for one steward |
 | `rule_versions` | one version of one regulatory document |
 | `rule_provisions` | one article/provision within a rule version |
 | `guideline_sanctions` | one offence-session-guideline recommendation |
@@ -95,6 +96,11 @@ event. Exact signatures establish content-addressed panel identities; an event-c
 is permitted only when all directly parsed documents identify one panel. Signature order does not
 infer a chair or driver-steward role. See
 [`steward_panel_extraction.md`](steward_panel_extraction.md).
+
+`steward_country_evidence` retains the source code separately from the normalized analysis code and
+does not update a static nationality. Conflicting observations stay visible until they can be
+resolved into dated intervals or excluded from that analysis. See
+[`steward_country_evidence.md`](steward_country_evidence.md).
 
 `harm_assessments` keeps responsibility, observed victim harm, lasting-damage evidence, repair-stop
 response, and persistent-pace estimates separate from `classification_impact`, which measures the

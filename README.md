@@ -126,6 +126,7 @@ f1stewards audit-full-coding-queues
 f1stewards study-fastf1 --max-sessions 5
 f1stewards study-fastf1-inventory --strict
 f1stewards load-steward-panels --strict-extraction
+f1stewards load-steward-country-evidence
 ```
 
 `build-study-catalog` freezes FastF1 schedules into stable event IDs and FIA archive targets;
@@ -179,6 +180,11 @@ consensus, and none remain unresolved. The resulting 181 panels preserve seven e
 within-weekend substitutions and identify 83 stewards. Every extraction control passes; panel-
 nationality analysis remains explicitly blocked until all steward nationalities have source-backed
 lineage.
+
+The follow-on [steward-country evidence ledger](docs/steward_country_evidence.md) currently holds
+45 dated official-source records for 38 of the 83 stewards. It keeps raw and normalized codes
+separate and exposes an official-source `BEL`/`LUX` conflict rather than forcing a static value.
+Panel identity is usable as adjustment context; steward-country comparisons remain blocked.
 
 The content-addressed [full-corpus coding workspace](docs/full_corpus_coding_workspace.md) now joins
 all 1,951 adjudication starters to protected source lineage and the complete timing-quality context.

@@ -96,6 +96,11 @@ from f1stewards.reconciliation import (
     write_reconciliation_bundle,
 )
 from f1stewards.snowflake import export_snowflake_pilot, validate_snowflake_export
+from f1stewards.steward_country import (
+    load_steward_country_evidence,
+    replace_steward_country_evidence,
+    steward_country_evidence_audit,
+)
 from f1stewards.steward_panels import (
     build_steward_panel_frames,
     load_decision_signature_population,
@@ -387,6 +392,64 @@ def load_steward_panels_command(
     )
     extraction = controls.loc[controls["gate_type"].eq("extraction")]
     if strict_extraction and not extraction["status"].eq("pass").all():
+        raise typer.Exit(code=1)
+
+
+@app.command("load-steward-country-evidence")
+def load_steward_country_evidence_command(
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+    strict_release: Annotated[
+        bool,
+        typer.Option(help="Exit nonzero until country-evidence release controls pass."),
+    ] = False,
+    worklist_rows: Annotated[
+        int, typer.Option(min=1, help="Number of highest-priority unresolved identities to show.")
+    ] = 15,
+) -> None:
+    """Load dated official country evidence while preserving source disagreements."""
+
+    initialize_database(db_path)
+    try:
+        evidence = load_steward_country_evidence()
+        with connect(db_path) as connection:
+            replace_steward_country_evidence(connection, evidence)
+            controls = steward_country_evidence_audit(connection)
+            conflicts = connection.sql(
+                """
+                SELECT steward_id, full_name, observed_analysis_codes, evidence_records
+                FROM analysis.v_steward_country_evidence_summary
+                WHERE resolution_status = 'source_conflict_unresolved'
+                ORDER BY steward_id
+                """
+            ).df()
+            worklist = connection.sql(
+                """
+                SELECT
+                    steward_id,
+                    full_name,
+                    resolution_status,
+                    observed_analysis_codes,
+                    decision_document_count,
+                    first_study_season,
+                    last_study_season
+                FROM analysis.v_steward_country_research_worklist
+                LIMIT ?
+                """,
+                params=[worklist_rows],
+            ).df()
+    except (FileNotFoundError, ValueError, duckdb.Error) as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=1) from exc
+    typer.echo(controls.to_string(index=False))
+    if not conflicts.empty:
+        typer.echo("\nUnresolved official-source country-code conflicts:")
+        typer.echo(conflicts.to_string(index=False))
+    if not worklist.empty:
+        typer.echo("\nHighest-priority steward-country research worklist:")
+        typer.echo(worklist.to_string(index=False))
+    typer.echo(f"Loaded {len(evidence)} dated steward-country evidence records")
+    release = controls.loc[controls["gate_type"].eq("analysis_release")]
+    if strict_release and not release["status"].eq("pass").all():
         raise typer.Exit(code=1)
 
 

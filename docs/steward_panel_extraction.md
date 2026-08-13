@@ -85,7 +85,12 @@ source research remains intact on a reproducible panel rebuild.
 Seven extraction controls pass: nonempty population, at least 95% direct parsing, direct evidence
 in every event, complete document assignment, valid three-to-five-member panels, a complete exact
 panel dimension, and retention of multi-panel event structure. Two analysis-release controls fail
-by design because all 83 panel stewards still require sourced nationality records.
+by design because the dated evidence has not yet been promoted to conflict-resolved assignments for
+all 83 panel stewards.
+
+The dated source register and its first observed conflict are documented in
+[`steward_country_evidence.md`](steward_country_evidence.md). This replaces the unsafe assumption
+that one unqualified static nationality can be assigned directly from an FIA country code.
 
 Until that source register is complete, this layer supports panel fixed/group effects, decision
 lineage inspection, and substitution diagnostics, but not same-nationality, British-panel, or
