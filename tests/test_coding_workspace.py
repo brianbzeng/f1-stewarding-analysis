@@ -270,3 +270,31 @@ def test_edited_workspace_allows_final_fields_and_supported_splits(tmp_path: Pat
         "adjudication_coding_worklist:protected_lineage"
     ]
     assert protected["status"] == "fail"
+
+
+def test_edited_workspace_rejects_invalid_corrected_sanction_fields(
+    tmp_path: Path,
+) -> None:
+    seed_directory = tmp_path / "seed"
+    output_root = tmp_path / "workspaces"
+    write_seed_directory(seed_directory)
+    sessions, drivers = sample_timing_context()
+    output_directory, _, _ = write_full_corpus_coding_workspace(
+        seed_directory, output_root, sessions, drivers
+    )
+    path = output_directory / WORKSPACE_ADJUDICATION_FILENAME
+    worklist = pd.read_csv(path, dtype=str, keep_default_na=False)
+    worklist.loc[0, "penalty_points_final"] = "-1"
+    worklist.loc[0, "fault_language_final"] = "unsupported_judgment"
+    worklist.to_csv(path, index=False, lineterminator="\n")
+
+    validation = validate_edited_full_corpus_coding_workspace(
+        seed_directory, output_directory, sessions, drivers
+    ).set_index("control")
+
+    assert (
+        validation.loc[
+            "adjudication_coding_worklist:corrected_outcome_fields", "status"
+        ]
+        == "fail"
+    )

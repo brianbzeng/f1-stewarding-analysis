@@ -25,11 +25,28 @@ from f1stewards.coding_queue import (
     QUEUE_MANIFEST_FILENAME,
 )
 
-WORKSPACE_SCHEMA_VERSION = "full-corpus-coding-workspace-v1"
+WORKSPACE_SCHEMA_VERSION = "full-corpus-coding-workspace-v2"
 WORKSPACE_DOCUMENT_FILENAME = "document_review_worklist.csv"
 WORKSPACE_ADJUDICATION_FILENAME = "adjudication_coding_worklist.csv"
 WORKSPACE_EXCLUSION_QA_FILENAME = "exclusion_qa_worklist.csv"
 WORKSPACE_MANIFEST_FILENAME = "workspace_manifest.json"
+
+FULL_CORPUS_REVIEW_STATUSES = {
+    "",
+    "single_coded_pending_human",
+    "double_coded",
+    "adjudicated",
+}
+FAULT_LANGUAGE_VALUES = {
+    "",
+    "wholly_to_blame",
+    "predominantly_to_blame",
+    "mainly_at_fault",
+    "shared_fault",
+    "racing_incident",
+    "no_conclusion",
+    "not_applicable",
+}
 
 DOCUMENT_CONTEXT_COLUMNS = [
     "workspace_review_order",
@@ -741,6 +758,36 @@ def validate_edited_full_corpus_coding_workspace(
                 "Inclusion flags are blank/true/false and primary/secondary are mutually exclusive."
                 if flag_values_valid and mutually_exclusive
                 else "Inclusion flags contain invalid values or select both populations.",
+            )
+        )
+        numeric_fields_valid = True
+        for column, integer_only in (
+            ("penalty_seconds_final", False),
+            ("penalty_points_final", True),
+            ("grid_places_final", True),
+        ):
+            populated = actual_adjudications.loc[
+                actual_adjudications[column].ne(""), column
+            ]
+            numeric = pd.to_numeric(populated, errors="coerce")
+            valid = numeric.notna() & numeric.ge(0)
+            if integer_only:
+                valid &= numeric.mod(1).eq(0)
+            numeric_fields_valid &= bool(valid.all())
+        fault_language_valid = set(actual_adjudications["fault_language_final"]).issubset(
+            FAULT_LANGUAGE_VALUES
+        )
+        review_status_valid = set(actual_adjudications["review_status"]).issubset(
+            FULL_CORPUS_REVIEW_STATUSES
+        )
+        controls.append(
+            _control(
+                "adjudication_coding_worklist:corrected_outcome_fields",
+                numeric_fields_valid and fault_language_valid and review_status_valid,
+                "Corrected sanctions are nonnegative, integer where required, and controlled "
+                "fault/review values are valid."
+                if numeric_fields_valid and fault_language_valid and review_status_valid
+                else "Corrected sanction, fault-language, or review-status values are invalid.",
             )
         )
 

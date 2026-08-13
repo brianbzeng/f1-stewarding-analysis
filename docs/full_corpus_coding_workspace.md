@@ -8,8 +8,8 @@ the blocked human-review gate in its conclusion.
 
 ## Release identity
 
-The current local workspace is `full-coding-8299dc9f9250`. It is derived from the committed
-`full_corpus_coding_v2` seed release and the complete 197-session FastF1 review context.
+The current local workspace is `full-coding-4b0c0d5ddd72`. It is derived from the committed
+`full_corpus_coding_v3` seed release and the complete 197-session FastF1 review context.
 
 | Item | Value |
 |---|---:|
@@ -18,9 +18,9 @@ The current local workspace is `full-coding-8299dc9f9250`. It is derived from th
 | Stratified exclusion-QA rows | 403 |
 | Timing sessions | 197 |
 | Driver classifications | 3,938 |
-| Protected seed-manifest SHA-256 | `b3e35e15bd880019395c2eeebb7fc79d14a54219bf578cbab989a0bce9981acd` |
+| Protected seed-manifest SHA-256 | `6f3a48afe57632e0652f0b354ce14da3cf66465aca7ddb879f9127612b796330` |
 | Timing-context SHA-256 | `3227b6dac56635caa08a71a9ba789cecc59bb4557786749d9f997d9531e35264` |
-| Workspace-content SHA-256 | `0cf6834448f0be229581894113c6ebef4e0deb7d609cf8b325f10bcf79fcac5c` |
+| Workspace-content SHA-256 | `c32cee30d5a4030d87d82eb17973d6e59d994c8cbf61895cc76c37bb57271772` |
 
 The workspace ID hashes the schema version, protected seed manifest, timing context, and generated
 worklist content. A source, timing, schema, or transformation change therefore creates a different
@@ -31,9 +31,9 @@ Generate and verify it with:
 ```powershell
 f1stewards build-full-coding-workspace
 f1stewards audit-full-coding-workspace `
-  data/manual/full_corpus_workspaces/full-coding-8299dc9f9250
+  data/manual/full_corpus_workspaces/full-coding-4b0c0d5ddd72
 f1stewards validate-edited-full-coding-workspace `
-  data/manual/full_corpus_workspaces/full-coding-8299dc9f9250
+  data/manual/full_corpus_workspaces/full-coding-4b0c0d5ddd72
 ```
 
 The generated workspace is intentionally git-ignored because it becomes local human working
@@ -47,7 +47,9 @@ reviewer, status, exclusion reason, and notes fields may be edited.
 
 `adjudication_coding_worklist.csv` begins with one `-01` instance per live content-confirmed
 decision. Source text, suggestions, review priority, timing quality, and classification context are
-protected. Only the final adjudication fields, coder, status, and notes may be edited.
+protected. Only the final adjudication fields, coder, status, and notes may be edited. The final
+fields include separate corrections for penalty seconds, penalty points, grid places, and written
+fault language, so a corrected outcome never inherits an unverified parser value.
 
 A source document that independently decides more than one accused driver's case may be split:
 

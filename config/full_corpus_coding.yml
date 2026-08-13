@@ -1,5 +1,5 @@
 full_corpus_coding:
-  schema_version: full_corpus_coding_v2
+  schema_version: full_corpus_coding_v3
   source_document_class: steward_decision
 
   exclusion_quality_control:

@@ -181,6 +181,14 @@ independent review remain required before substantive modeling. The executed
 [full-corpus readiness notebook](notebooks/04_full_corpus_readiness.ipynb) presents the denominator,
 seasonal review workload, SQL candidate profile, timing coverage, and explicit blocked model gate.
 
+The [gated analysis feature release](docs/analysis_feature_release.md) materializes one
+adjudication-grain table and a separate accused/affected driver-role bridge in DuckDB. Its first
+build contains 260 provisional candidates and 503 role rows with complete sourced identity joins;
+eight ambiguous `other` outcomes remain outside the binary design set. All reporting flags remain
+false because document, adjudication, and exclusion-QA human review has not begun. The feature
+schema can therefore support model engineering and overlap diagnostics without leaking unreviewed
+suggestions into the eventual report.
+
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active
 retrieval failures. Of 26 linked steward-decision PDFs, 25 yielded a complete Decision section and

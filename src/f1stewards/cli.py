@@ -21,6 +21,10 @@ from f1stewards.acquisition.fia import (
     download_documents,
     write_manifest,
 )
+from f1stewards.analysis_features import (
+    build_analysis_features_from_workspace,
+    replace_analysis_feature_build,
+)
 from f1stewards.catalog import build_study_event_catalog, write_study_event_catalog
 from f1stewards.coding_queue import (
     audit_full_corpus_seed_bundle,
@@ -1175,6 +1179,42 @@ def validate_edited_full_coding_workspace_command(
     )
     typer.echo(audit.to_string(index=False))
     if not audit["status"].eq("pass").all():
+        raise typer.Exit(code=1)
+
+
+@app.command("build-analysis-features")
+def build_analysis_features_command(
+    workspace_directory: Annotated[
+        Path, typer.Argument(help="Validated full-corpus coding workspace directory.")
+    ],
+    seed_directory: Annotated[
+        Path, typer.Option(help="Protected full-corpus seed-bundle directory.")
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_seed",
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+    strict_release: Annotated[
+        bool, typer.Option(help="Exit nonzero while human-review release controls are blocked.")
+    ] = False,
+) -> None:
+    """Materialize gated adjudication and driver-role features in DuckDB."""
+
+    initialize_database(db_path)
+    try:
+        with connect(db_path) as connection:
+            build = build_analysis_features_from_workspace(
+                connection,
+                seed_directory,
+                workspace_directory,
+            )
+            replace_analysis_feature_build(connection, build)
+    except ValueError as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=1) from exc
+    typer.echo(build.controls.to_string(index=False))
+    typer.echo(
+        f"Materialized {build.feature_build_id}: {len(build.features)} adjudication rows, "
+        f"{len(build.driver_roles)} role rows; release={build.release_status}"
+    )
+    if strict_release and build.release_status != "reportable_human_reviewed":
         raise typer.Exit(code=1)
 
 

@@ -114,9 +114,14 @@ exclusion, with every matched family retained for audit.
 8. Publish an attrition table from 2,002 labels to final adjudications, with a count and reason for
    every exclusion stage.
 
-If a parsed driver heading is unavailable, schema v2 may suggest the first explicit `Car N`
+If a parsed driver heading is unavailable, schema v3 may suggest the first explicit `Car N`
 reference in the official title. `driver_number_basis_suggestion` distinguishes that fallback from
 a parsed heading or an unavailable number; all three remain reviewable suggestions.
+
+Schema v3 also separates protected machine suggestions from reviewer-correctable
+`penalty_seconds_final`, `penalty_points_final`, `grid_places_final`, and
+`fault_language_final` fields. A corrected outcome can therefore never silently inherit an
+incorrect parsed punishment amount.
 
 The frozen rules select 403 of the 1,305 out-of-scope suggestions across all 223 observed
 season/session/family strata. Selection uses a documented SHA-256 ordering, a 10% target, at least

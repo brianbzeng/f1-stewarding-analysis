@@ -28,7 +28,7 @@
   "outputs": {
     "adjudication_seed_queue.csv": {
       "row_count": 1951,
-      "sha256": "46ccd632c40e9dd50acf32dcc7014f42b352468ebe324e575da4038e7af7ed14"
+      "sha256": "46e01b4fa942d8a9751ced75289fe9965ff4eecf95851b007d860de20155683c"
     },
     "document_review_queue.csv": {
       "row_count": 2002,
@@ -39,8 +39,8 @@
       "sha256": "e1d5f36931ee95905e2cd220b9ca0d350c90c187193f71e8bdabd2abfd2afccd"
     }
   },
-  "schema_version": "full_corpus_coding_v2",
-  "settings_sha256": "5c55d57dd9ac322550e9daeff4c3c8a41b5534a9cd9c310f90fb3671df132760",
+  "schema_version": "full_corpus_coding_v3",
+  "settings_sha256": "1be12d9bbf01dfdea83d4fc644536b1bffc9fe7ba29abfc03ddbd23dfafae044",
   "source_counts": {
     "archive_outcome_labels": 2002,
     "content_confirmed_decisions": 1951,
