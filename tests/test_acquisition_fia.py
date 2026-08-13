@@ -7,6 +7,7 @@ import pandas as pd
 from f1stewards.acquisition.fia import (
     _normalized_pdf_bytes,
     _resolve_pdf_response,
+    apply_retrieval_exceptions,
     classify_document,
     discover_event,
     extract_document_links,
@@ -187,3 +188,49 @@ def test_manifest_retry_can_clear_prior_retrieval_error(tmp_path: Path) -> None:
 
     assert pd.isna(row["retrieval_error"])
     assert row["content_sha256"] == "a" * 64
+
+
+def test_manifest_backfills_source_availability_for_legacy_rows(tmp_path: Path) -> None:
+    path = tmp_path / "manifest.parquet"
+    event = load_pilot_events()[0]
+    documents = extract_document_links(
+        (FIXTURES / "fia_archive.html").read_text(encoding="utf-8"),
+        event,
+        load_document_classes(),
+        discovered_at=datetime(2026, 8, 12, tzinfo=UTC),
+    )[:2]
+    legacy = pd.DataFrame([documents[0].model_dump(mode="json")]).drop(
+        columns=["source_availability_status", "source_availability_note"]
+    )
+    legacy.to_parquet(path, index=False)
+
+    write_manifest([documents[1]], path)
+    frame = pd.read_parquet(path)
+
+    assert frame["source_availability_status"].tolist() == ["advertised", "advertised"]
+
+
+def test_retrieval_exception_preserves_broken_link_evidence() -> None:
+    event = load_pilot_events()[0]
+    document = extract_document_links(
+        (FIXTURES / "fia_archive.html").read_text(encoding="utf-8"),
+        event,
+        load_document_classes(),
+        discovered_at=datetime(2026, 8, 12, tzinfo=UTC),
+    )[0].model_copy(update={"retrieval_error": "404 Not Found"})
+    exceptions = {
+        str(document.document_url): {
+            "event_id": document.pilot_id,
+            "source_availability_status": "verified_unavailable",
+            "verified_at": "2026-08-12",
+            "note": "Official link returns HTTP 404.",
+        }
+    }
+
+    resolved = apply_retrieval_exceptions([document], exceptions)[0]
+
+    assert resolved.retrieval_error == "404 Not Found"
+    assert resolved.source_availability_status == "verified_unavailable"
+    assert resolved.source_availability_note == (
+        "Verified 2026-08-12: Official link returns HTTP 404."
+    )

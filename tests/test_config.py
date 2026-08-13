@@ -9,6 +9,7 @@ from f1stewards.config import (
     load_full_collection_settings,
     load_international_sporting_code_issues,
     load_regulatory_sources,
+    load_retrieval_exceptions,
     load_sporting_regulation_issues,
     select_international_sporting_code,
     select_sporting_regulation,
@@ -81,6 +82,31 @@ def test_evidence_profiles_bound_retrieval_scope() -> None:
     assert profiles["decisions"] == {DocumentClass.STEWARD_DECISION}
     assert DocumentClass.SUMMONS in profiles["adjudications"]
     assert DocumentClass.OTHER not in profiles["full_recognized"]
+
+
+def test_retrieval_exception_register_is_explicit(tmp_path: Path) -> None:
+    path = tmp_path / "retrieval_exceptions.yml"
+    path.write_text(
+        """
+retrieval_exceptions:
+  - event_id: 2020-rus
+    document_url: https://www.fia.com/broken.pdf
+    source_availability_status: verified_unavailable
+    verified_at: 2026-08-12
+    note: Official link returns HTTP 404.
+""".strip(),
+        encoding="utf-8",
+    )
+    exceptions = load_retrieval_exceptions(path)
+    exception = exceptions["https://www.fia.com/broken.pdf"]
+
+    assert exception["event_id"] == "2020-rus"
+    assert exception["source_availability_status"] == "verified_unavailable"
+    assert "HTTP 404" in exception["note"]
+
+
+def test_official_retrieval_exception_register_is_currently_empty() -> None:
+    assert load_retrieval_exceptions() == {}
 
 
 def test_sporting_regulation_catalog_covers_2018_through_2025() -> None:

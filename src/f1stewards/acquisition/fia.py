@@ -365,6 +365,36 @@ def download_documents(
     return output
 
 
+def apply_retrieval_exceptions(
+    documents: Iterable[SourceDocument], exceptions: dict[str, dict[str, str]]
+) -> list[SourceDocument]:
+    """Adjudicate known broken official links while retaining their retrieval errors."""
+
+    output: list[SourceDocument] = []
+    for document in documents:
+        exception = exceptions.get(str(document.document_url))
+        if exception is None or document.retrieval_error is None:
+            output.append(document)
+            continue
+        if exception["event_id"] != document.pilot_id:
+            raise ValueError(
+                f"Retrieval exception event mismatch for {document.document_url}: "
+                f"{exception['event_id']} != {document.pilot_id}"
+            )
+        note = f"Verified {exception['verified_at']}: {exception['note']}"
+        output.append(
+            document.model_copy(
+                update={
+                    "source_availability_status": exception[
+                        "source_availability_status"
+                    ],
+                    "source_availability_note": note,
+                }
+            )
+        )
+    return output
+
+
 def write_manifest(documents: Iterable[SourceDocument], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     incoming = pd.DataFrame([document.model_dump(mode="json") for document in documents])
@@ -380,5 +410,9 @@ def write_manifest(documents: Iterable[SourceDocument], path: Path) -> None:
         frame = frame.reset_index()
     else:
         frame = incoming
+    if "source_availability_status" in frame.columns:
+        frame["source_availability_status"] = frame[
+            "source_availability_status"
+        ].fillna("advertised")
     frame = frame.sort_values(["season", "pilot_id", "published_at", "document_id"])
     frame.to_parquet(path, index=False)

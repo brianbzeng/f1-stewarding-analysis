@@ -14,6 +14,7 @@ import pandas as pd
 import typer
 
 from f1stewards.acquisition.fia import (
+    apply_retrieval_exceptions,
     build_client,
     discover_event,
     download_documents,
@@ -29,6 +30,7 @@ from f1stewards.config import (
     load_international_sporting_code_issues,
     load_pilot_events,
     load_regulatory_sources,
+    load_retrieval_exceptions,
     load_sporting_regulation_issues,
     load_study_events,
 )
@@ -488,6 +490,7 @@ def study_discover(
             f"Unknown download profile: {download_profile}. Available profiles: {choices}"
         )
     selected_classes = evidence_profiles[download_profile]
+    retrieval_exceptions = load_retrieval_exceptions()
     all_documents = []
     failures: list[dict[str, object]] = []
     retrieval_failure_count = 0
@@ -526,12 +529,15 @@ def study_discover(
                     PROJECT_ROOT / "data" / "raw",
                     delay_seconds=delay_seconds,
                 )
+                downloaded = apply_retrieval_exceptions(downloaded, retrieval_exceptions)
                 downloaded_by_id = {document.document_id: document for document in downloaded}
                 documents = [
                     downloaded_by_id.get(document.document_id, document) for document in documents
                 ]
                 download_failure_count = sum(
-                    document.retrieval_error is not None for document in downloaded
+                    document.retrieval_error is not None
+                    and document.source_availability_status != "verified_unavailable"
+                    for document in downloaded
                 )
                 retrieval_failure_count += download_failure_count
                 typer.echo(
@@ -608,8 +614,13 @@ def study_inventory(
                 count(t.content_document_class) AS content_typed_documents,
                 count(d.content_sha256) AS retrieved_files,
                 count(*) FILTER (
-                    WHERE d.retrieval_error IS NOT NULL AND NOT d.is_recalled
+                    WHERE d.retrieval_error IS NOT NULL
+                      AND NOT d.is_recalled
+                      AND d.source_availability_status <> 'verified_unavailable'
                 ) AS active_failures,
+                count(*) FILTER (
+                    WHERE d.source_availability_status = 'verified_unavailable'
+                ) AS verified_unavailable_records,
                 count(*) FILTER (WHERE d.is_recalled) AS recalled_records
             FROM metadata.events AS e
             LEFT JOIN raw.source_documents AS d USING (event_id)
@@ -627,6 +638,7 @@ def study_inventory(
             FROM raw.source_documents
             WHERE retrieval_error IS NOT NULL
               AND NOT is_recalled
+              AND source_availability_status <> 'verified_unavailable'
             """
         ).fetchone()[0]
         catalog_event_ids = {

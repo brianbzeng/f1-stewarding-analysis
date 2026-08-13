@@ -241,6 +241,8 @@ def upsert_source_documents(
         "http_status",
         "content_type",
         "retrieval_error",
+        "source_availability_status",
+        "source_availability_note",
         "is_recalled",
         "supersedes_document_id",
     ]
@@ -251,12 +253,14 @@ def upsert_source_documents(
             document_id, event_id, title, document_url, archive_url, document_class,
             published_at_raw, published_at, discovered_at, retrieved_at, source_domain,
             content_sha256, local_path, http_status, content_type, retrieval_error
+            , source_availability_status, source_availability_note
             , is_recalled, supersedes_document_id
         )
         SELECT
             document_id, event_id, title, document_url, archive_url, document_class,
             published_at_raw, published_at, discovered_at, retrieved_at, source_domain,
             content_sha256, local_path, http_status, content_type, retrieval_error
+            , source_availability_status, source_availability_note
             , is_recalled, supersedes_document_id
         FROM document_batch
         ON CONFLICT (document_id) DO UPDATE SET
@@ -269,6 +273,8 @@ def upsert_source_documents(
             http_status = EXCLUDED.http_status,
             content_type = EXCLUDED.content_type,
             retrieval_error = EXCLUDED.retrieval_error,
+            source_availability_status = EXCLUDED.source_availability_status,
+            source_availability_note = EXCLUDED.source_availability_note,
             is_recalled = EXCLUDED.is_recalled,
             supersedes_document_id = EXCLUDED.supersedes_document_id
         """

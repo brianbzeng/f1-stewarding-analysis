@@ -188,6 +188,8 @@ class SourceDocument(BaseModel):
     http_status: int | None = None
     content_type: str | None = None
     retrieval_error: str | None = None
+    source_availability_status: Literal["advertised", "verified_unavailable"] = "advertised"
+    source_availability_note: str | None = None
     is_recalled: bool = False
     supersedes_document_id: str | None = None
 

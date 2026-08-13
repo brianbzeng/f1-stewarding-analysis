@@ -38,6 +38,16 @@ checksummed like every other source. All 250 decision-labelled 2019 files are ge
 decisions; 231 (92.4%) expose the standard labeled Decision section and 19 remain in the explicit
 nonstandard-format review queue.
 
+The FIA's 2020 Russian Grand Prix archive initially returned HTTP 404 for the second Car 7
+pit-lane-speeding decision, while the older Event & Timing page exposed only the first decision.
+A bounded retry later returned the valid, distinct Document 20 PDF. Its checksum and lineage are
+retained separately from the earlier Document 17 decision. No source is currently classified as
+`verified_unavailable`; the explicit exception mechanism remains available for future confirmed
+broken links without allowing their contents to be inferred.
+
+All 123 decision-labelled 2020 files are genuine steward decisions. Every file exposes the standard
+Fact, Offence, Decision, and Reason sections, so the season has no parser-format review cases.
+
 ## Archive systems
 
 - For 2019-2025, the collector uses the FIA decision-document archive and its published timestamps.
@@ -70,7 +80,8 @@ The configuration, rather than hidden scraper branches, is the audit trail for t
 
 At the 2026-08-12 checkpoint, all 173 events were covered; Parquet and DuckDB each contained 9,462
 unique source-document IDs; no catalog event was missing evidence; and the active discovery-failure
-queue contained zero rows.
+queue contained zero rows. Bounded decision retrieval and content typing were complete through the
+2020 season, with no active retrieval failures.
 
 ## Interpretation boundary
 

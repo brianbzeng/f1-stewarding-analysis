@@ -27,6 +27,21 @@ SELECT document_id, content_document_class, content_classification_basis
 FROM raw.document_text
 WHERE (content_document_class IS NULL) <> (content_classification_basis LIKE 'empty_text%');
 
+-- A verified-unavailable record must preserve both the failed attempt and adjudication note.
+SELECT document_id, source_availability_status, retrieval_error, source_availability_note
+FROM raw.source_documents
+WHERE source_availability_status = 'verified_unavailable'
+  AND (
+      retrieval_error IS NULL
+      OR source_availability_note IS NULL
+      OR content_sha256 IS NOT NULL
+      OR is_recalled
+  );
+
+SELECT document_id, source_availability_status
+FROM raw.source_documents
+WHERE source_availability_status NOT IN ('advertised', 'verified_unavailable');
+
 SELECT i.incident_id, i.source_document_id
 FROM curated.incidents AS i
 LEFT JOIN raw.source_documents AS d ON i.source_document_id = d.document_id

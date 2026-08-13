@@ -110,6 +110,34 @@ def load_evidence_profiles(path: Path | None = None) -> dict[str, set[DocumentCl
     return profiles
 
 
+def load_retrieval_exceptions(path: Path | None = None) -> dict[str, dict[str, str]]:
+    config_path = path or PROJECT_ROOT / "config" / "retrieval_exceptions.yml"
+    payload = load_yaml(config_path)
+    raw_exceptions = payload.get("retrieval_exceptions")
+    if not isinstance(raw_exceptions, list):
+        raise ValueError(f"Missing retrieval_exceptions list in {config_path}")
+    exceptions: dict[str, dict[str, str]] = {}
+    for raw in raw_exceptions:
+        if not isinstance(raw, dict):
+            raise ValueError("Each retrieval exception must be a mapping")
+        required = {
+            "event_id",
+            "document_url",
+            "source_availability_status",
+            "verified_at",
+            "note",
+        }
+        if missing := required - set(raw):
+            raise ValueError(f"Retrieval exception is missing: {', '.join(sorted(missing))}")
+        url = str(raw["document_url"])
+        if url in exceptions:
+            raise ValueError(f"Duplicate retrieval exception URL: {url}")
+        if raw["source_availability_status"] != "verified_unavailable":
+            raise ValueError("Retrieval exceptions must be verified_unavailable")
+        exceptions[url] = {key: str(raw[key]) for key in required - {"document_url"}}
+    return exceptions
+
+
 def load_regulatory_sources(path: Path | None = None) -> list[RegulatorySource]:
     config_path = path or PROJECT_ROOT / "config" / "regulatory_sources.yml"
     payload = load_yaml(config_path)
