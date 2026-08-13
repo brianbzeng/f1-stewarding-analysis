@@ -48,6 +48,12 @@ broken links without allowing their contents to be inferred.
 All 123 decision-labelled 2020 files are genuine steward decisions. Every file exposes the standard
 Fact, Offence, Decision, and Reason sections, so the season has no parser-format review cases.
 
+All 162 decision-labelled 2021 files are also genuine steward decisions. Of these, 155 (95.7%)
+expose the standard labeled sections. The seven format-review records are narrative administrative
+decisions: five permissions to start after failing to set a qualifying time, one permission to
+start Sprint Qualifying, and one force-majeure withdrawal approval. They are retained as valid
+decisions but do not enter incident-penalty comparisons without later eligibility coding.
+
 ## Archive systems
 
 - For 2019-2025, the collector uses the FIA decision-document archive and its published timestamps.
@@ -81,7 +87,7 @@ The configuration, rather than hidden scraper branches, is the audit trail for t
 At the 2026-08-12 checkpoint, all 173 events were covered; Parquet and DuckDB each contained 9,462
 unique source-document IDs; no catalog event was missing evidence; and the active discovery-failure
 queue contained zero rows. Bounded decision retrieval and content typing were complete through the
-2020 season, with no active retrieval failures.
+2021 season, with no active retrieval failures.
 
 ## Interpretation boundary
 
