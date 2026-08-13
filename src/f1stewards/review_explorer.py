@@ -28,6 +28,21 @@ from f1stewards.coding_workspace import (
 REVIEW_EXPLORER_SCHEMA_VERSION = "full-corpus-review-explorer-v1"
 REVIEW_LEDGER_SCHEMA_VERSION = "full-corpus-review-ledger-v1"
 COMPLETE_REVIEW_STATUSES = {"double_coded", "adjudicated"}
+QA_EVIDENCE_FIELDS = [
+    "driver_number_suggestion",
+    "driver_name_suggestion",
+    "participant_driver_numbers_suggestion",
+    "affected_driver_numbers_suggestion",
+    "candidate_action_suggestion",
+    "outcome_family_suggestion",
+    "penalty_seconds_suggestion",
+    "penalty_points_suggestion",
+    "grid_places_suggestion",
+    "fact_text",
+    "infringement_text",
+    "decision_text",
+    "reason_text",
+]
 
 QUEUE_SPECS: dict[str, dict[str, Any]] = {
     "documents": {
@@ -59,6 +74,7 @@ QUEUE_SPECS: dict[str, dict[str, Any]] = {
         "display_fields": [
             "adjudication_instance_id",
             "adjudication_seed_id",
+            "document_id",
             "workspace_review_order",
             "workspace_priority_bucket",
             "season",
@@ -99,8 +115,10 @@ QUEUE_SPECS: dict[str, dict[str, Any]] = {
         "filename": WORKSPACE_EXCLUSION_QA_FILENAME,
         "id_field": "exclusion_qa_id",
         "editable_fields": FINAL_EXCLUSION_QA_FIELDS,
+        "derived_fields": QA_EVIDENCE_FIELDS,
         "display_fields": [
             "exclusion_qa_id",
+            "document_id",
             "workspace_review_order",
             "workspace_priority_bucket",
             "season",
@@ -116,6 +134,7 @@ QUEUE_SPECS: dict[str, dict[str, Any]] = {
             "qa_stratum_size",
             "qa_selection_rank",
             "qa_selection_sha256",
+            *QA_EVIDENCE_FIELDS,
             *FINAL_EXCLUSION_QA_FIELDS,
         ],
     },
@@ -166,13 +185,55 @@ def _load_queue(workspace_directory: Path, queue_name: str) -> pd.DataFrame:
         dtype=str,
         keep_default_na=False,
     )
-    missing = set(spec["display_fields"]) - set(frame.columns)
+    required = set(spec["display_fields"]) - set(spec.get("derived_fields", []))
+    missing = required - set(frame.columns)
     if missing:
         raise ValueError(f"{queue_name} queue is missing columns: {sorted(missing)}")
     key = spec["id_field"]
     if frame[key].eq("").any() or frame[key].duplicated().any():
         raise ValueError(f"{queue_name} queue has blank or duplicate {key} values")
     return frame
+
+
+def enrich_exclusion_qa_evidence(
+    exclusion_qa: pd.DataFrame,
+    adjudications: pd.DataFrame,
+) -> pd.DataFrame:
+    """Attach protected decision evidence to every QA row by exact document ID."""
+
+    required = {"document_id", "adjudication_instance_id", *QA_EVIDENCE_FIELDS}
+    missing = required - set(adjudications.columns)
+    if missing:
+        raise ValueError(f"Adjudication evidence is missing columns: {sorted(missing)}")
+    evidence = adjudications[
+        ["document_id", "adjudication_instance_id", *QA_EVIDENCE_FIELDS]
+    ].copy()
+    duplicate_documents = evidence["document_id"].duplicated(keep=False)
+    if duplicate_documents.any():
+        inconsistent = []
+        for document_id, group in evidence.loc[duplicate_documents].groupby("document_id"):
+            if any(group[field].nunique(dropna=False) > 1 for field in QA_EVIDENCE_FIELDS):
+                inconsistent.append(document_id)
+        if inconsistent:
+            raise ValueError(
+                "Split adjudication instances disagree on protected QA evidence: "
+                + ", ".join(sorted(inconsistent))
+            )
+    evidence = (
+        evidence.sort_values("adjudication_instance_id", kind="stable")
+        .drop_duplicates("document_id", keep="first")
+        .drop(columns="adjudication_instance_id")
+    )
+    base = exclusion_qa.drop(columns=QA_EVIDENCE_FIELDS, errors="ignore")
+    enriched = base.merge(evidence, on="document_id", how="left", validate="many_to_one")
+    missing_documents = enriched.loc[enriched["fact_text"].isna(), "document_id"].tolist()
+    if missing_documents:
+        raise ValueError(
+            "Exclusion-QA rows lack linked adjudication evidence: "
+            + ", ".join(missing_documents)
+        )
+    enriched[QA_EVIDENCE_FIELDS] = enriched[QA_EVIDENCE_FIELDS].fillna("")
+    return enriched
 
 
 def _review_summary(frame: pd.DataFrame) -> dict[str, int]:
@@ -210,6 +271,9 @@ def build_review_explorer_payload(
         )
 
     frames = {name: _load_queue(workspace_directory, name) for name in QUEUE_SPECS}
+    frames["exclusion_qa"] = enrich_exclusion_qa_evidence(
+        frames["exclusion_qa"], frames["adjudications"]
+    )
     summaries = {name: _review_summary(frame) for name, frame in frames.items()}
     total = sum(item["total"] for item in summaries.values())
     complete = sum(item["review_complete"] for item in summaries.values())
@@ -356,7 +420,7 @@ function makeOptions(id,values){const el=document.getElementById(id),first=el.op
 function makeFilters(){const rows=DATA.queues[queue];document.getElementById('search').value='';makeOptions('season',rows.map(r=>r.season));makeOptions('priority',rows.map(r=>r.workspace_priority_bucket));makeOptions('review-status',rows.map(r=>r.review_status||'(blank)'))}
 function fieldValue(row,field){return EDITS[queue]?.[row[Q[queue].id]]?.[field]??row[field]??''}
 function inputFor(row,field){const id=row[Q[queue].id],value=fieldValue(row,field),attrs=`data-row="${esc(id)}" data-field="${esc(field)}"`;if(field==='review_status')return `<select ${attrs}><option value=""></option>${['single_coded_pending_human','double_coded','adjudicated'].map(v=>`<option value="${v}" ${value===v?'selected':''}>${label(v)}</option>`).join('')}</select>`;if(field==='fault_language_final')return `<select ${attrs}><option value=""></option>${['wholly_to_blame','predominantly_to_blame','mainly_at_fault','shared_fault','racing_incident','no_conclusion','not_applicable'].map(v=>`<option value="${v}" ${value===v?'selected':''}>${label(v)}</option>`).join('')}</select>`;if(['include_primary_final','include_secondary_final'].includes(field))return `<select ${attrs}><option value=""></option>${['true','false'].map(v=>`<option value="${v}" ${String(value).toLowerCase()===v?'selected':''}>${v}</option>`).join('')}</select>`;if(field.includes('notes')||field.includes('reason'))return `<textarea ${attrs}>${esc(value)}</textarea>`;return `<input ${attrs} value="${esc(value)}">`}
-function evidence(row){if(queue!=='adjudications')return '';return ['fact_text','infringement_text','decision_text','reason_text'].map(k=>`<div class="evidence"><b>${label(k)}</b>${esc(row[k]||'Not available')}</div>`).join('')}
+function evidence(row){if(!['adjudications','exclusion_qa'].includes(queue))return '';return ['fact_text','infringement_text','decision_text','reason_text'].map(k=>`<div class="evidence"><b>${label(k)}</b>${esc(row[k]||'Not available')}</div>`).join('')}
 function fields(row){const omit=new Set([Q[queue].id,'source_url','title','event_name','season','workspace_review_order','review_status','fact_text','infringement_text','decision_text','reason_text',...DATA.queue_specs[queue].editable_fields]);return Object.entries(row).filter(([k,v])=>!omit.has(k)&&v!=='').map(([k,v])=>`<div class="field"><b>${esc(label(k))}</b>${esc(v)}</div>`).join('')}
 function details(row){const id=row[Q[queue].id],editable=DATA.queue_specs[queue].editable_fields;return `<details><summary>Inspect evidence and final fields</summary><p><a href="${esc(row.source_url)}" target="_blank" rel="noreferrer">Open official FIA source</a> · <code>${esc(id)}</code></p><div class="grid">${fields(row)}</div>${evidence(row)}<div class="edit-grid">${editable.map(f=>`<label>${esc(label(f))}${inputFor(row,f)}</label>`).join('')}</div></details>`}
 function activeRows(){const search=document.getElementById('search').value.trim().toLowerCase(),season=document.getElementById('season').value,priority=document.getElementById('priority').value,status=document.getElementById('review-status').value;return DATA.queues[queue].filter(r=>(!search||Object.values(r).some(v=>String(v).toLowerCase().includes(search)))&&(!season||r.season===season)&&(!priority||r.workspace_priority_bucket===priority)&&(!status||(status==='(blank)'?!r.review_status:r.review_status===status)))}

@@ -62,6 +62,7 @@ from f1stewards.enrichment.fastf1 import (
     replace_session_enrichment,
     upsert_session_ingestion,
 )
+from f1stewards.exception_packet import write_exception_packet
 from f1stewards.explorer import build_explorer_payload, write_explorer
 from f1stewards.first_pass import write_first_pass_workspace
 from f1stewards.impact import remove_post_race_time_penalty
@@ -1409,6 +1410,32 @@ def build_full_corpus_first_pass_command(
         f"{summary['adjudications']['unresolved_rows']} unresolved, "
         f"exclusion QA={summary['exclusion_qa']['unresolved_rows']} unresolved; "
         "analytical release remains blocked"
+    )
+
+
+@app.command("build-full-corpus-exception-packet")
+def build_full_corpus_exception_packet_command(
+    workspace_directory: Annotated[
+        Path, typer.Argument(help="Verified machine-assisted first-pass workspace directory.")
+    ],
+    output_root: Annotated[
+        Path, typer.Option(help="Parent for content-addressed exception investigation packets.")
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_exception_packets",
+) -> None:
+    """Collapse unresolved queue rows into source-document investigations."""
+
+    output_directory, manifest, created = write_exception_packet(
+        workspace_directory,
+        output_root,
+    )
+    action = "Created" if created else "Verified existing"
+    summary = manifest["summary"]
+    typer.echo(
+        f"{action} {manifest['exception_packet_id']} at {output_directory}; "
+        f"{summary['unresolved_queue_rows']} queue rows collapse to "
+        f"{summary['unique_document_investigations']} source investigations, "
+        f"eliminating {summary['duplicate_queue_rows_eliminated']} duplicate reviews; "
+        f"all-three-queue documents={summary['all_three_queue_documents']}"
     )
 
 

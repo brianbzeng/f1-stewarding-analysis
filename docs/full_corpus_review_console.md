@@ -14,9 +14,11 @@ surface. It is an operational control, not a statistical dashboard. Its current 
 | Exclusion QA | frozen hash-selected exclusion check | 486 | 0 |
 | **Total** |  | **4,441** | **0** |
 
-Every row links to its official FIA source. Adjudication rows also expose parsed Fact,
-Infringement, Decision, and Reason text plus timing-availability context. Suggestions remain visibly
-separate from final coding fields.
+Every row links to its official FIA source. Adjudication rows expose parsed Fact, Infringement,
+Decision, and Reason text plus timing-availability context. Every exclusion-QA row is now joined by
+exact `document_id` to the same protected decision evidence: 423 have Fact text, 424 have
+Infringement text, 434 have Decision text, and 414 have Reason text. Missing sections remain visibly
+`Not available`; they are never inferred. Suggestions remain separate from final coding fields.
 
 ## Build and identity
 
@@ -39,6 +41,9 @@ it, the command requires all edited-workspace lineage controls to pass. The embe
 
 The current build passes 19 workspace validation controls and resolves all 4,441 displayed rows to
 official FIA URLs.
+
+Split adjudication instances may repeat the same protected document evidence. The build accepts the
+split only when every repeated evidence field is identical and fails closed on disagreement.
 
 ## Reviewer workflow
 

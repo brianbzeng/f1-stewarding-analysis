@@ -64,6 +64,19 @@ population and triggered complete seed, QA-sample, workspace, feature, and noteb
 This is a machine-assisted diagnostic result, not independent review agreement. No sample row is
 promoted to final exclusion merely because the regenerated screen found no conflict.
 
+## Evidence-linked review handoff
+
+All 486 frozen QA rows now join exactly once by `document_id` to their protected adjudication seed.
+The full-corpus review console displays the available Fact, Infringement, Decision, and Reason text
+next to the proposed exclusion and official FIA link. Section availability is 423 Fact, 424
+Infringement, 434 Decision, and 414 Reason records; nonstandard formats remain visibly incomplete.
+
+The content-addressed `exception-packet-e59c0de45246` groups the 486 QA rows with overlapping
+document and adjudication exceptions. Eighty-one QA sources appear in all three queues, so one
+source investigation can inform all linked decisions without silently copying a QA disposition.
+The remaining 405 are QA-only investigations. See
+[the exception packet release record](full_corpus_exception_packet.md).
+
 ## Release rule
 
 Each sampled record must ultimately receive `confirm_exclusion`, `false_exclusion`, or

@@ -29,6 +29,16 @@ The output is local working state under
 release record, and [portable first-pass console](../explorer/full_corpus_first_pass_review.html)
 make the transformation reproducible without presenting the edited CSVs as reviewed data.
 
+Build the de-duplicated investigation handoff after verifying this release:
+
+```powershell
+f1stewards build-full-corpus-exception-packet `
+  data/manual/full_corpus_first_pass/full-coding-e0192ecbd9e4
+```
+
+The resulting [exception packet](full_corpus_exception_packet.md) converts 1,096 unstarted queue
+rows into 712 unique source-document investigations.
+
 ## Scope and exceptions
 
 | Queue | Total | First-pass prefilled | Deliberately unresolved |

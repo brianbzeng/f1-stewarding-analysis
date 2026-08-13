@@ -5,10 +5,12 @@ import pandas as pd
 import pytest
 
 from f1stewards.review_explorer import (
+    QA_EVIDENCE_FIELDS,
     QUEUE_SPECS,
     REVIEW_LEDGER_SCHEMA_VERSION,
     apply_review_ledger,
     build_review_explorer_payload,
+    enrich_exclusion_qa_evidence,
     render_review_explorer_html,
     validate_review_explorer_payload,
     workspace_input_sha256,
@@ -17,7 +19,12 @@ from f1stewards.review_explorer import (
 
 def _queue_frame(queue_name: str) -> pd.DataFrame:
     spec = QUEUE_SPECS[queue_name]
-    row = {column: "" for column in spec["display_fields"]}
+    columns = [
+        column
+        for column in spec["display_fields"]
+        if column not in spec.get("derived_fields", [])
+    ]
+    row = {column: "" for column in columns}
     row.update(
         {
             spec["id_field"]: f"{queue_name}-1",
@@ -41,6 +48,7 @@ def _queue_frame(queue_name: str) -> pd.DataFrame:
         row.update(
             {
                 "adjudication_seed_id": "seed-1",
+                "document_id": "document-1",
                 "driver_number_suggestion": "1",
                 "driver_name_suggestion": "Driver One",
                 "offence_family_suggestion": "causing_collision",
@@ -52,11 +60,12 @@ def _queue_frame(queue_name: str) -> pd.DataFrame:
     else:
         row.update(
             {
+                "document_id": "document-1",
                 "qa_stratum_id": "2025|excluded|test",
                 "eligibility_basis": "Proposed exclusion.",
             }
         )
-    return pd.DataFrame([row], columns=spec["display_fields"])
+    return pd.DataFrame([row], columns=columns)
 
 
 def _write_workspace(parent: Path) -> Path:
@@ -100,6 +109,9 @@ def test_payload_covers_all_queues_and_preserves_blocked_release(tmp_path: Path)
     )
     assert set(payload["queues"]) == {"documents", "adjudications", "exclusion_qa"}
     assert payload["validation_controls"][0]["status"] == "pass"
+    assert payload["queues"]["exclusion_qa"][0]["reason_text"].startswith(
+        "Reason with"
+    )
 
 
 def test_rendered_console_has_review_workflow_and_safe_embedded_json(
@@ -126,6 +138,33 @@ def test_payload_rejects_nationality_fields(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="Nationality fields"):
         validate_review_explorer_payload(payload)
+
+
+def test_qa_evidence_enrichment_accepts_consistent_splits_and_rejects_disagreement() -> None:
+    qa = pd.DataFrame([{"exclusion_qa_id": "qa-1", "document_id": "doc-1"}])
+    base = {field: "" for field in QA_EVIDENCE_FIELDS}
+    base["reason_text"] = "Protected reason"
+    adjudications = pd.DataFrame(
+        [
+            {
+                "document_id": "doc-1",
+                "adjudication_instance_id": "seed-01",
+                **base,
+            },
+            {
+                "document_id": "doc-1",
+                "adjudication_instance_id": "seed-02",
+                **base,
+            },
+        ]
+    )
+
+    enriched = enrich_exclusion_qa_evidence(qa, adjudications)
+    assert enriched.loc[0, "reason_text"] == "Protected reason"
+
+    adjudications.loc[1, "reason_text"] = "Different reason"
+    with pytest.raises(ValueError, match="disagree"):
+        enrich_exclusion_qa_evidence(qa, adjudications)
 
 
 def _write_ledger(

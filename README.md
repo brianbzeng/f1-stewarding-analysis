@@ -87,6 +87,8 @@ f1stewards build-full-corpus-review-explorer `
   data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4
 f1stewards build-full-corpus-first-pass `
   data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4
+f1stewards build-full-corpus-exception-packet `
+  data/manual/full_corpus_first_pass/full-coding-e0192ecbd9e4
 f1stewards apply-full-corpus-review-ledger `
   data/manual/full_corpus_first_pass/full-coding-e0192ecbd9e4 `
   <exported-review-ledger.json>
@@ -105,6 +107,12 @@ parser-clean document dispositions and 1,649 conflict-free adjudication rows as
 all 486 exclusion-QA judgments unstarted. The generated
 [first-pass review console](explorer/full_corpus_first_pass_review.html) exposes those assignments
 without counting any as independent review.
+
+The content-addressed [exception investigation packet](docs/full_corpus_exception_packet.md)
+collapses the 1,096 unstarted queue rows to 712 unique FIA documents, eliminating 384 duplicate
+source reviews. It gives every investigation a root cause, priority, linked queue IDs, official URL,
+available Fact/Decision/Reason evidence, and review question. The QA console now carries the same
+linked decision evidence for all 486 sampled exclusions.
 
 ## Pilot commands
 

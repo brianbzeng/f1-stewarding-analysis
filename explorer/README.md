@@ -51,3 +51,7 @@ pass `first-pass-29113bebd312`. It shows 1,696 document and 1,649 adjudication r
 `single_coded_pending_human`, while 307 document exceptions, 303 adjudication exceptions, and all
 486 exclusion-QA checks remain unstarted. It is the operational starting point for source-level
 review; `full_corpus_review.html` remains the untouched-starter reference.
+
+Both full-corpus consoles attach protected adjudication evidence to all 486 exclusion-QA rows by
+exact `document_id`. The build fails if a QA source is missing or if duplicated split instances
+disagree on Fact, Infringement, Decision, Reason, driver, outcome, or sanction evidence.
