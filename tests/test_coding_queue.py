@@ -144,6 +144,8 @@ def test_session_normalization_preserves_primary_and_non_primary_distinction() -
     assert normalize_session_type("Race – 2019 Russian Grand Prix") == "Race"
     assert normalize_session_type("Race (temporarily stopped)") == "Race"
     assert normalize_session_type("Race (Reconnaissance Laps)") == "Pre-session"
+    assert normalize_session_type("Sprint Qualifying", 2021) == "Sprint"
+    assert normalize_session_type("Sprint Qualifying", 2024) == "Sprint Qualifying"
     assert normalize_session_type(None) == "Unknown"
 
 

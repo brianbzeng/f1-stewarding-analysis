@@ -123,6 +123,8 @@ f1stewards study-discover --download --download-profile decisions
 f1stewards study-inventory
 f1stewards build-full-coding-queues
 f1stewards audit-full-coding-queues
+f1stewards study-fastf1 --max-sessions 5
+f1stewards study-fastf1-inventory
 ```
 
 `build-study-catalog` freezes FastF1 schedules into stable event IDs and FIA archive targets;
@@ -156,12 +158,17 @@ statistical modeling; its protected machine-seed layer is complete and human dis
 
 The first full-corpus coding bridge is now reproducible and checksum-protected. Its document queue
 retains all 2,002 outcome labels, and its adjudication seed retains all 1,951 live,
-content-confirmed decisions. Deterministic rules currently prioritize 250 primary Race/Sprint
-candidates and 66 secondary qualifying-impeding candidates; 454 ambiguous session or offence-family
+content-confirmed decisions. Deterministic rules currently prioritize 260 primary Race/Sprint
+candidates and 66 secondary qualifying-impeding candidates; 320 ambiguous session or offence-family
 records remain mandatory manual review rather than automatic conclusions. The counts are triage
-workload, not final study results. A deterministic 375-row sample spans all 208 observed
+workload, not final study results. A deterministic 403-row sample spans all 223 observed
 season/session/family exclusion strata so proposed exclusions receive a reproducible false-exclusion
 audit. See [the full-corpus coding workflow](docs/full_corpus_coding_workflow.md).
+The [first exclusion-QA diagnostic](docs/exclusion_qa_audit.md) documents an actual 2021 session-
+terminology false-exclusion mechanism, the corrective regeneration, and the remaining human gate.
+The [full FastF1 collection method](docs/full_fastf1_collection.md) adds resumable, session-keyed
+Race/Sprint timing with explicit absolute-timestamp lineage; completeness remains a separate strict
+gate before timing-based analysis.
 
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active

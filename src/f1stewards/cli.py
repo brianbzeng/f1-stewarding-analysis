@@ -44,7 +44,13 @@ from f1stewards.config import (
     load_sporting_regulation_issues,
     load_study_events,
 )
-from f1stewards.enrichment.fastf1 import fetch_pilot_race, replace_event_enrichment
+from f1stewards.enrichment.fastf1 import (
+    fetch_pilot_race,
+    fetch_study_session,
+    replace_event_enrichment,
+    replace_session_enrichment,
+    upsert_session_ingestion,
+)
 from f1stewards.explorer import build_explorer_payload, write_explorer
 from f1stewards.impact import remove_post_race_time_penalty
 from f1stewards.inventory import (
@@ -1157,6 +1163,249 @@ def pilot_fastf1(
             f"{event.pilot_id}: {len(results)} results, {len(laps)} laps, "
             f"{len(messages)} race-control messages"
         )
+
+
+@app.command("study-fastf1")
+def study_fastf1(
+    event_id: Annotated[
+        str | None, typer.Option(help="One frozen study event ID; default resumes all.")
+    ] = None,
+    session_type: Annotated[
+        str, typer.Option(help="Race, Sprint, or all eligible sessions.")
+    ] = "all",
+    max_sessions: Annotated[
+        int | None, typer.Option(help="Bound the number of missing sessions loaded this run.")
+    ] = None,
+    force: Annotated[
+        bool, typer.Option(help="Reload sessions already present in the session-keyed warehouse.")
+    ] = False,
+    fail_fast: Annotated[
+        bool, typer.Option(help="Stop on the first failed FastF1 session instead of continuing.")
+    ] = False,
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Resumably load full-study Race and Sprint timing data from FastF1."""
+
+    normalized_session = session_type.casefold()
+    if normalized_session not in {"all", "race", "sprint"}:
+        raise typer.BadParameter("session-type must be Race, Sprint, or all")
+    if max_sessions is not None and max_sessions < 1:
+        raise typer.BadParameter("max-sessions must be positive")
+
+    initialize_database(db_path)
+    events = load_study_events()
+    if event_id:
+        events = [event for event in events if event.pilot_id == event_id]
+        if not events:
+            raise typer.BadParameter(f"Unknown study event id: {event_id}")
+    requested = (
+        ["Race", "Sprint"]
+        if normalized_session == "all"
+        else [normalized_session.title()]
+    )
+    tasks = [
+        (event, current_session)
+        for event in events
+        for current_session in requested
+        if current_session == "Race" or event.has_sprint
+    ]
+    with connect(db_path) as connection:
+        loaded = {
+            (row[0], row[1])
+            for row in connection.sql(
+                "SELECT DISTINCT event_id, session_type FROM raw.fastf1_session_results"
+            ).fetchall()
+        }
+    if not force:
+        tasks = [
+            (event, current_session)
+            for event, current_session in tasks
+            if (event.pilot_id, current_session) not in loaded
+        ]
+    if max_sessions is not None:
+        tasks = tasks[:max_sessions]
+    if not tasks:
+        typer.echo("No matching FastF1 sessions require loading.")
+        return
+
+    failures: list[tuple[str, str, str]] = []
+    for event, current_session in tasks:
+        started_at = datetime.now(UTC)
+        typer.echo(f"Loading FastF1 {current_session} data for {event.pilot_id}...")
+        with connect(db_path) as connection:
+            upsert_session_ingestion(
+                connection, event.pilot_id, current_session, "running", started_at
+            )
+        try:
+            results, laps, messages = fetch_study_session(
+                event,
+                current_session,
+                PROJECT_ROOT / "data" / "cache" / "fastf1",
+                PROJECT_ROOT / "data" / "external" / "fastf1_sessions",
+            )
+            with connect(db_path) as connection:
+                replace_session_enrichment(
+                    connection,
+                    event.pilot_id,
+                    current_session,
+                    results,
+                    laps,
+                    messages,
+                    started_at,
+                )
+        except Exception as exc:  # noqa: BLE001 - persist per-session failure and resume
+            error = str(exc)[:4000]
+            failures.append((event.pilot_id, current_session, error))
+            with connect(db_path) as connection:
+                upsert_session_ingestion(
+                    connection,
+                    event.pilot_id,
+                    current_session,
+                    "failed",
+                    started_at,
+                    finished_at=datetime.now(UTC),
+                    error_message=error,
+                )
+            typer.echo(f"FAILED {event.pilot_id} {current_session}: {error}")
+            if fail_fast:
+                break
+            continue
+        typer.echo(
+            f"{event.pilot_id} {current_session}: {len(results)} results, "
+            f"{len(laps)} laps, {len(messages)} race-control messages"
+        )
+    typer.echo(
+        f"FastF1 run complete: {len(tasks) - len(failures)} succeeded, "
+        f"{len(failures)} failed"
+    )
+    if failures:
+        raise typer.Exit(code=1)
+
+
+@app.command("study-fastf1-inventory")
+def study_fastf1_inventory(
+    strict: Annotated[
+        bool,
+        typer.Option(help="Exit nonzero unless every expected Race and Sprint is loaded."),
+    ] = False,
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Audit expected versus loaded session-keyed FastF1 coverage and timestamp lineage."""
+
+    events = load_study_events()
+    expected = pd.DataFrame(
+        [
+            {
+                "event_id": event.pilot_id,
+                "season": event.season,
+                "round_number": event.round_number,
+                "event_name": event.event_name,
+                "session_type": current_session,
+            }
+            for event in events
+            for current_session in ("Race", "Sprint")
+            if current_session == "Race" or event.has_sprint
+        ]
+    )
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        observed = connection.sql(
+            """
+            WITH results AS (
+                SELECT event_id, session_type, count(*) AS result_rows
+                FROM raw.fastf1_session_results
+                GROUP BY event_id, session_type
+            ),
+            laps AS (
+                SELECT
+                    event_id,
+                    session_type,
+                    count(*) AS lap_rows,
+                    count(*) FILTER (
+                        WHERE lap_start_timestamp_basis = 'fastf1_lap_start_date'
+                    ) AS direct_timestamp_rows,
+                    count(*) FILTER (
+                        WHERE lap_start_timestamp_basis =
+                              'session_date_plus_lap_start_time'
+                    ) AS derived_timestamp_rows,
+                    count(*) FILTER (
+                        WHERE lap_start_timestamp_basis = 'unavailable'
+                    ) AS missing_timestamp_rows
+                FROM raw.fastf1_session_laps
+                GROUP BY event_id, session_type
+            ),
+            messages AS (
+                SELECT event_id, session_type, count(*) AS message_rows
+                FROM raw.fastf1_session_race_control_messages
+                GROUP BY event_id, session_type
+            )
+            SELECT
+                coalesce(r.event_id, i.event_id) AS event_id,
+                coalesce(r.session_type, i.session_type) AS session_type,
+                coalesce(r.result_rows, 0) AS result_rows,
+                coalesce(l.lap_rows, 0) AS lap_rows,
+                coalesce(m.message_rows, 0) AS message_rows,
+                coalesce(l.direct_timestamp_rows, 0) AS direct_timestamp_rows,
+                coalesce(l.derived_timestamp_rows, 0) AS derived_timestamp_rows,
+                coalesce(l.missing_timestamp_rows, 0) AS missing_timestamp_rows,
+                i.status AS ingestion_status,
+                i.error_message
+            FROM results AS r
+            FULL JOIN metadata.fastf1_session_ingestion AS i
+              ON i.event_id = r.event_id
+             AND i.session_type = r.session_type
+            LEFT JOIN laps AS l
+              ON l.event_id = coalesce(r.event_id, i.event_id)
+             AND l.session_type = coalesce(r.session_type, i.session_type)
+            LEFT JOIN messages AS m
+              ON m.event_id = coalesce(r.event_id, i.event_id)
+             AND m.session_type = coalesce(r.session_type, i.session_type)
+            """
+        ).df()
+    inventory = expected.merge(
+        observed, on=["event_id", "session_type"], how="left", validate="one_to_one"
+    )
+    count_columns = [
+        "result_rows",
+        "lap_rows",
+        "message_rows",
+        "direct_timestamp_rows",
+        "derived_timestamp_rows",
+        "missing_timestamp_rows",
+    ]
+    inventory[count_columns] = inventory[count_columns].fillna(0).astype(int)
+
+    def coverage_status(row: pd.Series) -> str:
+        if row["result_rows"] > 0 and row["ingestion_status"] == "succeeded":
+            return "succeeded"
+        if row["result_rows"] > 0:
+            return "backfilled_unregistered"
+        if row["ingestion_status"] in {"running", "failed"}:
+            return str(row["ingestion_status"])
+        return "missing"
+
+    inventory["coverage_status"] = inventory.apply(coverage_status, axis=1)
+    summary = (
+        inventory.groupby(["season", "session_type", "coverage_status"], dropna=False)
+        .agg(
+            sessions=("event_id", "size"),
+            results=("result_rows", "sum"),
+            laps=("lap_rows", "sum"),
+            direct_timestamps=("direct_timestamp_rows", "sum"),
+            derived_timestamps=("derived_timestamp_rows", "sum"),
+            missing_timestamps=("missing_timestamp_rows", "sum"),
+        )
+        .reset_index()
+        .sort_values(["season", "session_type", "coverage_status"])
+    )
+    typer.echo(summary.to_string(index=False))
+    complete_statuses = {"succeeded", "backfilled_unregistered"}
+    complete = inventory["coverage_status"].isin(complete_statuses)
+    typer.echo(
+        f"\nExpected {len(inventory)} sessions; loaded {int(complete.sum())}; "
+        f"missing/failed/running {int((~complete).sum())}."
+    )
+    if strict and not complete.all():
+        raise typer.Exit(code=1)
 
 
 @app.command("pilot-messages")

@@ -28,6 +28,7 @@ full_corpus_coding:
       - '\bfail(?:ed|ure)?\s+to\s+leave\s+(?:at\s+least\s+)?(?:a\s+)?car(?:s|\s+width)?\b'
     gaining_advantage_off_track:
       - '\bleav(?:e|es|ing|left)\s+the\s+track\s+and\s+gain(?:ed|ing|s)?\b'
+      - '\bleft\s+the\s+track\b.*\bgain(?:ed|ing)\s+(?:a\s+)?(?:lasting\s+)?advantage\b'
       - '\boff\s+the\s+track\s+and\s+gain(?:ed|ing|s)?\s+(?:a\s+)?(?:lasting\s+)?advantage\b'
       - '\bgain(?:ed|ing)\s+(?:a\s+)?(?:lasting\s+)?advantage\s+(?:by|while|after)\s+leav(?:e|ing|left)\b'
     unsafe_rejoin:

@@ -12,6 +12,8 @@ import pandas as pd
 
 from f1stewards.models import PilotEvent
 
+SESSION_CODES = {"Race": "R", "Sprint": "S"}
+
 
 def _column(frame: pd.DataFrame, name: str, default: object = pd.NA) -> pd.Series:
     if name in frame.columns:
@@ -138,6 +140,78 @@ def fetch_pilot_race(
     return results, laps, messages
 
 
+def _add_session_type(frame: pd.DataFrame, session_type: str) -> pd.DataFrame:
+    enriched = frame.copy()
+    enriched.insert(1, "session_type", session_type)
+    return enriched
+
+
+def add_lap_timestamp_lineage(
+    frame: pd.DataFrame, session_date: datetime | pd.Timestamp | None
+) -> pd.DataFrame:
+    """Fill missing absolute lap starts from FastF1's UTC session anchor with lineage."""
+
+    enriched = frame.copy()
+    timestamps = pd.to_datetime(enriched["lap_start_timestamp"], errors="coerce", utc=True)
+    direct = timestamps.notna()
+    derived = pd.Series(False, index=enriched.index, dtype="bool")
+    if session_date is not None and not pd.isna(session_date):
+        anchor = pd.Timestamp(session_date)
+        anchor = anchor.tz_localize("UTC") if anchor.tzinfo is None else anchor.tz_convert("UTC")
+        relative = pd.to_timedelta(enriched["lap_start_time_seconds"], unit="s", errors="coerce")
+        derived = timestamps.isna() & relative.notna()
+        timestamps.loc[derived] = anchor + relative.loc[derived]
+    basis = pd.Series("unavailable", index=enriched.index, dtype="object")
+    basis.loc[direct] = "fastf1_lap_start_date"
+    basis.loc[derived] = "session_date_plus_lap_start_time"
+    enriched["lap_start_timestamp"] = timestamps
+    enriched["lap_start_timestamp_basis"] = basis
+    enriched["lap_start_timestamp_is_derived"] = derived
+    return enriched
+
+
+def fetch_study_session(
+    event: PilotEvent,
+    session_type: str,
+    cache_dir: Path,
+    output_root: Path,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Fetch one Race or Sprint into session-keyed normalized Parquet tables."""
+
+    if session_type not in SESSION_CODES:
+        raise ValueError(f"Unsupported FastF1 study session: {session_type}")
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    fastf1.Cache.enable_cache(str(cache_dir))
+    session = fastf1.get_session(event.season, event.event_name, SESSION_CODES[session_type])
+    session.load(laps=True, telemetry=True, weather=False, messages=True)
+    retrieved_at = datetime.now(UTC)
+    results = _add_session_type(
+        normalize_results(pd.DataFrame(session.results), event.pilot_id, retrieved_at),
+        session_type,
+    )
+    laps = normalize_laps(pd.DataFrame(session.laps), event.pilot_id, retrieved_at)
+    laps = add_lap_timestamp_lineage(laps, session.date)
+    laps = _add_session_type(laps, session_type)
+    messages = _add_session_type(
+        normalize_messages(
+            pd.DataFrame(session.race_control_messages), event.pilot_id, retrieved_at
+        ),
+        session_type,
+    )
+
+    output_dir = (
+        output_root
+        / str(event.season)
+        / _safe_event_slug(event)
+        / session_type.casefold()
+    )
+    output_dir.mkdir(parents=True, exist_ok=True)
+    results.to_parquet(output_dir / "results.parquet", index=False)
+    laps.to_parquet(output_dir / "laps.parquet", index=False)
+    messages.to_parquet(output_dir / "race_control_messages.parquet", index=False)
+    return results, laps, messages
+
+
 def replace_event_enrichment(
     connection: duckdb.DuckDBPyConnection,
     event_id: str,
@@ -157,6 +231,130 @@ def replace_event_enrichment(
             connection.register("enrichment_batch", frame)
             connection.execute(f"INSERT INTO {table} BY NAME SELECT * FROM enrichment_batch")
             connection.unregister("enrichment_batch")
+        connection.execute("COMMIT")
+    except Exception:
+        connection.execute("ROLLBACK")
+        raise
+
+
+def upsert_session_ingestion(
+    connection: duckdb.DuckDBPyConnection,
+    event_id: str,
+    session_type: str,
+    status: str,
+    started_at: datetime,
+    *,
+    finished_at: datetime | None = None,
+    result_rows: int | None = None,
+    lap_rows: int | None = None,
+    message_rows: int | None = None,
+    direct_lap_timestamp_rows: int | None = None,
+    derived_lap_timestamp_rows: int | None = None,
+    missing_lap_timestamp_rows: int | None = None,
+    error_message: str | None = None,
+) -> None:
+    """Record resumable FastF1 session ingestion state."""
+
+    if session_type not in SESSION_CODES:
+        raise ValueError(f"Unsupported FastF1 study session: {session_type}")
+    if status not in {"running", "succeeded", "failed"}:
+        raise ValueError(f"Unsupported FastF1 ingestion status: {status}")
+    connection.execute(
+        """
+        INSERT INTO metadata.fastf1_session_ingestion (
+            event_id, session_type, status, started_at, finished_at, fastf1_version,
+            result_rows, lap_rows, message_rows, direct_lap_timestamp_rows,
+            derived_lap_timestamp_rows, missing_lap_timestamp_rows, error_message
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (event_id, session_type) DO UPDATE SET
+            status = EXCLUDED.status,
+            started_at = EXCLUDED.started_at,
+            finished_at = EXCLUDED.finished_at,
+            fastf1_version = EXCLUDED.fastf1_version,
+            result_rows = EXCLUDED.result_rows,
+            lap_rows = EXCLUDED.lap_rows,
+            message_rows = EXCLUDED.message_rows,
+            direct_lap_timestamp_rows = EXCLUDED.direct_lap_timestamp_rows,
+            derived_lap_timestamp_rows = EXCLUDED.derived_lap_timestamp_rows,
+            missing_lap_timestamp_rows = EXCLUDED.missing_lap_timestamp_rows,
+            error_message = EXCLUDED.error_message
+        """,
+        [
+            event_id,
+            session_type,
+            status,
+            started_at,
+            finished_at,
+            fastf1.__version__,
+            result_rows,
+            lap_rows,
+            message_rows,
+            direct_lap_timestamp_rows,
+            derived_lap_timestamp_rows,
+            missing_lap_timestamp_rows,
+            error_message,
+        ],
+    )
+
+
+def replace_session_enrichment(
+    connection: duckdb.DuckDBPyConnection,
+    event_id: str,
+    session_type: str,
+    results: pd.DataFrame,
+    laps: pd.DataFrame,
+    messages: pd.DataFrame,
+    started_at: datetime,
+) -> None:
+    """Atomically replace one session and mark its resumable ingestion as succeeded."""
+
+    if session_type not in SESSION_CODES:
+        raise ValueError(f"Unsupported FastF1 study session: {session_type}")
+    expected = {
+        "raw.fastf1_session_results": results,
+        "raw.fastf1_session_laps": laps,
+        "raw.fastf1_session_race_control_messages": messages,
+    }
+    for table, frame in expected.items():
+        if frame.empty and table != "raw.fastf1_session_race_control_messages":
+            raise ValueError(f"{table} cannot be empty for a successful session load")
+        if frame.empty:
+            continue
+        if set(frame.get("event_id", [])) != {event_id}:
+            raise ValueError(f"{table} event IDs do not match {event_id}")
+        if set(frame.get("session_type", [])) != {session_type}:
+            raise ValueError(f"{table} session types do not match {session_type}")
+
+    connection.execute("BEGIN TRANSACTION")
+    try:
+        for table, frame in expected.items():
+            connection.execute(
+                f"DELETE FROM {table} WHERE event_id = ? AND session_type = ?",
+                [event_id, session_type],
+            )
+            if not frame.empty:
+                connection.register("session_enrichment_batch", frame)
+                connection.execute(
+                    f"INSERT INTO {table} BY NAME SELECT * FROM session_enrichment_batch"
+                )
+                connection.unregister("session_enrichment_batch")
+        timestamp_basis = laps["lap_start_timestamp_basis"].value_counts()
+        upsert_session_ingestion(
+            connection,
+            event_id,
+            session_type,
+            "succeeded",
+            started_at,
+            finished_at=datetime.now(UTC),
+            result_rows=len(results),
+            lap_rows=len(laps),
+            message_rows=len(messages),
+            direct_lap_timestamp_rows=int(timestamp_basis.get("fastf1_lap_start_date", 0)),
+            derived_lap_timestamp_rows=int(
+                timestamp_basis.get("session_date_plus_lap_start_time", 0)
+            ),
+            missing_lap_timestamp_rows=int(timestamp_basis.get("unavailable", 0)),
+        )
         connection.execute("COMMIT")
     except Exception:
         connection.execute("ROLLBACK")

@@ -235,3 +235,86 @@ WHERE realized_grid_places_lost <> starting_grid_position - qualifying_position
        grid_effect_level = 'mechanical'
        AND realized_grid_places_lost <> nominal_grid_places
    );
+
+-- Session-keyed FastF1 rows must resolve to the frozen event catalog.
+SELECT r.event_id, r.session_type
+FROM raw.fastf1_session_results AS r
+LEFT JOIN metadata.events AS e USING (event_id)
+WHERE e.event_id IS NULL
+   OR (r.session_type = 'Sprint' AND NOT e.has_sprint);
+
+-- Every normalized lap must resolve to one classification row in the same session.
+SELECT l.event_id, l.session_type, l.driver_number, l.lap_number
+FROM raw.fastf1_session_laps AS l
+LEFT JOIN raw.fastf1_session_results AS r
+  ON r.event_id = l.event_id
+ AND r.session_type = l.session_type
+ AND r.driver_number = l.driver_number
+WHERE r.driver_number IS NULL;
+
+-- Absolute lap-time lineage must agree with timestamp presence and the derived flag.
+SELECT event_id, session_type, driver_number, lap_number,
+       lap_start_timestamp, lap_start_timestamp_basis,
+       lap_start_timestamp_is_derived
+FROM raw.fastf1_session_laps
+WHERE lap_start_timestamp_basis NOT IN (
+          'fastf1_lap_start_date',
+          'session_date_plus_lap_start_time',
+          'unavailable'
+      )
+   OR (lap_start_timestamp_basis = 'unavailable' AND lap_start_timestamp IS NOT NULL)
+   OR (lap_start_timestamp_basis <> 'unavailable' AND lap_start_timestamp IS NULL)
+   OR (
+       lap_start_timestamp_is_derived
+       <> (lap_start_timestamp_basis = 'session_date_plus_lap_start_time')
+   );
+
+-- Successful ingestion ledger counts must reconcile to the stored session tables.
+WITH observed AS (
+    SELECT
+        i.event_id,
+        i.session_type,
+        count(DISTINCT r.driver_number) AS result_rows,
+        count(DISTINCT (l.driver_number, l.lap_number)) AS lap_rows,
+        (
+            SELECT count(*)
+            FROM raw.fastf1_session_race_control_messages AS m
+            WHERE m.event_id = i.event_id
+              AND m.session_type = i.session_type
+        ) AS message_rows,
+        count(DISTINCT CASE
+            WHEN l.lap_start_timestamp_basis = 'fastf1_lap_start_date'
+                THEN (l.driver_number, l.lap_number)
+        END) AS direct_lap_timestamp_rows,
+        count(DISTINCT CASE
+            WHEN l.lap_start_timestamp_basis = 'session_date_plus_lap_start_time'
+                THEN (l.driver_number, l.lap_number)
+        END) AS derived_lap_timestamp_rows,
+        count(DISTINCT CASE
+            WHEN l.lap_start_timestamp_basis = 'unavailable'
+                THEN (l.driver_number, l.lap_number)
+        END) AS missing_lap_timestamp_rows
+    FROM metadata.fastf1_session_ingestion AS i
+    LEFT JOIN raw.fastf1_session_results AS r
+      ON r.event_id = i.event_id
+     AND r.session_type = i.session_type
+    LEFT JOIN raw.fastf1_session_laps AS l
+      ON l.event_id = i.event_id
+     AND l.session_type = i.session_type
+    WHERE i.status = 'succeeded'
+    GROUP BY i.event_id, i.session_type
+)
+SELECT i.event_id, i.session_type
+FROM metadata.fastf1_session_ingestion AS i
+JOIN observed AS o USING (event_id, session_type)
+WHERE i.status = 'succeeded'
+  AND (
+      i.finished_at IS NULL
+      OR i.error_message IS NOT NULL
+      OR i.result_rows <> o.result_rows
+      OR i.lap_rows <> o.lap_rows
+      OR i.message_rows <> o.message_rows
+      OR i.direct_lap_timestamp_rows <> o.direct_lap_timestamp_rows
+      OR i.derived_lap_timestamp_rows <> o.derived_lap_timestamp_rows
+      OR i.missing_lap_timestamp_rows <> o.missing_lap_timestamp_rows
+  );

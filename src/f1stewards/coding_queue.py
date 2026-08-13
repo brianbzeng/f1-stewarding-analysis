@@ -52,6 +52,7 @@ DOCUMENT_REVIEW_COLUMNS = [
     "offence_family_group_suggestion",
     "all_matching_families_suggestion",
     "multiple_family_matches",
+    "family_conflict_suggestion",
     "eligibility_suggestion",
     "eligibility_basis",
     "version_status_final",
@@ -94,6 +95,7 @@ ADJUDICATION_SEED_COLUMNS = [
     "offence_family_group_suggestion",
     "all_matching_families_suggestion",
     "multiple_family_matches",
+    "family_conflict_suggestion",
     "outcome_family_suggestion",
     "penalty_seconds_suggestion",
     "penalty_points_suggestion",
@@ -283,7 +285,7 @@ def _parse_warnings(value: Any) -> list[str]:
     return [str(item) for item in parsed]
 
 
-def normalize_session_type(value: Any) -> str:
+def normalize_session_type(value: Any, season: Any = None) -> str:
     """Normalize observed FIA session labels without guessing from the sanction."""
 
     raw = _one_line(value)
@@ -296,6 +298,8 @@ def normalize_session_type(value: Any) -> str:
         return "Race"
     if normalized == "qualifying":
         return "Qualifying"
+    if normalized == "sprint qualifying" and not _missing(season) and int(season) <= 2022:
+        return "Sprint"
     if normalized == "sprint qualifying":
         return "Sprint Qualifying"
     if normalized == "sprint shootout":
@@ -352,6 +356,16 @@ def _selected_family(matches: list[tuple[str, str]]) -> tuple[str, str]:
     return matches[0]
 
 
+def _family_conflict(matches: list[tuple[str, str]]) -> bool:
+    """Flag scope-relevant conflicts while allowing multiple exclusion labels."""
+
+    if len(matches) <= 1:
+        return False
+    groups = {group for _, group in matches}
+    in_scope_families = {family for family, group in matches if group != "excluded"}
+    return len(groups) > 1 or len(in_scope_families) > 1
+
+
 def _version_state(row: pd.Series) -> str:
     recalled = bool(row.get("is_recalled"))
     successor = _text(row.get("successor_document_id"))
@@ -381,7 +395,7 @@ def _eligibility(
     session_scope: str,
     family: str,
     family_group: str,
-    multiple_family_matches: bool,
+    family_conflict: bool,
 ) -> tuple[str, str]:
     if version_state == "recalled_linked_predecessor":
         return "version_exclusion_suggestion", "Recalled version has a verified live successor."
@@ -396,7 +410,7 @@ def _eligibility(
             "content_exclusion_suggestion",
             "Archive outcome label content-types as a non-decision or has no parsed decision body.",
         )
-    if multiple_family_matches:
+    if family_conflict:
         return (
             "manual_offence_review",
             "Source text matched multiple offence families; no automatic scope decision was made.",
@@ -558,18 +572,19 @@ def build_full_corpus_coding_queues(
         content_status = _content_status(row)
         warnings = _parse_warnings(row.get("parser_warnings_json"))
         parser_review_required = bool(warnings)
-        session = normalize_session_type(row.get("session_type"))
+        session = normalize_session_type(row.get("session_type"), row.get("season"))
         session_scope = _session_scope(session, settings)
         matches = _family_matches(_classification_text(row), settings)
         family, family_group = _selected_family(matches)
         matching_families = [match[0] for match in matches]
+        family_conflict = _family_conflict(matches)
         eligibility, eligibility_basis = _eligibility(
             version_state=version_state,
             content_status=content_status,
             session_scope=session_scope,
             family=family,
             family_group=family_group,
-            multiple_family_matches=len(matches) > 1,
+            family_conflict=family_conflict,
         )
         effective_version = not bool(row.get("is_recalled")) and (
             content_status == "content_confirmed_decision"
@@ -608,6 +623,7 @@ def build_full_corpus_coding_queues(
             "offence_family_group_suggestion": family_group,
             "all_matching_families_suggestion": "|".join(matching_families),
             "multiple_family_matches": len(matching_families) > 1,
+            "family_conflict_suggestion": family_conflict,
             "eligibility_suggestion": eligibility,
             "eligibility_basis": eligibility_basis,
             **{field: "" for field in FINAL_DOCUMENT_FIELDS},
@@ -655,6 +671,7 @@ def build_full_corpus_coding_queues(
             "offence_family_group_suggestion": family_group,
             "all_matching_families_suggestion": "|".join(matching_families),
             "multiple_family_matches": len(matching_families) > 1,
+            "family_conflict_suggestion": family_conflict,
             "outcome_family_suggestion": outcome,
             "penalty_seconds_suggestion": seconds,
             "penalty_points_suggestion": points,
