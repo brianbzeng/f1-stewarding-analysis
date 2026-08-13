@@ -1347,6 +1347,11 @@ def study_fastf1_inventory(
                 coalesce(l.direct_timestamp_rows, 0) AS direct_timestamp_rows,
                 coalesce(l.derived_timestamp_rows, 0) AS derived_timestamp_rows,
                 coalesce(l.missing_timestamp_rows, 0) AS missing_timestamp_rows,
+                coalesce(q.incident_timing_eligible_rows, 0) AS incident_timing_rows,
+                coalesce(q.pace_model_eligible_rows, 0) AS pace_model_eligible_rows,
+                coalesce(q.stored_beyond_classified_distance, 0) AS beyond_classified_rows,
+                coalesce(q.missing_within_classified_distance, 0) AS missing_within_rows,
+                coalesce(q.fallback_timing_rows, 0) AS fallback_timing_rows,
                 i.status AS ingestion_status,
                 i.error_message
             FROM results AS r
@@ -1359,6 +1364,9 @@ def study_fastf1_inventory(
             LEFT JOIN messages AS m
               ON m.event_id = coalesce(r.event_id, i.event_id)
              AND m.session_type = coalesce(r.session_type, i.session_type)
+            LEFT JOIN analysis.v_fastf1_session_data_quality AS q
+              ON q.event_id = coalesce(r.event_id, i.event_id)
+             AND q.session_type = coalesce(r.session_type, i.session_type)
             """
         ).df()
     inventory = expected.merge(
@@ -1371,6 +1379,11 @@ def study_fastf1_inventory(
         "direct_timestamp_rows",
         "derived_timestamp_rows",
         "missing_timestamp_rows",
+        "incident_timing_rows",
+        "pace_model_eligible_rows",
+        "beyond_classified_rows",
+        "missing_within_rows",
+        "fallback_timing_rows",
     ]
     inventory[count_columns] = inventory[count_columns].fillna(0).astype(int)
 
@@ -1393,6 +1406,11 @@ def study_fastf1_inventory(
             direct_timestamps=("direct_timestamp_rows", "sum"),
             derived_timestamps=("derived_timestamp_rows", "sum"),
             missing_timestamps=("missing_timestamp_rows", "sum"),
+            incident_timing=("incident_timing_rows", "sum"),
+            pace_eligible=("pace_model_eligible_rows", "sum"),
+            beyond_classified=("beyond_classified_rows", "sum"),
+            missing_within=("missing_within_rows", "sum"),
+            fallback_timing=("fallback_timing_rows", "sum"),
         )
         .reset_index()
         .sort_values(["season", "session_type", "coverage_status"])

@@ -237,3 +237,65 @@ def test_session_enrichment_rejects_cross_session_rows(tmp_path: Path) -> None:
         assert connection.sql(
             "SELECT count(*) FROM raw.fastf1_session_results"
         ).fetchone()[0] == 0
+
+
+def test_lap_eligibility_separates_incident_timing_from_pace_modeling(
+    tmp_path: Path,
+) -> None:
+    db_path = tmp_path / "eligibility.duckdb"
+    initialize_database(db_path)
+    results, laps, messages = session_frames("2025-tst", "Race")
+    results.loc[:, "laps_completed"] = 1
+    laps.loc[:, "lap_time_seconds"] = 90.0
+    laps.loc[:, "track_status"] = "1"
+    laps.loc[:, "compound"] = "MEDIUM"
+    laps.loc[:, "stint"] = 1.0
+    laps.loc[:, "tyre_life"] = 1.0
+    laps.loc[:, "is_accurate"] = True
+    beyond = laps.copy()
+    beyond.loc[:, "lap_number"] = 2.0
+    laps = pd.concat([laps, beyond], ignore_index=True)
+
+    with duckdb.connect(str(db_path)) as connection:
+        replace_session_enrichment(
+            connection,
+            "2025-tst",
+            "Race",
+            results,
+            laps,
+            messages,
+            RETRIEVED_AT,
+        )
+        eligibility = connection.sql(
+            """
+            SELECT lap_number, is_within_classified_distance,
+                   is_beyond_classified_distance, is_incident_timing_eligible,
+                   is_pace_model_eligible
+            FROM analysis.v_fastf1_lap_eligibility
+            ORDER BY lap_number
+            """
+        ).fetchall()
+        coverage = connection.sql(
+            """
+            SELECT classified_laps, stored_timing_laps,
+                   stored_within_classified_distance,
+                   stored_beyond_classified_distance,
+                   missing_within_classified_distance
+            FROM analysis.v_fastf1_driver_lap_coverage
+            """
+        ).fetchone()
+        session_quality = connection.sql(
+            """
+            SELECT incident_timing_eligible_rows, pace_model_eligible_rows,
+                   stored_beyond_classified_distance,
+                   missing_within_classified_distance, fallback_timing_rows
+            FROM analysis.v_fastf1_session_data_quality
+            """
+        ).fetchone()
+
+    assert eligibility == [
+        (1.0, True, False, True, True),
+        (2.0, False, True, True, False),
+    ]
+    assert coverage == (1, 2, 1, 1, 0)
+    assert session_quality == (2, 1, 1, 0, 0)

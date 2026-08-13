@@ -73,6 +73,15 @@ basic timing, pit, position, and track-status fields, labels all rows
 This retains the 925 timing observations for incident reconstruction while excluding them from
 persistent-pace models until a separate parity study supports broader use.
 
+Raw timing coverage and model eligibility are intentionally separate. The warehouse retains timed
+retirement or incident laps beyond a driver's official completed-lap count because those rows can
+document the event that ended the race. `analysis.v_fastf1_lap_eligibility` marks those rows as
+incident-timing evidence but excludes them from pace modeling. Its strict pace flag additionally
+requires processed FastF1 normalization, an accurate timed lap within the classified distance,
+green-flag track status, no pit entry or exit, and complete tyre context. Driver- and session-level
+coverage views expose timing beyond the official classification and missing within-distance rows;
+they never impute either condition.
+
 ## Quality controls
 
 The SQL suite now rejects:

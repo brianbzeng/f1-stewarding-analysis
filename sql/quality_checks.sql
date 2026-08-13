@@ -288,6 +288,20 @@ WHERE lap_normalization_basis NOT IN (
        )
    );
 
+-- Pace-model eligibility must never admit unsupported, inaccurate, interrupted, or unclassified laps.
+SELECT event_id, session_type, driver_number, lap_number
+FROM analysis.v_fastf1_lap_eligibility
+WHERE is_pace_model_eligible
+  AND (
+      NOT has_model_supported_normalizer
+      OR NOT has_accurate_timing
+      OR NOT is_within_classified_distance
+      OR NOT has_green_track_status
+      OR NOT is_uninterrupted_lap
+      OR NOT has_tyre_context
+      OR lap_time_seconds IS NULL
+  );
+
 -- Successful ingestion ledger counts must reconcile to the stored session tables.
 WITH observed AS (
     SELECT
