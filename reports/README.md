@@ -1,67 +1,75 @@
 # The Cost of Discretion
 
-## What public FIA data can—and cannot—establish about Formula 1 stewarding, 2018–2025
+## What public FIA data can and cannot show about Formula 1 stewarding, 2018-2025
 
-The completed report is available as an [executable Jupyter notebook](../notebooks/06_final_oversight_report.ipynb)
-and a [code-free HTML reading version](the_cost_of_discretion.html).
+Read the completed report as an [executable Jupyter notebook](../notebooks/06_final_oversight_report.ipynb)
+or a [code-free HTML report](the_cost_of_discretion.html).
 
-### Executive finding
+### Main finding
 
-A nominal sanction and its realized competitive burden are not the same quantity. In the
-independently reviewed pilot, Pérez's post-race five-second penalty mechanically cost two places,
-six points, and a podium; Colapinto's post-race five-second penalty changed no place and no points.
-A served ten-second penalty could not be converted honestly into a finishing counterfactual, while
-a delayed three-place grid penalty had an exact starting-grid effect but an unknowable race-result
-effect.
+The penalty written in a stewarding decision is not always what it costs on track. This report calls
+the written penalty the *nominal sanction* and the actual loss in places, points, or starting position
+the *realized burden*.
 
-That gap matters to fairness, but it does not prove that a stewarding decision was wrong. The report
-therefore keeps four dimensions separate: the responsibility finding, nominal sanction, realized
-sanction burden, and affected-driver harm.
+In the independently reviewed pilot, Perez's post-race five-second penalty cost two places, six
+points, and a podium. Colapinto's post-race five-second penalty changed no place or points. A served
+ten-second penalty changed strategy and traffic, so simply subtracting ten seconds from the final
+time would be misleading. A later three-place grid penalty had a clear effect on the next starting
+grid, but not a measurable effect on the race result.
+
+This difference matters for fairness, but it does not prove that a decision was wrong. The report
+studies four related facts separately: responsibility, the written penalty, the penalty's actual
+cost, and harm to the affected driver.
 
 ![Four reviewed cases show different competitive consequences for nominal sanctions](generated/pilot_harm_sanction_matrix.png)
 
-### What the full corpus supports
+### What the full dataset supports
 
 The evidence system covers all 173 completed events from 2018 through 2025: 9,467 FIA archive
-records, 2,003 version-preserving outcome labels, 1,984 live outcome PDFs, and 1,952
-content-confirmed steward decisions. The provisional primary feature set contains 348 adjudications
-across 131 events.
+records, 2,003 version-preserving outcome records, 1,984 live outcome PDFs, and 1,952 confirmed
+steward decisions. The possible primary case set contains 348 decisions across 131 events.
 
-It contains **zero reporting-eligible full-corpus rows** because independent document,
-adjudication, and 486-row exclusion-QA review remains incomplete. This is a deliberate fail-closed
-control. The report consequently withholds league-wide sanction rates, anomaly rankings,
-guideline-departure rates, and nationality effects.
+None of those 348 cases is approved for full-dataset reporting because independent document, case,
+and exclusion review is incomplete. The report therefore withholds league-wide penalty rates,
+anomaly rankings, guideline-departure rates, and nationality effects.
 
 ![The source population narrows to a deliberately blocked analytical release](generated/population_flow.png)
 
 ### Nationality conclusion
 
-The outcome-free design contains 44 British and 304 other accused-driver exposures. Estimated
-common support is 97.4%, and overlap weighting reduces the largest absolute standardized difference
-from 0.526 to 0.040. But no frozen power scenario reaches the 80% target: estimated detection power
-ranges from 8.2% to 78.8% for assumed 5–20 percentage-point differences.
+The design includes 44 British and 304 other accused-driver cases. Most cases have reasonable
+comparisons in the other group, but the sample is too small to detect subtle differences. Estimated
+power ranges from 8.2% to 78.8% across the prespecified scenarios, below the 80% target.
 
-The correct conclusion is **inconclusive**, not “no bias” and not “bias.” No observed sanction
-outcome was used in this design diagnostic.
+The result is **inconclusive**. It is not evidence of either bias or no bias. This design check did
+not use observed penalty outcomes.
 
 ![Simulation shows inadequate power for subtle nationality effects](generated/nationality_power.png)
 
-### Recommendations
+### Best ways to strengthen the study
 
-1. Publish structured, stable incident and adjudication identifiers with driver roles, session,
-   lap, finding, sanction, application timing, and version status.
-2. Publish the exact guidance effective at each event and identify the written baseline,
-   aggravating factors, and mitigation in each decision.
-3. Report seconds, grid positions, classification positions, points, repair, damage, and retirement
-   separately; do not reduce them to one fairness score.
-4. Preserve the referral limitation: formal decisions show treatment only among referred cases.
-5. Use calibrated models to prioritize evidence review, never to declare a steward wrong
-   automatically.
+1. Treat decision consistency and competitive consequence as two separate primary analyses.
+2. Independently review all possible analytical cases, high-risk records, and the prespecified
+   sample of exclusions; expand review when errors cross a published threshold.
+3. Use Race Control messages to study the path from an incident being noted to a formal decision.
+4. Compare closely matched cases before using a broader statistical model.
+5. Estimate lasting damage on a representative collision sample with clean-lap controls and
+   uncertainty ranges; keep cases as "not estimable" when the data cannot support an answer.
+6. Keep nationality secondary unless a larger sample can detect differences small enough to matter.
+
+### Recommendations to the FIA
+
+1. Publish stable incident and decision IDs with driver roles, session, lap, finding, penalty timing,
+   and version status.
+2. Publish the exact guidance active at each event and list the normal penalty plus written
+   aggravating or mitigating factors.
+3. Report seconds, starting positions, finishing positions, points, repair, damage, and retirement
+   separately instead of reducing them to one fairness score.
+4. Publish what was noted, investigated, formally decided, and not referred.
+5. Use models to flag cases for human review, not to decide that a steward was wrong.
 
 ### Portfolio evidence
 
-The report is backed by source-preserving ETL, typed Python models, DuckDB SQL, FastF1 enrichment,
-content-addressed review lineage, automated validation, executed Jupyter notebooks, a self-service
-evidence console, Git/CI, and a locally validated Snowflake/Snowsight deployment package. The
-release gate demonstrates the same governance principle as an oversight data system: an available
-number is not automatically an authorized finding.
+The project uses tested Python, Jupyter, DuckDB SQL, FastF1 enrichment, traceable review records,
+Git/CI, and a locally validated Snowflake/Snowsight package. Most importantly, the workflow blocks a
+finding when its evidence checks have not passed.

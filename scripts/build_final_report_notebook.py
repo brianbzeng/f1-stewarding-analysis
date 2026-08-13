@@ -24,26 +24,26 @@ def build_notebook() -> nbformat.NotebookNode:
             """
 # The Cost of Discretion
 
-## What public FIA data can—and cannot—establish about Formula 1 stewarding, 2018–2025
+## What public FIA data can and cannot show about Formula 1 stewarding, 2018-2025
 
 **Oversight report | Python, Jupyter, SQL/DuckDB | Evidence frozen through the 2025 season**
 
-The central finding is methodological and substantive: **a nominal sanction and its realized
-competitive burden are not the same quantity**. In the independently reviewed pilot, the same
-five-second sanction changed a podium and six points in one case and changed no classification
-position in another. A served ten-second penalty could not be converted honestly into a finishing
-counterfactual, while a delayed grid penalty had an exact starting-grid effect but an unknowable
-race-result effect.
+The main finding is simple: **the penalty written in a decision is not always what it costs on
+track**. This report calls the written penalty the *nominal sanction* and the actual loss in places,
+points, or starting position the *realized burden*. In the independently reviewed pilot, one
+five-second penalty cost a podium and six points. Another changed no position or points. A served
+ten-second penalty changed strategy and traffic, so subtracting ten seconds from the final time
+would give a misleading answer. A later grid penalty had a clear effect on the next starting grid,
+but not a measurable effect on the race result.
 
-That distinction matters for fairness, but it does not prove that a decision was wrong. FIA
-stewards judge conduct and responsibility; penalties are not necessarily designed to compensate
-the affected driver. The report therefore keeps **decision consistency**, **sanction burden**, and
-**victim harm** as separate evidence dimensions.
+This difference matters for fairness, but it does not prove that a decision was wrong. Stewards
+judge conduct and responsibility; penalties are not designed simply to repay the affected driver.
+The report therefore studies **decision consistency**, **penalty burden**, and **affected-driver
+harm** separately.
 
-The full-corpus pipeline is complete enough to audit the evidence system and diagnose study design,
-but not to publish a league-wide fairness or nationality effect: all substantive outcome rows remain
-blocked from reporting until independent review is complete. This notebook treats that boundary as
-a result, not as missing fine print.
+The full dataset is complete enough to audit the evidence process and test whether the study design
+is workable. It is not ready for a league-wide fairness or nationality estimate because the outcome
+records have not completed independent review. That limit is part of the result, not a footnote.
 """
         ),
         code(
@@ -83,17 +83,16 @@ pd.set_option("display.max_colwidth", 120)
             """
 ## Executive decision
 
-The evidence supports four decisions:
+Four conclusions follow:
 
-1. **Do not use penalty seconds alone as a fairness measure.** Application timing, classification
-   gaps, repair needs, retirement, and delayed sanctions determine who actually paid.
-2. **Do not publish a British-bias estimate from the present design.** Outcome-free diagnostics show
-   useful overlap but inadequate power for subtle effects, before the human-review gate is even met.
-3. **Use the full corpus as a controlled review system, not as released outcome data.** Source
-   coverage is complete; independent full-corpus verification is not.
+1. **Penalty seconds alone do not measure fairness.** When a penalty is applied, the gaps between
+   cars, repair stops, retirements, and delayed sanctions determine its actual cost.
+2. **The current study cannot support a British-bias estimate.** The groups are reasonably
+   comparable on measured factors, but the sample is too small to detect subtle differences.
+3. **Treat the full dataset as work under review, not as released findings.** Source coverage is
+   complete; independent verification is not.
 4. **Ask the FIA for structured, versioned decisions.** A machine-readable incident ID, roles,
-   applicable guidance, sanction application, and correction lineage would make consistency and
-   consequence audits materially more reliable.
+   applicable guidance, penalty timing, and correction history would make audits more reliable.
 """
         ),
         markdown("## 1. Population and release status"),
@@ -122,8 +121,8 @@ flow = pd.DataFrame(
             "Outcome labels",
             "Live outcome PDFs",
             "Content-confirmed decisions",
-            "Provisional primary candidates",
-            "Reporting-eligible adjudications",
+            "Possible Race/Sprint cases",
+            "Cases approved for reporting",
         ],
         "count": [
             9_467,
@@ -138,8 +137,8 @@ flow = pd.DataFrame(
             "Version-preserving outcome population",
             "Retrieved and parsed",
             "One live decision seed each",
-            "Design diagnostics only",
-            "Substantive release gate",
+            "Study-design checks only",
+            "Approved findings",
         ],
     }
 )
@@ -152,7 +151,7 @@ fig, ax = plt.subplots(figsize=(10, 5.5))
 plot_flow = flow.iloc[1:].copy()
 bars = ax.barh(plot_flow["stage"], plot_flow["count"], color=COLORS[:5])
 ax.invert_yaxis()
-ax.set(title="The evidence denominator narrows before any result is released", xlabel="Records")
+ax.set(title="The dataset narrows before any result is released", xlabel="Records")
 ax.bar_label(bars, labels=[f"{value:,}" for value in plot_flow["count"]], padding=4)
 ax.set_xlim(0, 2200)
 plt.tight_layout()
@@ -162,16 +161,15 @@ plt.show()
         ),
         markdown(
             """
-All 173 completed championship events are covered. The archive layer preserves 2,003 outcome
-labels, including corrected and recalled versions; 1,952 live records are confirmed steward
-decisions. The analytical feature layer contains 348 provisional Race/Sprint candidates across 131
-events, but **zero rows are reporting-eligible**. The release controls fail closed because full
-document disposition, adjudication coding, and the 486-row exclusion audit have not received
-independent review.
+All 173 completed championship events are covered. The archive contains 2,003 outcome records,
+including corrected and recalled versions, and 1,952 live records are confirmed steward decisions.
+The analysis contains 348 possible Race/Sprint cases across 131 events, but **zero are approved for
+full-corpus reporting**. The release rules block results until document classification, case coding,
+and the 486-row exclusion audit receive independent review.
 
-This means the project can report inventory, data quality, pipeline behavior, reviewed pilot cases,
-and outcome-free design diagnostics. It cannot report league-wide sanction rates, anomaly rankings,
-guideline departure rates, or nationality effects as findings.
+The project can report source coverage, data quality, reviewed pilot cases, and study-design checks
+that do not use penalty outcomes. It cannot yet publish league-wide penalty rates, anomaly rankings,
+guideline-departure rates, or nationality effects.
 """
         ),
         markdown("## 2. Exploratory data analysis: what the candidate set contains"),
@@ -205,8 +203,8 @@ sns.barplot(
     ax=axes[0],
 )
 axes[0].set(
-    title="Collision allegations dominate the provisional scope",
-    xlabel="Candidate adjudications",
+    title="Collision allegations dominate the possible case set",
+    xlabel="Possible decisions",
     ylabel="",
 )
 sns.barplot(
@@ -219,7 +217,7 @@ sns.barplot(
 axes[1].set(
     title="Candidate volume varies by season",
     xlabel="Season",
-    ylabel="Candidate adjudications",
+    ylabel="Possible decisions",
 )
 plt.tight_layout()
 fig.savefig(GENERATED / "provisional_candidate_composition.png", dpi=180, bbox_inches="tight")
@@ -228,14 +226,14 @@ plt.show()
         ),
         markdown(
             """
-The candidate set contains 235 collision adjudications, 54 gaining-advantage cases, 43 forcing-off-
-track cases, and 16 cases across the three smaller primary families. Twenty-five rows retain more
-than one affected driver, so the model uses a separate driver-role bridge rather than forcing every
-incident into a two-car shape. Half the rows now contain a completed source-coding pass and half
-remain machine-assisted; every row is still pending independent verification.
+The possible case set contains 235 collision decisions, 54 gaining-advantage cases, 43 forcing-off-
+track cases, and 16 cases in three smaller categories. Twenty-five decisions involve more than one
+affected driver. The data therefore keep a separate driver-role table instead of forcing every
+incident into a two-car format. Half the rows have one completed human coding pass; half still rely
+on machine-assisted coding. All rows still need independent verification.
 
-The plots describe workload and case mix only. Outcome rates are intentionally not shown as report
-findings because provisional labels could turn parser behavior into a false stewarding trend.
+The plots show workload and case mix only. Outcome rates are withheld because unreviewed labels
+could make a parsing error look like a stewarding trend.
 """
         ),
         markdown("## 3. Nationality: diagnose the design before estimating an effect"),
@@ -263,10 +261,10 @@ for index, (baseline, group) in enumerate(power.groupby("baseline_probability"))
         color=COLORS[index],
         label=f"Baseline sanction probability: {baseline:.0%}",
     )
-ax.axhline(80, color="black", linestyle="--", linewidth=1, label="Frozen 80% target")
+ax.axhline(80, color="black", linestyle="--", linewidth=1, label="Prespecified 80% target")
 ax.set(
     title="The current design is underpowered for subtle nationality effects",
-    xlabel="Assumed risk difference (percentage points)",
+    xlabel="Assumed difference in penalty rate (percentage points)",
     ylabel="Detection power (%)",
     ylim=(0, 100),
 )
@@ -281,17 +279,18 @@ overlap.summary.to_csv(GENERATED / "nationality_overlap_summary.csv", index=Fals
         ),
         markdown(
             """
-The outcome-free population has 44 British and 304 other accused-driver exposures. Estimated common
-support is 97.4%, and overlap weighting reduces the largest absolute standardized difference from
-0.526 to 0.040. That is encouraging for comparability, but it does not solve sample-size limits.
+The design contains 44 British and 304 other accused-driver cases. Estimated common support is
+97.4%, meaning most cases have a reasonable comparison in the other group. Overlap weighting lowers
+the largest measured group imbalance from 0.526 to 0.040. This improves comparability, but it does
+not fix the small sample.
 
-Across the frozen simulation grid, approximate detection power ranges from 8.2% to 78.8%. Even an
-assumed 20-percentage-point difference at a 70% baseline misses the 80% target; 5–10-point effects
-are far less detectable. **The correct nationality conclusion is “inconclusive,” not “no bias” and
-not “bias.”** No observed sanction outcome was used in this diagnostic.
+Across the prespecified simulations, estimated power ranges from 8.2% to 78.8%. Even a large
+20-percentage-point difference misses the 80% target in one scenario; 5-10-point differences are
+much harder to detect. **The nationality result is inconclusive. It is not evidence of either bias
+or no bias.** This design check did not use observed penalty outcomes.
 """
         ),
-        markdown("## 4. The reviewed pilot: sanction severity is not realized burden"),
+        markdown("## 4. The reviewed pilot: written penalty is not actual cost"),
         code(
             """
 adjudications = pd.read_csv(PILOT / "adjudications.csv")
@@ -310,30 +309,30 @@ pilot_matrix = pd.DataFrame(
     [
         {
             "case": "Pérez → Norris, Abu Dhabi 2023",
-            "nominal sanction": "5 seconds + 2 points",
+            "written penalty": "5 seconds + 2 points",
             "application": "added after race",
-            "realized sanction burden": "P4→P2 without penalty; 6 points and podium",
+            "actual penalty cost": "P4→P2 without penalty; 6 points and podium",
             "affected-driver evidence": "Norris P4→P5 next lap; 0.167 s relative swing",
         },
         {
             "case": "Tsunoda → Colapinto, Austria 2025",
-            "nominal sanction": "10 seconds + 2 points",
+            "written penalty": "10 seconds + 2 points",
             "application": "served during race",
-            "realized sanction burden": "not mechanically estimable",
+            "actual penalty cost": "not estimable from the final classification",
             "affected-driver evidence": "no immediate place loss; possible damage alleged",
         },
         {
             "case": "Colapinto → Piastri, Austria 2025",
-            "nominal sanction": "5 seconds + 1 point",
+            "written penalty": "5 seconds + 1 point",
             "application": "added after race",
-            "realized sanction burden": "0 positions; 0 points",
+            "actual penalty cost": "0 positions; 0 points",
             "affected-driver evidence": "forced off; seconds/win effect not estimable",
         },
         {
             "case": "Antonelli → Verstappen, Austria 2025",
-            "nominal sanction": "3-grid places + 2 points",
+            "written penalty": "3-grid places + 2 points",
             "application": "next event",
-            "realized sanction burden": "exact P7→P10 start; race effect not estimable",
+            "actual penalty cost": "exact P7→P10 start; race effect not estimable",
             "affected-driver evidence": "confirmed incident-caused retirement",
         },
     ]
@@ -364,9 +363,9 @@ table_ax.axis("off")
 wrapped = pilot_matrix.copy()
 wrapped.columns = [
     "Case",
-    "Nominal sanction",
+    "Written penalty",
     "Application",
-    "Realized sanction burden",
+    "Actual penalty cost",
     "Affected-driver evidence",
 ]
 table = table_ax.table(
@@ -400,25 +399,24 @@ plt.show()
         ),
         markdown(
             """
-The purposive pilot covers nine adjudications in Austria 2019, Abu Dhabi 2023, and Austria
-2025; all 26 adjudication, impact, harm, location, relation, and cross-event review targets
-were independently agreed and reconciled.
+The pilot covers nine decisions from Austria 2019, Abu Dhabi 2023, and Austria 2025. Independent
+reviewers agreed on all 26 case, impact, harm, location, relationship, and cross-event records.
 
-Its key lesson is not that one of these penalties was necessarily unfair. It is that a five-second
-number does not identify the actual burden:
+The pilot does not show that any penalty was necessarily unfair. It shows that the number written in
+a decision does not tell us its actual competitive cost:
 
-- Pérez's post-race five seconds mechanically cost two places, six points, and a podium.
+- Perez's post-race five seconds cost two places, six points, and a podium.
 - Colapinto's post-race five seconds changed no place and no points.
-- Tsunoda's served ten seconds altered strategy and traffic, so final-time subtraction would be
-  false precision.
+- Tsunoda served ten seconds during the race. Because that changed strategy and traffic, subtracting
+  ten seconds from his final time would be misleading.
 - Antonelli's delayed penalty moved his next start from P7 to P10 exactly, but the wet-race result
-  remained confounded.
+  depended on too many other factors to isolate.
 
-The victim side is also multidimensional. Four pilot records establish counterparty fault; one
-contains an incident-caused retirement, one an observed next-lap position loss, one possible damage
-without immediate place loss, and one an off-track excursion whose seconds could not be isolated.
-No persistent per-lap damage estimate passed the clean-lap evidence rule. Severe harm is not itself
-proof of fault, and a conduct-based penalty is not automatically a restorative payment.
+Harm to the affected driver also takes different forms. Four pilot records establish another
+driver's fault. They include one incident-caused retirement, one next-lap position loss, one claim
+of possible damage without an immediate place loss, and one off-track excursion whose time cost
+could not be isolated. No estimate of lasting per-lap damage met the clean-lap evidence rule. Severe
+harm does not by itself prove fault, and a penalty for conduct is not automatic compensation.
 """
         ),
         markdown("## 5. Public-guideline audit: a bounded pilot finding"),
@@ -436,86 +434,123 @@ assert set(guideline_pilot["conformance_status"]) == {"conformant", "mitigated"}
         ),
         markdown(
             """
-All five reviewed 2025 Austrian pilot decisions matched the public baseline/rule outcome or recorded
-explicit mitigation: four were coded conformant and one mitigated. This demonstrates that the
-method can distinguish baseline, mitigation, and departure. It is **not** a 2025 league-wide
-conformance rate; the full-year mapping has not passed independent review.
+All five reviewed 2025 Austrian decisions either matched the public guideline or explained a
+mitigating factor: four matched the baseline and one was mitigated. This shows that the method can
+separate a guideline match, mitigation, and a departure. It is **not** a league-wide 2025 rate; the
+full season has not passed independent review.
 """
         ),
         markdown(
             """
-## 6. Conclusions and recommendations
+## 6. How to strengthen the study
+
+The next version will be stronger if it narrows the main question before adding more models. The
+best design has two linked but separate tracks:
+
+1. **Decision consistency:** among similar incidents that reached the stewards, did similar conduct
+   and responsibility findings receive similar penalties?
+2. **Competitive consequence:** what did the incident cost the affected driver, and what did the
+   penalty actually cost the penalized driver?
+
+The following changes would improve the evidence most:
+
+1. **Finish a feasible independent-review plan.** Review all 348 possible analytical cases, every
+   corrected, recalled, ambiguous, and multi-car case, and the prespecified 486-row sample of
+   exclusions. Report false-exclusion rates by sample group and expand review when an error
+   threshold is crossed. This would preserve a strict release standard without treating every
+   administrative document as equally risky.
+2. **Study the referral stage.** FIA decision PDFs only show incidents that reached a formal
+   decision. Race Control messages could add the earlier path from "noted" to "investigated" to
+   "formally decided." This would not capture every on-track event, but it would make the current
+   denominator limitation smaller and measurable.
+3. **Use matched cases as the main consistency test.** Build comparison sets within incident type,
+   rule era, session type, lap phase, and responsibility language. Show close case pairs first, then
+   use a multilevel model as a sensitivity check. Uncertainty should be grouped by incident and
+   event so related decisions are not treated as independent evidence.
+4. **Study harm deeply on a representative sample.** Select collision cases across penalty outcome,
+   damage, repair-stop, and retirement groups. Estimate lasting pace loss only from clean laps and
+   compare the affected car with suitable teammate or field controls. Report an uncertainty range
+   and keep "not estimable" when the race does not provide a credible comparison.
+5. **Keep nationality secondary.** State the minimum effect the sample can detect before estimating
+   an association. If the study cannot detect a difference small enough to matter, report the design
+   limit instead of making nationality a headline result.
+6. **Measure reviewer reliability by field.** The full review should report disagreement rates for
+   incident type, responsibility, penalty, damage, and inclusion. A chance-adjusted agreement
+   measure can remain in the technical appendix; the main report should show where reviewers
+   actually differ.
+
+## 7. Conclusions and recommendations
 
 ### Conclusion
 
-The public record does not currently support a defensible conclusion that F1 stewarding was
-systematically inconsistent or nationally biased from 2018–2025. That statement is about evidence
-strength, not an acquittal: full-corpus labels are unreleased, non-referrals are unobserved, panel
-nationalities remain incomplete, and the British-driver contrast is underpowered for subtle
-effects.
+The public record does not currently support a reliable conclusion that F1 stewarding was
+systematically inconsistent or nationally biased from 2018-2025. This does not clear the system of
+either problem. It means the evidence is not yet strong enough to decide: full-dataset labels are
+unreleased, incidents that were never referred are missing, some steward nationalities are
+unconfirmed, and the British-driver comparison is too small for subtle effects.
 
-The report does support a narrower and useful conclusion: **competitive fairness cannot be audited
-with the penalty column alone.** Any serious comparison must preserve at least four linked facts:
-the responsibility finding, nominal sanction, realized sanction burden, and affected-driver harm.
-The reviewed pilot shows these dimensions diverging even when nominal penalties look similar.
+The report does support a narrower conclusion: **the penalty column alone cannot measure competitive
+fairness.** A useful comparison needs four linked facts: who was found responsible, the penalty
+written in the decision, what that penalty actually cost, and the harm to each affected driver. The
+pilot shows that these can differ even when the written penalties look similar.
 
 ### Recommendations
 
-1. **Publish structured decisions.** Add stable incident/adjudication IDs, accused and affected
-   roles, session/lap/turn, finding, sanction, application timing, and version status.
+1. **Publish structured decisions.** Add stable incident and decision IDs, driver roles,
+   session/lap/turn, finding, penalty timing, and version status.
 2. **Version the guidance.** Publish the exact guideline text effective at each event and identify
-   the baseline plus written aggravating or mitigating factors in each decision.
-3. **Report consequence dimensions separately.** Keep seconds, grid positions, classification
-   positions, points, repair, damage, and retirement separate; do not collapse them into a single
-   fairness score.
-4. **Preserve the referral boundary.** Acknowledge that formal decisions can measure treatment only
-   among referred cases. A complete fairness audit also needs referral/non-referral data.
-5. **Use models as triage.** Calibrated residuals should prioritize comparable cases for evidence
-   review, never declare a steward wrong automatically.
-6. **Release conservatively.** Keep nationality and guideline findings descriptive or inconclusive
-   until independent review, overlap, power, and sensitivity gates pass.
+   the normal penalty and any written aggravating or mitigating factors.
+3. **Report consequences separately.** Keep seconds, starting positions, finishing positions,
+   points, repair, damage, and retirement separate instead of combining them into one fairness
+   score.
+4. **Show the referral boundary.** Formal decisions describe only cases sent to the stewards. A full
+   audit also needs data on what was noted, investigated, and not referred.
+5. **Use models to find cases for review.** A model can flag unusual decisions; it cannot decide
+   that a steward was wrong.
+6. **Release findings only when their checks pass.** Nationality and guideline results should remain
+   descriptive or inconclusive until review, comparability, power, and sensitivity checks pass.
 
 ### Evidence grades
 
 | Finding | Grade | Release decision |
 |---|---|---|
 | 2018–2025 source inventory and lineage | A | Reportable |
-| Reviewed pilot mechanical impact arithmetic | A | Reportable for pilot cases |
+| Reviewed pilot penalty-impact calculations | A | Reportable for pilot cases |
 | Reviewed pilot harm and guideline case audit | D | Case-study evidence; no population rate |
 | Full-corpus consistency and anomaly results | U | Withheld pending independent review |
 | British-driver association | U | Inconclusive; effect not estimated |
 | Panel-nationality association | U | Withheld pending complete source evidence |
 
-The practical accomplishment is an auditable data product: source-preserving ETL, typed analytical
-models, DuckDB SQL, FastF1 enrichment, content-addressed review lineage, validation controls,
-executable Jupyter analysis, a self-service evidence console, and a credential-free Snowflake/
-Snowsight deployment package. The same controls that make the project slower to sensationalize are
-what make it useful for oversight work.
+The project also demonstrates an auditable data workflow: source history is preserved, Python and
+DuckDB transformations are tested, FastF1 timing data are kept separate from FIA fault findings,
+review changes are traceable, the Jupyter analysis is executable, and the Snowflake/Snowsight
+package can be validated without credentials. Most importantly, the workflow blocks a finding when
+its evidence checks have not passed.
 """
         ),
         markdown(
             """
 ## Technical appendix: reproducibility and limitations
 
-- **Population:** 173 completed F1 championship events, 2018–2025; Race and Sprint primary sessions.
+- **Population:** 173 completed F1 championship events, 2018-2025; Race and Sprint primary sessions.
 - **Primary unit:** one accused-driver adjudication; multi-car affected roles retained separately.
 - **Authorities:** FIA decisions and classifications; FastF1 used for timing enrichment, not fault.
 - **Storage/query:** typed Parquet exports and DuckDB schemas; Snowflake/Snowsight SQL package is
   locally validated but not claimed as remotely deployed.
 - **Validation:** 19 editable-workspace controls, schema contracts, SQL integrity checks,
   test suite, checksum manifests, and content-addressed reconciliation.
-- **Referral limitation:** incidents never formally referred are outside the denominator.
+- **Referral limitation:** incidents never formally sent to the stewards are not in the denominator.
 - **Human-review limitation:** zero of the 4,441 full-corpus review targets meet the independent
   completion status; the 486-row stratified exclusion audit is still pending.
-- **Power limitation:** the provisional nationality design is not powered for subtle associations.
-- **Counterfactual limitation:** served penalties, repair effects, and race outcomes are not
-  obtained by naive time subtraction.
-- **Causal limitation:** observed position/time changes do not prove the no-incident outcome.
+- **Power limitation:** the current nationality design is not powered for subtle associations.
+- **Counterfactual limitation:** for penalties served during a race, repair effects, and race
+  outcomes, the no-penalty or no-incident result usually cannot be found by simple time subtraction.
+- **Causal limitation:** an observed position or time change does not prove what would have happened
+  without the incident.
 
-Rebuild the feature layer with `f1stewards build-analysis-features`, execute notebooks 04–06, run
+Rebuild the feature layer with `f1stewards build-analysis-features`, execute notebooks 04-06, run
 `pytest` and `ruff check`, and inspect `analysis.feature_release_controls` before interpreting any
-substantive table. The report intentionally fails closed when those controls do not authorize a
-claim.
+result table. The report blocks a claim when those controls have not approved it.
 """
         ),
     ]
