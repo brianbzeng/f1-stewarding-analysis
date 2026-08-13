@@ -18,6 +18,13 @@ packets accept an edited descendant only after verifying every link, the origina
 and the current workspace digest. This prevents a valid old manifest from being copied beside
 tampered current worklists.
 
-The current analytical feature build is `features-8f436aaa3796`; it records the terminal workspace
-digest in DuckDB metadata. Release is still `blocked_pending_human_review`, so provenance
-completeness cannot be mistaken for independent substantive review.
+The original human-review feature build was `features-8f436aaa3796` and remained
+`blocked_pending_human_review`. A later, separate GPT-5.6 Sol second pass uses this terminal digest
+as its protected parent. Model run `model-review-3dacc1268f13` writes a new content-addressed
+workspace; analytical build `features-57542b24ea9f` releases 346 cases as
+`reportable_model_reviewed`.
+
+This preserves the distinction between provenance, model review, and independent human review.
+The model release does not change the earlier rows to a human completion status. Its protocol,
+source-evidence hashes, corrections, and limitations are recorded in
+[`model_review_protocol.md`](model_review_protocol.md).

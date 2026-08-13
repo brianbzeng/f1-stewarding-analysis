@@ -1,0 +1,73 @@
+{
+  "completed_at_utc": "2026-08-13T20:45:57.778272+00:00",
+  "correction_counts_by_field": {
+    "adjudication_id_final": 4,
+    "eligibility_final": 4,
+    "exclusion_reason_final": 32,
+    "fault_language_final": 184,
+    "grid_places_final": 6,
+    "incident_id_final": 4,
+    "include_primary_final": 2,
+    "include_secondary_final": 2,
+    "outcome_family_final": 11,
+    "penalty_points_final": 3,
+    "penalty_seconds_final": 6,
+    "version_status_final": 16
+  },
+  "coverage": {
+    "adjudication_codings": 1952,
+    "document_dispositions": 2003,
+    "exclusion_qa": 486,
+    "linked_recalled_predecessors_without_binary": 15,
+    "metadata_only_unresolved_sources": 4,
+    "queue_obligations": 4441,
+    "source_text_records": 1984,
+    "unique_source_records": 2003,
+    "unresolved": 0
+  },
+  "independence_claim": "none",
+  "independent_human_review": "not_performed",
+  "limitations": [
+    "The second pass was performed by GPT-5.6 Sol, not an independent human reviewer.",
+    "Model and first-pass errors can be correlated.",
+    "Four recalled source binaries remain unavailable; their version exclusions use archive metadata.",
+    "A completed model review does not make descriptive associations causal findings."
+  ],
+  "model_id": "gpt-5.6-sol",
+  "outputs": {
+    "model_review_audit.csv": {
+      "bytes": 2425182,
+      "sha256": "a3e1b4e2a7059170912b8705728975a8a5e7691dbedd7fa2914fe1cd14961839"
+    },
+    "protocol.md": {
+      "bytes": 3333,
+      "sha256": "552b87ae920a334ea29cc095bec2133483ca114cbd2866a0461f9ec5f6639a3d"
+    },
+    "review_summary.csv": {
+      "bytes": 178,
+      "sha256": "7dbf1cf483bac85a0de84a3d1e008f1797ccf0b95cb2b9f40b13b06ccb5b8f57"
+    },
+    "reviewed_workspace/adjudication_coding_worklist.csv": {
+      "row_count": 1952,
+      "sha256": "8a48c118523e9d3d317c4165dea407261f569c9d3f8f3e5f5860e5fe69ed8907"
+    },
+    "reviewed_workspace/document_review_worklist.csv": {
+      "row_count": 2003,
+      "sha256": "c99bfa9b3b2d52ae161e2bd8a88cea519a02febac3ca1011b08456d897fd270a"
+    },
+    "reviewed_workspace/exclusion_qa_worklist.csv": {
+      "row_count": 486,
+      "sha256": "acc2f61853890283aca67896963346aeca76d940fef447f89ad6c5b3a3ab296f"
+    }
+  },
+  "parent_workspace": "data/manual/full_corpus_review_rounds/lineage_rebuild/recalled_versions/full-coding-e0192ecbd9e4",
+  "parent_workspace_sha256": "e1d4c4a969aee29b3db2a4f65e253e444c2e0c7d735cc3ec5451e3ec7b883f8f",
+  "protocol_sha256": "552b87ae920a334ea29cc095bec2133483ca114cbd2866a0461f9ec5f6639a3d",
+  "protocol_version": "gpt-5.6-sol-full-corpus-review-v1",
+  "review_implementation_sha256": "3deab0497ecd9607bdbb9f3157057be81684484efd9d262b4fa0df47f25f4c88",
+  "review_tier": "disclosed_model_second_pass",
+  "reviewer_id": "gpt-5.6-sol-model-review-2026-08-13",
+  "run_id": "model-review-3dacc1268f13",
+  "schema_version": "disclosed-model-review-run-v1",
+  "workspace_directory": "data/manual/full_corpus_model_review/model-review-3dacc1268f13/full-coding-e0192ecbd9e4"
+}

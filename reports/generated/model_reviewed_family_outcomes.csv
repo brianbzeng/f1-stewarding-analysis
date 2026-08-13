@@ -1,0 +1,7 @@
+incident_family,cases,sanctions,sanction_rate,incident
+causing_collision,233,137,0.5879828326180258,Causing Collision
+gaining_advantage_off_track,54,41,0.7592592592592593,Gaining Advantage Off Track
+forcing_off_track,43,23,0.5348837209302325,Forcing Off Track
+unsafe_rejoin,8,7,0.875,Unsafe Rejoin
+multiple_defensive_moves,6,5,0.8333333333333334,Multiple Defensive Moves
+moving_under_braking,2,1,0.5,Moving Under Braking

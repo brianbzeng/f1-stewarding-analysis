@@ -9,9 +9,10 @@ This project treats stewarding decisions as regulatory evidence, not fan opinion
 Read the recruiter-facing [report landing page](reports/README.md), open the
 [executable Jupyter report](notebooks/06_final_oversight_report.ipynb), or download the
 [code-free HTML edition](reports/the_cost_of_discretion.html). The central finding is that nominal
-penalty severity and realized competitive burden are different quantities; the independently
-reviewed pilot demonstrates that distinction, while the full-corpus consistency and nationality
-claims remain explicitly blocked by their evidence gates.
+penalty severity and realized competitive burden are different quantities. The independently
+reviewed pilot demonstrates that distinction. A disclosed GPT-5.6 Sol review releases 346 primary
+cases for descriptive analysis; the report does not present that model review as independent human
+assurance. The broad consistency model is weak and the nationality result remains inconclusive.
 
 ## Questions
 
@@ -103,12 +104,20 @@ f1stewards apply-full-corpus-review-ledger `
   <exported-review-ledger.json>
 f1stewards validate-edited-full-coding-workspace `
   data/manual/full_corpus_review_edits/full-coding-e0192ecbd9e4
+python scripts/build_model_review_release.py
+f1stewards build-analysis-features `
+  data/manual/full_corpus_model_review/model-review-3dacc1268f13/full-coding-e0192ecbd9e4 `
+  --strict-release
 ```
 
 The generated [full-corpus review console](explorer/full_corpus_review.html) exposes every document,
-adjudication, and stratified exclusion-QA target while preserving the blocked analytical release.
+adjudication, and stratified exclusion-QA target while preserving the original human-review gate.
 Browser drafts export only editable final fields in a ledger locked to the current workspace hash;
 the apply command writes a separate workspace and reruns protected-lineage validation.
+
+The disclosed [GPT-5.6 Sol review protocol](docs/model_review_protocol.md) maps the 4,441 queue
+obligations to 2,003 unique FIA records, records source-backed corrections, and writes a separate
+content-addressed workspace. It is a model-led second pass, not independent human review.
 
 The conservative [machine-assisted first pass](docs/full_corpus_first_pass.md) prepopulates 1,903
 document dispositions and 1,856 adjudication rows as `single_coded_pending_human`. This includes
@@ -220,19 +229,17 @@ document classes. Nineteen recalls are outcome records: 15 link to verified corr
 and four unavailable Belgian versions remain explicit exclusions. All 1,984 live outcome PDFs are
 retrieved and parsed with parser v4, yielding 1,952 content-confirmed steward decisions and zero
 active discovery or retrieval failures. The frozen Parquet manifest and DuckDB lineage agree
-exactly. The next milestone is full-corpus analytical eligibility and adjudication coding before
-statistical modeling; its protected machine-seed layer is complete and human disposition remains.
+exactly. The disclosed model-review tier now releases 346 primary cases; independent human review
+remains a separate future assurance layer.
 
 The first full-corpus coding bridge is now reproducible and checksum-protected. Its document queue
 retains all 2,003 outcome labels, and its adjudication seed retains all 1,952 live,
-content-confirmed decisions. The initial audited deterministic rules prioritize 296 primary
-Race/Sprint candidates and 74 secondary qualifying-impeding candidates; 77 ambiguous session or
-offence-family records remain mandatory manual review rather than automatic conclusions. The counts
-are triage workload, not final study results. A deterministic 486-row sample spans all 272 observed
-season/session/family exclusion strata so proposed exclusions receive a reproducible false-exclusion
-audit. See [the full-corpus coding workflow](docs/full_corpus_coding_workflow.md).
-The [first exclusion-QA diagnostic](docs/exclusion_qa_audit.md) documents an actual 2021 session-
-terminology false-exclusion mechanism, the corrective regeneration, and the remaining human gate.
+content-confirmed decisions. The initial deterministic rules supplied triage, not findings. The
+second pass reviewed all session and offence-family conflicts and a deterministic 486-row exclusion
+sample spanning all 272 observed season/session/family strata. See the
+[full-corpus coding workflow](docs/full_corpus_coding_workflow.md) and the original
+[exclusion-QA diagnostic](docs/exclusion_qa_audit.md), which records the first-pass false-exclusion
+mechanism before the model-reviewed release.
 The [full FastF1 collection method](docs/full_fastf1_collection.md) now covers all 197 expected
 Race/Sprint sessions: 3,938 classifications, 198,620 driver laps, and 16,039 Race Control messages.
 Strict completeness and 38 warehouse controls pass. All laps remain available for incident timing,
@@ -251,46 +258,29 @@ The follow-on [steward-country evidence ledger](docs/steward_country_evidence.md
 separate and exposes an official-source `BEL`/`LUX` conflict rather than forcing a static value.
 Panel identity is usable as adjustment context; steward-country comparisons remain blocked.
 
-The content-addressed [full-corpus coding workspace](docs/full_corpus_coding_workspace.md) now joins
-all 1,952 adjudication starters to protected source lineage and the complete timing-quality context.
-All 296 machine-seed primary candidates resolve to a loaded Race/Sprint session and accused-driver
-classification. Exact-starter and edited-workspace validators separately protect reproducibility
-while permitting final fields and traceable one-to-many adjudication splits. Human disposition and
-independent review remain required before substantive modeling. The executed
-[full-corpus readiness notebook](notebooks/04_full_corpus_readiness.ipynb) presents the denominator,
-seasonal review workload, SQL candidate profile, timing coverage, and explicit blocked model gate.
-The separate [full-corpus review console](docs/full_corpus_review_console.md) turns those worklists
-into a portable evidence-review surface covering 2,003 document dispositions, 1,952 adjudication
-starters, and 486 frozen exclusion checks. It supports official-source inspection, queue filtering,
-local draft fields, filtered CSV export, and stale-safe ledger application without presenting any
-machine suggestion as a finding.
+The content-addressed [full-corpus coding workspace](docs/full_corpus_coding_workspace.md) joins all
+1,952 adjudication starters to protected source lineage and timing-quality context. The original
+first pass remained explicitly pending human review and produced no reportable outcome estimate.
+The separate [full-corpus review console](docs/full_corpus_review_console.md) preserves that human
+workflow for future independent assurance.
 
-The next controlled layer is `first-pass-5aa88d7f05b2`. It transfers conflict-free deterministic
-paths and clearly out-of-scope parser-warning exclusions into disclosed editable fields, while
-never prefilling a parser-warning inclusion. It preserves every protected source column, uses
-source-unique provisional incident IDs to avoid false grouping, and extracts written fault language
-only from explicit phrases. All 19 edited-workspace controls pass. The resulting feature build,
-`features-8f436aaa3796`, contains 348 `incomplete_human_coding` primary rows after the complete
-source-coding chain; reporting eligibility remains zero.
+The disclosed [GPT-5.6 Sol review](docs/model_review_protocol.md) provides a separate assurance
+tier. It covers all 4,441 queue obligations across 2,003 unique FIA records, records 16 version-
+history corrections plus sanction-field corrections, and leaves zero unresolved rows. Four recalled
+sources remain metadata-only exclusions. The resulting build, `features-57542b24ea9f`, releases 346
+primary cases under `reportable_model_reviewed`; it does not relabel model work as human review.
 
 The [gated analysis feature release](docs/analysis_feature_release.md) materializes one
-adjudication-grain table and a separate accused/affected driver-role bridge in DuckDB. Its current
-build contains 348 provisional candidates and 692 role rows with complete sourced identity joins;
-ten ambiguous `other` outcomes remain outside the binary design set. Half the candidates have a
-completed source-coding pass and half remain machine-assisted, but all reporting flags remain false
-because independent document, adjudication, and exclusion-QA review is incomplete. Exact
-document-panel identity is now joined for all 348 candidate rows and hashed into the feature-build
-lineage; steward-country exposure remains separately blocked by its evidence gate. The feature
-schema can therefore support model engineering and overlap diagnostics without leaking unreviewed
-suggestions into the eventual report.
+adjudication-grain table and a separate accused/affected driver-role bridge in DuckDB. All release
+controls now pass for the model-reviewed tier: 2,003 source dispositions, 1,952 adjudication codings,
+486 exclusion checks, complete identities, and complete binary outcomes. Steward-country exposure
+remains separately blocked by its evidence gate.
 
-The [grouped validation and nationality design method](docs/model_validation_method.md) is frozen in
-configuration and tested. Outcome validation enforces event-grouped folds and refuses the current
-unreviewed labels. The outcome-free notebook now finds 44 British versus 304 other provisional
-accused-driver rows across 131 events, 97.4% estimated common support, and a maximum weighted
-standardized difference of 0.040. Across 4,000 cluster-robust simulations, no assumed 5–20 point
-difference reaches the predefined 80% power target; the maximum is 78.8%. This is a design warning,
-not an effect estimate, so the final report labels nationality evidence inconclusive.
+The [grouped validation and nationality method](docs/model_validation_method.md) is frozen in
+configuration and tested. Event-grouped outcome validation on 346 cases finds little predictive
+value in incident type, season, and multi-car status (ROC AUC 0.558). The released population has
+44 British and 302 other accused-driver cases. The raw sanction-rate difference is descriptive, and
+power remains too low for subtle effects, so the final report labels nationality inconclusive.
 
 Competitive-impact arithmetic now validates ordered same-lap classifications, preserves official
 order on exact ties, calculates standard Race/Sprint position points and podium/win changes, and

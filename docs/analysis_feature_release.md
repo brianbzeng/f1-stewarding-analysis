@@ -1,111 +1,81 @@
 # Gated Analysis Feature Release
 
-Status: provisional design diagnostics materialized; inferential release blocked by human review.
+Status: disclosed model-reviewed release materialized; independent human review remains separate.
 
 The feature layer converts the protected full-corpus coding workspace into explicit analytical
-grains without treating machine suggestions as findings. It is built with:
+grains without presenting machine suggestions as human-reviewed facts. The current release is built
+from the GPT-5.6 Sol workspace:
 
 ```powershell
 f1stewards build-analysis-features `
-  data/manual/full_corpus_review_rounds/lineage_rebuild/recalled_versions/full-coding-e0192ecbd9e4
+  data/manual/full_corpus_model_review/model-review-3dacc1268f13/full-coding-e0192ecbd9e4 `
+  --strict-release
 ```
 
-The current content-addressed build is `features-8f436aaa3796`. It uses machine-assisted first pass
-`first-pass-5aa88d7f05b2`, the 17-case
-[parser-format source review](parser_format_source_review.md), and the 18-case
-[analytical-scope conflict review](analytical_scope_conflict_review.md) over workspace
-`full-coding-e0192ecbd9e4`, plus the 61-case manual-scope source ledger and four unavailable
-recalled-version dispositions. The four-step review chain ends at workspace SHA-256
-`e1d4c4a969aee29b3db2a4f65e253e444c2e0c7d735cc3ec5451e3ec7b883f8f`. It also uses the sourced 43-driver
-nationality registry, the controlled 28-label
-event-country crosswalk, all 3,938 Race/Sprint classifications, and the complete decision-document
-panel assignment register. The panel register contributes its own SHA-256 lineage field to the
-feature-build identity.
+The content-addressed build is `features-57542b24ea9f`. Its release status is
+`reportable_model_reviewed`. The protocol, correction audit, source hashes, and assurance boundary
+are documented in [`model_review_protocol.md`](model_review_protocol.md).
 
 ## Two analytical grains
 
 `analysis.adjudication_features` has one row per candidate accused-driver adjudication. It stores
-the proposed or reviewed session, incident family, outcome, sanction amounts, accused-driver
-identity, nationality, home-race exposure, affected-role summary, timing availability, and the
-provenance of each field. `panel_id` is an adjustment key; `panel_assignment_basis`,
-`panel_signature_parse_status`, `panel_size`, and `panel_data_status` distinguish source-observed
-signatures from the tightly constrained event-consensus fallback.
+the reviewed session, incident family, outcome, sanction amounts, accused-driver identity,
+nationality, home-race exposure, affected-role summary, timing availability, panel context, and
+field provenance.
 
-`analysis.adjudication_driver_roles` has one row per accused or affected driver within that
-adjudication. This bridge prevents a four-car incident from being reduced to a false two-driver
-record. `role_sequence` preserves multiple affected drivers, while `role_number_basis` states
-whether the number was machine-extracted or human-reviewed.
+`analysis.adjudication_driver_roles` has one row per accused or affected driver within an
+adjudication. This prevents a multi-car incident from being reduced to a false two-driver record.
 
-The current gated build contains:
+The current build contains:
 
-| Diagnostic | Count |
+| Measure | Count |
 |---|---:|
-| Primary-candidate adjudication rows | 348 |
-| Accused-driver role rows | 348 |
-| Affected-driver role rows | 344 |
+| Feature rows retained for lineage | 348 |
+| Model-reviewed reporting-eligible primary rows | 346 |
+| Events represented | 131 |
 | Total driver-role rows | 692 |
-| Rows with more than one affected driver | 25 |
-| Missing accused or affected identity joins | 0 |
-| Suggestions or source codes mapped to a binary sanction outcome | 338 |
-| `other` outcome suggestions withheld from binary mapping | 10 |
+| Released multi-car primary cases | 24 |
 | British accused-driver exposures | 44 |
+| Other accused-driver exposures | 302 |
 | Accused-driver home-race exposures | 14 |
-| Reporting-eligible rows | 0 |
-| Rows with complete document-panel context | 348 |
-| Distinct panels represented | 131 |
-| Exact document-signature panel assignments | 348 |
-| Four-member / five-member panel rows | 337 / 11 |
+| Missing released accused identity joins | 0 |
+| Missing released binary outcomes | 0 |
+| Released rows with source-observed panel context | 346 |
 
-These are workload and design-coverage counts. They are not sanction rates, nationality effects,
-or evidence of bias.
-
-All 348 provisional primary candidates are labeled `incomplete_human_coding`: 174 use a completed
-source-coding pass and 174 retain disclosed machine assistance. Every source code remains
-`single_coded_pending_human`; no row is relabeled `human_reviewed_final` or allowed into reporting.
+Two source rows that were previously counted as primary candidates remain in the feature table for
+lineage but are not reporting eligible because the model review identified them as superseded
+predecessor decisions. This is why the table has 348 rows while the released primary population has
+346.
 
 ## Label separation
 
-Every row carries both `feature_label_status` and `population_status`:
+Every feature row carries `feature_label_status`, `population_status`, and `reporting_eligible`.
+Model-reviewed analytical rows use `model_reviewed_final`; genuine independent human work remains
+reserved for `human_reviewed_final`. The corresponding build statuses are
+`reportable_model_reviewed` and `reportable_human_reviewed`.
 
-- `provisional_machine_suggestion` permits schema, join, missingness, and overlap diagnostics only;
-- `incomplete_human_coding` identifies a started but unreleasable row;
-- `human_reviewed_excluded` preserves attrition without entering a model; and
-- `human_reviewed_final` can become model-eligible only when the entire release gate passes.
-
-The builder never fills final penalty amounts from protected machine suggestions. A reviewed row
-uses only `penalty_seconds_final`, `penalty_points_final`, and `grid_places_final`; a blank final
-value remains blank. This prevents an outcome correction from silently carrying forward a wrong
-parsed punishment.
+The builder never fills final penalty amounts from unreviewed suggestions. Blank final values stay
+blank. This prevents a corrected outcome from silently carrying forward a wrong parsed sanction.
 
 ## Release controls
 
-`analysis.feature_release_controls` records nine fail-fast checks. The current workspace passes
-all 19 lineage and editing controls, but correctly fails these substantive gates:
+`analysis.feature_release_controls` records nine fail-fast checks. The current build passes:
 
-- 0 of 2,003 document dispositions independently reviewed, despite completed source work on the
-  targeted parser, scope, manual-scope, and recalled-version investigations;
-- 0 of 1,952 adjudication seeds independently reviewed, despite the same source-coding chain;
-- 0 of 486 frozen exclusion-QA rows independently reviewed; and
-- no final reviewed primary population yet exists.
+- all 19 protected workspace and lineage controls;
+- 2,003 of 2,003 document dispositions reviewed;
+- 1,952 of 1,952 adjudication codings reviewed;
+- 486 of 486 frozen exclusion checks reviewed;
+- 346 final primary cases present;
+- zero missing accused identities; and
+- zero missing or unmapped released outcomes.
 
-Accordingly, `metadata.analysis_feature_builds.release_status` is
-`blocked_pending_human_review`, every `reporting_eligible` value is false, and the latest views
-cannot be mistaken for report results. Once the complete workspace is reviewed, the same command
-rebuilds the features from final fields and changes the release status only if every prerequisite
-control passes.
+The four recalled records without source binaries are metadata-only exclusions. They cannot enter
+the analytical population. Panel-country exposure remains separately withheld until all steward
+country evidence is temporally and source coherent.
 
-## Why this matters for the report
+## Interpretation boundary
 
-The structure supports the planned adjusted analyses while preserving the study's limits:
-
-- accused and affected nationality are separate role exposures;
-- home-race exposure uses a published code crosswalk rather than names;
-- multi-car incidents retain every affected role;
-- unmapped outcomes remain null rather than being guessed into sanction/no-sanction; and
-- exact panel identity is available as a non-nationality adjustment dimension for every candidate;
-  panel-country exposure remains withheld until all 83 steward identities have source-backed,
-  temporally coherent country evidence.
-
-Grouped validation, overlap diagnostics, and outcome-free simulation power are implemented in
-[`model_validation_method.md`](model_validation_method.md). Substantive estimates stay suppressed
-until the release gate becomes reportable.
+The release supports descriptive full-corpus rates and grouped model validation. It does not turn a
+model-led second pass into independent human assurance, make missing referrals observable, or make
+descriptive nationality differences causal. The report names GPT-5.6 Sol, the run ID, corrections,
+unavailable sources, and the lack of independent human review.

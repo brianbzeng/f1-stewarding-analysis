@@ -47,10 +47,17 @@ reports/generated/**
 !reports/generated/.gitkeep
 !reports/generated/population_flow.png
 !reports/generated/provisional_candidate_composition.png
+!reports/generated/model_reviewed_sanction_rates.png
+!reports/generated/grouped_model_calibration.png
 !reports/generated/nationality_power.png
 !reports/generated/pilot_harm_sanction_matrix.png
 !reports/generated/nationality_overlap_summary.csv
 !reports/generated/nationality_power.csv
+!reports/generated/nationality_descriptive_rates.csv
+!reports/generated/model_reviewed_family_outcomes.csv
+!reports/generated/model_reviewed_season_outcomes.csv
+!reports/generated/grouped_model_metrics.csv
+!reports/generated/grouped_model_leave_one_season_out.csv
 
 # OS/editor
 .DS_Store

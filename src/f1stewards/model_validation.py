@@ -157,10 +157,11 @@ def _released_population(frame: pd.DataFrame, spec: dict[str, Any]) -> pd.DataFr
             "No reporting-eligible labels are available; provisional suggestions cannot be "
             "used for outcome-effect estimation"
         )
-    if "feature_label_status" in released and not released["feature_label_status"].eq(
-        "human_reviewed_final"
+    allowed_labels = {"human_reviewed_final", "model_reviewed_final"}
+    if "feature_label_status" in released and not released["feature_label_status"].isin(
+        allowed_labels
     ).all():
-        raise ValueError("Reporting-eligible rows must use human-reviewed final labels")
+        raise ValueError("Reporting-eligible rows must use a completed, disclosed review label")
     outcome = pd.to_numeric(released[spec["outcome"]], errors="coerce")
     if outcome.isna().any() or not set(outcome.unique()).issubset({0, 1}):
         raise ValueError("Released sanction_outcome must be complete and binary")

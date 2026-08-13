@@ -31,7 +31,13 @@ REVIEW_CHAIN_SCHEMA_VERSION = "full-corpus-review-chain-v1"
 REVIEW_CHAIN_MANIFEST_FILENAME = "review_chain_manifest.json"
 FIRST_PASS_MANIFEST_FILENAME = "first_pass_manifest.json"
 FIRST_PASS_AUDIT_FILENAME = "first_pass_audit.csv"
-COMPLETE_REVIEW_STATUSES = {"double_coded", "adjudicated"}
+COMPLETE_REVIEW_STATUSES = {
+    "model_reviewed_agree",
+    "model_reviewed_corrected",
+    "source_unavailable_model_review",
+    "double_coded",
+    "adjudicated",
+}
 QA_EVIDENCE_FIELDS = [
     "driver_number_suggestion",
     "driver_name_suggestion",
@@ -423,7 +429,7 @@ document.querySelectorAll('[role=tab]').forEach(b=>{b.addEventListener('click',(
 function makeOptions(id,values){const el=document.getElementById(id),first=el.options[0];el.innerHTML='';el.append(first);[...new Set(values.filter(Boolean))].sort().forEach(v=>el.add(new Option(label(v),v)))}
 function makeFilters(){const rows=DATA.queues[queue];document.getElementById('search').value='';makeOptions('season',rows.map(r=>r.season));makeOptions('priority',rows.map(r=>r.workspace_priority_bucket));makeOptions('review-status',rows.map(r=>r.review_status||'(blank)'))}
 function fieldValue(row,field){return EDITS[queue]?.[row[Q[queue].id]]?.[field]??row[field]??''}
-function inputFor(row,field){const id=row[Q[queue].id],value=fieldValue(row,field),attrs=`data-row="${esc(id)}" data-field="${esc(field)}"`;if(field==='review_status')return `<select ${attrs}><option value=""></option>${['single_coded_pending_human','double_coded','adjudicated'].map(v=>`<option value="${v}" ${value===v?'selected':''}>${label(v)}</option>`).join('')}</select>`;if(field==='fault_language_final')return `<select ${attrs}><option value=""></option>${['wholly_to_blame','predominantly_to_blame','mainly_at_fault','shared_fault','racing_incident','no_conclusion','not_applicable'].map(v=>`<option value="${v}" ${value===v?'selected':''}>${label(v)}</option>`).join('')}</select>`;if(['include_primary_final','include_secondary_final'].includes(field))return `<select ${attrs}><option value=""></option>${['true','false'].map(v=>`<option value="${v}" ${String(value).toLowerCase()===v?'selected':''}>${v}</option>`).join('')}</select>`;if(field.includes('notes')||field.includes('reason'))return `<textarea ${attrs}>${esc(value)}</textarea>`;return `<input ${attrs} value="${esc(value)}">`}
+function inputFor(row,field){const id=row[Q[queue].id],value=fieldValue(row,field),attrs=`data-row="${esc(id)}" data-field="${esc(field)}"`;if(field==='review_status')return `<select ${attrs}><option value=""></option>${['single_coded_pending_human','model_reviewed_agree','model_reviewed_corrected','source_unavailable_model_review','model_review_unresolved','double_coded','adjudicated'].map(v=>`<option value="${v}" ${value===v?'selected':''}>${label(v)}</option>`).join('')}</select>`;if(field==='fault_language_final')return `<select ${attrs}><option value=""></option>${['wholly_to_blame','predominantly_to_blame','mainly_at_fault','shared_fault','racing_incident','no_conclusion','not_applicable'].map(v=>`<option value="${v}" ${value===v?'selected':''}>${label(v)}</option>`).join('')}</select>`;if(['include_primary_final','include_secondary_final'].includes(field))return `<select ${attrs}><option value=""></option>${['true','false'].map(v=>`<option value="${v}" ${String(value).toLowerCase()===v?'selected':''}>${v}</option>`).join('')}</select>`;if(field.includes('notes')||field.includes('reason'))return `<textarea ${attrs}>${esc(value)}</textarea>`;return `<input ${attrs} value="${esc(value)}">`}
 function evidence(row){if(!['adjudications','exclusion_qa'].includes(queue))return '';return ['fact_text','infringement_text','decision_text','reason_text'].map(k=>`<div class="evidence"><b>${label(k)}</b>${esc(row[k]||'Not available')}</div>`).join('')}
 function fields(row){const omit=new Set([Q[queue].id,'source_url','title','event_name','season','workspace_review_order','review_status','fact_text','infringement_text','decision_text','reason_text',...DATA.queue_specs[queue].editable_fields]);return Object.entries(row).filter(([k,v])=>!omit.has(k)&&v!=='').map(([k,v])=>`<div class="field"><b>${esc(label(k))}</b>${esc(v)}</div>`).join('')}
 function details(row){const id=row[Q[queue].id],editable=DATA.queue_specs[queue].editable_fields;return `<details><summary>Inspect evidence and final fields</summary><p><a href="${esc(row.source_url)}" target="_blank" rel="noreferrer">Open official FIA source</a> · <code>${esc(id)}</code></p><div class="grid">${fields(row)}</div>${evidence(row)}<div class="edit-grid">${editable.map(f=>`<label>${esc(label(f))}${inputFor(row,f)}</label>`).join('')}</div></details>`}

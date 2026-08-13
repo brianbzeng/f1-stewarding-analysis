@@ -178,7 +178,7 @@ def test_provisional_features_preserve_driver_roles_and_block_reporting(
         connection.close()
 
     feature = build.features.iloc[0]
-    assert build.release_status == "blocked_pending_human_review"
+    assert build.release_status == "blocked_pending_review"
     assert feature["feature_label_status"] == "provisional_machine_suggestion"
     assert bool(feature["provisional_design_eligible"])
     assert not bool(feature["reporting_eligible"])
@@ -277,6 +277,33 @@ def test_reviewed_features_use_final_outcome_and_materialize_release(
     assert stored == ("no_further_action", False, None, True, "panel-test", True)
 
 
+def test_model_reviewed_features_are_released_without_human_label(tmp_path: Path) -> None:
+    connection = _database(tmp_path)
+    try:
+        documents, adjudications, qa, validation = _inputs(final=True)
+        documents.loc[0, "review_status"] = "model_reviewed_agree"
+        adjudications.loc[0, "review_status"] = "model_reviewed_corrected"
+        qa.loc[0, "review_status"] = "model_reviewed_agree"
+        build = assemble_analysis_features(
+            connection,
+            documents,
+            adjudications,
+            qa,
+            workspace_id="workspace-model-review",
+            workspace_input_sha256="e" * 64,
+            workspace_validation=validation,
+        )
+        replace_analysis_feature_build(connection, build)
+    finally:
+        connection.close()
+
+    feature = build.features.iloc[0]
+    assert build.release_status == "reportable_model_reviewed"
+    assert feature["feature_label_status"] == "model_reviewed_final"
+    assert feature["population_status"] == "model_reviewed_primary"
+    assert bool(feature["reporting_eligible"])
+
+
 def test_panel_provenance_changes_build_identity_and_missing_context_blocks_release(
     tmp_path: Path,
 ) -> None:
@@ -335,5 +362,5 @@ def test_panel_provenance_changes_build_identity_and_missing_context_blocks_rele
         "selected_candidate_panel_identity_complete"
     ]
     assert panel_control["status"] == "fail"
-    assert missing.release_status == "blocked_pending_human_review"
+    assert missing.release_status == "blocked_pending_review"
     assert not bool(missing.features.iloc[0]["reporting_eligible"])
