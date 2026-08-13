@@ -86,6 +86,6 @@ The structure supports the planned adjusted analyses while preserving the study'
 - panel exposure is explicitly `not_collected` until steward signatures and nationalities have
   source-backed coverage.
 
-The next analytical step is grouped validation and overlap diagnostics on this schema. Those
-methods can be implemented and tested with synthetic or provisional design labels, but substantive
-estimates stay suppressed until the release gate becomes reportable.
+Grouped validation, overlap diagnostics, and outcome-free simulation power are implemented in
+[`model_validation_method.md`](model_validation_method.md). Substantive estimates stay suppressed
+until the release gate becomes reportable.

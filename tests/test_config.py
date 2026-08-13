@@ -10,6 +10,7 @@ from f1stewards.config import (
     load_full_collection_settings,
     load_full_corpus_coding_settings,
     load_international_sporting_code_issues,
+    load_outcome_model_spec,
     load_regulatory_sources,
     load_retrieval_exceptions,
     load_sporting_regulation_issues,
@@ -93,6 +94,23 @@ def test_full_corpus_coding_settings_match_frozen_primary_scope() -> None:
     }
     assert "qualifying_impeding" in settings["secondary_incident_patterns"]
     assert settings["exclusion_quality_control"]["target_fraction"] == 0.1
+
+
+def test_outcome_model_spec_freezes_grouping_and_circularity_safeguards() -> None:
+    spec = load_outcome_model_spec()
+
+    assert spec["validation_group"] == "event_id"
+    assert spec["release_filter"] == "reporting_eligible"
+    assert spec["nationality_model"]["primary_exposure"] == "british_accused_driver"
+    assert spec["safeguards"]["prohibit_random_row_splits"] is True
+    assert spec["safeguards"]["provisional_labels_allowed_for_effect_estimation"] is False
+    assert spec["nationality_model"]["simulation_power"]["repetitions"] == 500
+    predictors = {
+        *spec["consistency_model"]["categorical_covariates"],
+        *spec["consistency_model"]["numeric_covariates"],
+        *spec["consistency_model"]["binary_covariates"],
+    }
+    assert not {"outcome_family", "penalty_seconds", "penalty_points"} & predictors
 
 
 def test_evidence_profiles_bound_retrieval_scope() -> None:

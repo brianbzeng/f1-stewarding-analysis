@@ -304,6 +304,144 @@ def load_analysis_thresholds(path: Path | None = None) -> dict[str, Any]:
     return thresholds
 
 
+def load_outcome_model_spec(path: Path | None = None) -> dict[str, Any]:
+    """Load the frozen grouped-validation and nationality-overlap specification."""
+
+    config_path = path or PROJECT_ROOT / "config" / "outcome_model_spec.yml"
+    payload = load_yaml(config_path)
+    spec = payload.get("outcome_model_spec")
+    if not isinstance(spec, dict):
+        raise ValueError(f"Missing outcome_model_spec mapping in {config_path}")
+    required = {
+        "schema_version",
+        "unit_of_analysis",
+        "outcome",
+        "release_filter",
+        "validation_group",
+        "validation_folds",
+        "random_seed",
+        "consistency_model",
+        "nationality_model",
+        "safeguards",
+    }
+    if missing := required - set(spec):
+        raise ValueError(f"Outcome model spec is missing: {', '.join(sorted(missing))}")
+    if spec["outcome"] != "sanction_outcome":
+        raise ValueError("The frozen outcome must remain sanction_outcome")
+    if spec["release_filter"] != "reporting_eligible":
+        raise ValueError("Outcome modeling must require reporting_eligible rows")
+    if spec["validation_group"] != "event_id":
+        raise ValueError("Outcome validation must group by event_id")
+    if not isinstance(spec["validation_folds"], int) or spec["validation_folds"] < 2:
+        raise ValueError("validation_folds must be an integer of at least two")
+    consistency = spec["consistency_model"]
+    nationality = spec["nationality_model"]
+    safeguards = spec["safeguards"]
+    if not all(isinstance(section, dict) for section in (consistency, nationality, safeguards)):
+        raise ValueError("Model and safeguard sections must be mappings")
+    for section_name, section in (
+        ("consistency_model", consistency),
+        ("nationality_model", nationality),
+    ):
+        covariate_groups = [
+            section.get("categorical_covariates"),
+            section.get("numeric_covariates"),
+            section.get("binary_covariates"),
+        ]
+        if not all(
+            isinstance(group, list) and all(isinstance(value, str) for value in group)
+            for group in covariate_groups
+        ):
+            raise ValueError(f"{section_name} covariates must be lists of field names")
+        flattened = [value for group in covariate_groups for value in group]
+        if len(flattened) != len(set(flattened)):
+            raise ValueError(f"{section_name} covariates must not overlap")
+        forbidden = {
+            "outcome_family",
+            "penalty_seconds",
+            "penalty_points",
+            "grid_places",
+            "fault_language",
+        }
+        if forbidden & set(flattened):
+            raise ValueError(f"{section_name} contains outcome-derived predictors")
+    exposure = nationality.get("primary_exposure")
+    nationality_covariates = {
+        *nationality["categorical_covariates"],
+        *nationality["numeric_covariates"],
+        *nationality["binary_covariates"],
+    }
+    if exposure != "british_accused_driver" or exposure in nationality_covariates:
+        raise ValueError("The primary nationality exposure must be separate from covariates")
+    clip = nationality.get("propensity_clip")
+    if (
+        not isinstance(clip, list)
+        or len(clip) != 2
+        or not 0 < float(clip[0]) < float(clip[1]) < 1
+    ):
+        raise ValueError("propensity_clip must contain increasing probabilities inside (0, 1)")
+    simulation = nationality.get("simulation_power")
+    if not isinstance(simulation, dict):
+        raise ValueError("nationality_model.simulation_power must be a mapping")
+    simulation_required = {
+        "baseline_probabilities",
+        "target_risk_differences",
+        "event_random_intercept_sd",
+        "repetitions",
+        "alpha",
+        "minimum_successful_fit_fraction",
+        "target_power",
+    }
+    if simulation_required - set(simulation):
+        raise ValueError("Nationality simulation-power settings are incomplete")
+    baselines = simulation["baseline_probabilities"]
+    effects = simulation["target_risk_differences"]
+    if (
+        not isinstance(baselines, list)
+        or not baselines
+        or not all(0 < float(value) < 1 for value in baselines)
+        or not isinstance(effects, list)
+        or not effects
+        or not all(0 < float(value) < 1 for value in effects)
+        or any(float(baseline) + float(effect) >= 1 for baseline in baselines for effect in effects)
+    ):
+        raise ValueError(
+            "Simulation baselines and risk differences must define valid probabilities"
+        )
+    if (
+        not isinstance(simulation["repetitions"], int)
+        or simulation["repetitions"] < 100
+        or float(simulation["event_random_intercept_sd"]) < 0
+        or not 0 < float(simulation["alpha"]) < 1
+        or not 0 < float(simulation["minimum_successful_fit_fraction"]) <= 1
+        or not 0 < float(simulation["target_power"]) <= 1
+    ):
+        raise ValueError("Simulation repetitions, random-effect SD, or alpha are invalid")
+    required_safeguards = {
+        "exclude_penalty_fields_from_predictors",
+        "exclude_decision_reason_from_primary_predictors",
+        "prohibit_driver_fixed_effect_with_nationality_exposure",
+        "prohibit_random_row_splits",
+        "context_enrichment_required_before_inference",
+        "provisional_labels_allowed_for_effect_estimation",
+    }
+    if required_safeguards - set(safeguards):
+        raise ValueError("Outcome model safeguards are incomplete")
+    if any(
+        safeguards[name] is not expected
+        for name, expected in {
+            "exclude_penalty_fields_from_predictors": True,
+            "exclude_decision_reason_from_primary_predictors": True,
+            "prohibit_driver_fixed_effect_with_nationality_exposure": True,
+            "prohibit_random_row_splits": True,
+            "context_enrichment_required_before_inference": True,
+            "provisional_labels_allowed_for_effect_estimation": False,
+        }.items()
+    ):
+        raise ValueError("Outcome model safeguards cannot be relaxed in the frozen specification")
+    return spec
+
+
 def load_sporting_regulation_issues(
     path: Path | None = None,
 ) -> list[SportingRegulationIssue]:

@@ -189,6 +189,15 @@ false because document, adjudication, and exclusion-QA human review has not begu
 schema can therefore support model engineering and overlap diagnostics without leaking unreviewed
 suggestions into the eventual report.
 
+The [grouped validation and nationality design method](docs/model_validation_method.md) is now
+frozen in configuration and tested. Outcome validation enforces event-grouped folds and refuses
+the current unreviewed labels. The separate outcome-free notebook finds limited nationality
+support—34 British versus 226 other provisional accused-driver rows, no British exposure in
+2018–2020, and 76.5% estimated common support. Across 4,000 stable cluster-robust simulations, no
+assumed 5–20 point difference reaches the predefined 80% power target. This is a design warning,
+not an effect estimate; absent material improvement after human coding, the nationality result will
+be reported as descriptive or inconclusive.
+
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active
 retrieval failures. Of 26 linked steward-decision PDFs, 25 yielded a complete Decision section and

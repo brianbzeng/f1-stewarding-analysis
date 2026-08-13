@@ -48,6 +48,7 @@ from f1stewards.config import (
     load_full_collection_settings,
     load_full_corpus_coding_settings,
     load_international_sporting_code_issues,
+    load_outcome_model_spec,
     load_pilot_events,
     load_regulatory_sources,
     load_retrieval_exceptions,
@@ -72,6 +73,10 @@ from f1stewards.manual import (
     HarmAssessment,
     ImpactAssessment,
     IndependentReviewRecord,
+)
+from f1stewards.model_validation import (
+    nationality_overlap_diagnostics,
+    simulate_nationality_power,
 )
 from f1stewards.models import DocumentClass
 from f1stewards.nationality import (
@@ -1216,6 +1221,78 @@ def build_analysis_features_command(
     )
     if strict_release and build.release_status != "reportable_human_reviewed":
         raise typer.Exit(code=1)
+
+
+@app.command("nationality-overlap-audit")
+def nationality_overlap_audit_command(
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+    top_balance_rows: Annotated[
+        int, typer.Option(min=1, help="Number of largest weighted imbalances to display.")
+    ] = 10,
+) -> None:
+    """Report outcome-free nationality support diagnostics from the latest feature build."""
+
+    spec = load_outcome_model_spec()
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        features = connection.sql(
+            """
+            SELECT *
+            FROM analysis.v_latest_adjudication_features
+            WHERE feature_label_status <> 'incomplete_human_coding'
+            ORDER BY adjudication_instance_id
+            """
+        ).df()
+    if features.empty:
+        typer.echo("No adjudication feature build is available")
+        raise typer.Exit(code=1)
+    diagnostics = nationality_overlap_diagnostics(features, spec)
+    typer.echo(diagnostics.summary.to_string(index=False))
+    typer.echo("\nLargest absolute post-weighting covariate imbalances:")
+    typer.echo(diagnostics.feature_balance.head(top_balance_rows).to_string(index=False))
+    unsupported = diagnostics.support_cells.loc[
+        ~diagnostics.support_cells["both_exposure_groups_present"]
+    ]
+    typer.echo(
+        f"\nSingle-exposure support cells: {len(unsupported)}/"
+        f"{len(diagnostics.support_cells)}"
+    )
+    if not unsupported.empty:
+        typer.echo(unsupported.to_string(index=False))
+    typer.echo(
+        "\nDesign diagnostic only: no sanction outcome was read and no nationality effect was "
+        "estimated."
+    )
+
+
+@app.command("nationality-power-audit")
+def nationality_power_audit_command(
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+    repetitions: Annotated[
+        int | None,
+        typer.Option(min=1, help="Optional simulation repetitions per scenario override."),
+    ] = None,
+) -> None:
+    """Simulate detectable British-exposure differences without observed outcome labels."""
+
+    spec = load_outcome_model_spec()
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        features = connection.sql(
+            """
+            SELECT * EXCLUDE (sanction_outcome)
+            FROM analysis.v_latest_adjudication_features
+            WHERE feature_label_status <> 'incomplete_human_coding'
+            ORDER BY adjudication_instance_id
+            """
+        ).df()
+    if features.empty:
+        typer.echo("No adjudication feature build is available")
+        raise typer.Exit(code=1)
+    simulation = simulate_nationality_power(features, spec, repetitions=repetitions)
+    typer.echo(simulation.to_string(index=False))
+    typer.echo(
+        "\nDesign simulation only: inputs exclude the observed sanction outcome and results are "
+        "not nationality-effect estimates."
+    )
 
 
 @app.command("parser-audit")
