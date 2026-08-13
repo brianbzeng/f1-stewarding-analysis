@@ -80,6 +80,23 @@ pytest
 The three-event feasibility pilot and its expanded manual-review gate are complete. The frozen
 full-study catalog now contains all 173 completed championship events from 2018 through 2025.
 
+## Full-corpus review commands
+
+```powershell
+f1stewards build-full-corpus-review-explorer `
+  data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4
+f1stewards apply-full-corpus-review-ledger `
+  data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4 `
+  <exported-review-ledger.json>
+f1stewards validate-edited-full-coding-workspace `
+  data/manual/full_corpus_review_edits/full-coding-e0192ecbd9e4
+```
+
+The generated [full-corpus review console](explorer/full_corpus_review.html) exposes every document,
+adjudication, and stratified exclusion-QA target while preserving the blocked analytical release.
+Browser drafts export only editable final fields in a ledger locked to the current workspace hash;
+the apply command writes a separate workspace and reruns protected-lineage validation.
+
 ## Pilot commands
 
 ```powershell
@@ -194,6 +211,11 @@ while permitting final fields and traceable one-to-many adjudication splits. Hum
 independent review remain required before substantive modeling. The executed
 [full-corpus readiness notebook](notebooks/04_full_corpus_readiness.ipynb) presents the denominator,
 seasonal review workload, SQL candidate profile, timing coverage, and explicit blocked model gate.
+The separate [full-corpus review console](docs/full_corpus_review_console.md) turns those worklists
+into a portable evidence-review surface covering 2,003 document dispositions, 1,952 adjudication
+starters, and 486 frozen exclusion checks. It supports official-source inspection, queue filtering,
+local draft fields, filtered CSV export, and stale-safe ledger application without presenting any
+machine suggestion as a finding.
 
 The [gated analysis feature release](docs/analysis_feature_release.md) materializes one
 adjudication-grain table and a separate accused/affected driver-role bridge in DuckDB. Its current

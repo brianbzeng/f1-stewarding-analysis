@@ -86,3 +86,26 @@ framework complexity.
 
 The pilot is not a model-results release. Its primary purpose is to prove traceability and make the
 manual review packet inspectable before collection expands to 2018-2025.
+
+## Full-corpus operational console
+
+The full-corpus console is deliberately separate from the substantive evidence explorer. Its job is
+to move the protected 2018–2025 worklists through human review, not to display model outputs before
+the release gates pass.
+
+| Operational requirement | Status | Evidence |
+|---|---|---|
+| All review queues visible | Implemented | 2,003 document, 1,952 adjudication, and 486 exclusion-QA rows |
+| Official source on every row | Enforced | Payload validation requires an FIA URL for all 4,441 targets |
+| Protected source lineage | Enforced | Build requires the edited-workspace validator to pass |
+| Search, queue filters, paging | Implemented | Dependency-free client-side interface with 50-row pages |
+| Draft final fields | Implemented | Browser-local edits are restricted to the documented editable fields |
+| Portable change handoff | Implemented | Content-addressed JSON ledger and filtered CSV downloads |
+| Stale/protected edit rejection | Enforced | Ledger importer checks workspace hash, queue, row ID, and field allowlists |
+| Analytical claims gated | Enforced | Console can report review completion only, never model release |
+| Multi-row source splits | Documented manual step | CSV split procedure remains necessary before console rebuild |
+
+The console remains `blocked_pending_human_review` at 0 of 4,441 completed targets. Even when every
+review row is complete, its strongest permitted state is
+`workspace_review_complete_pending_feature_controls`; the separate feature builder owns analytical
+release authority.

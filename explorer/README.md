@@ -1,4 +1,4 @@
-# Evidence explorer
+# Evidence and review explorers
 
 `index.html` is a generated, dependency-free review artifact for the three-event pilot. Open it in
 a browser or serve the repository root with any static file server. The page embeds the curated
@@ -18,3 +18,30 @@ review, reconciliation, full-corpus collection, and model validation.
 The default payload excludes nationality ranking fields. Every adjudication must resolve to an
 official FIA decision URL, and each non-unclear 2025 conformance label must resolve to an applicable
 public guideline and clause before the build is allowed to complete.
+
+`full_corpus_review.html` is a separate operational console for the complete 2018–2025 coding
+workspace. It embeds all 4,441 review targets: 2,003 document dispositions, 1,952 adjudication
+starters, and 486 frozen exclusion-QA checks. It is intentionally labeled
+`blocked_pending_human_review` and does not publish consistency, competitive-impact, or nationality
+effect estimates.
+
+Rebuild it only from a workspace that passes the edited-workspace lineage validator:
+
+```powershell
+f1stewards build-full-corpus-review-explorer `
+  data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4
+```
+
+Reviewer edits remain in browser-local draft state until exported. Apply an exported ledger to a
+separate workspace copy with:
+
+```powershell
+f1stewards apply-full-corpus-review-ledger `
+  data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4 `
+  <exported-review-ledger.json>
+```
+
+The ledger contains only editable final fields and is bound to the exact source-workspace SHA-256.
+Stale ledgers, unknown IDs, protected-field changes, and invalid edited workspaces fail closed. The
+browser cannot create supported one-to-many adjudication splits; use the documented CSV split
+procedure and rebuild the console for those cases.

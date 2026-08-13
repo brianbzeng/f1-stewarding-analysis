@@ -95,6 +95,12 @@ from f1stewards.reconciliation import (
     build_pilot_reconciliation,
     write_reconciliation_bundle,
 )
+from f1stewards.review_explorer import (
+    apply_review_ledger,
+    build_review_explorer_payload,
+    project_git_commit,
+    write_review_explorer,
+)
 from f1stewards.snowflake import export_snowflake_pilot, validate_snowflake_export
 from f1stewards.steward_country import (
     load_steward_country_evidence,
@@ -1316,6 +1322,89 @@ def validate_edited_full_coding_workspace_command(
     typer.echo(audit.to_string(index=False))
     if not audit["status"].eq("pass").all():
         raise typer.Exit(code=1)
+
+
+@app.command("build-full-corpus-review-explorer")
+def build_full_corpus_review_explorer_command(
+    workspace_directory: Annotated[
+        Path, typer.Argument(help="Validated full-corpus coding workspace directory.")
+    ],
+    output_path: Annotated[
+        Path, typer.Option(help="Standalone HTML review-console output path.")
+    ] = PROJECT_ROOT / "explorer" / "full_corpus_review.html",
+    seed_directory: Annotated[
+        Path, typer.Option(help="Protected full-corpus seed-bundle directory.")
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_seed",
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Build a lineage-locked review console for all full-corpus work queues."""
+
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        session_context, driver_context = load_timing_review_context(connection)
+    validation = validate_edited_full_corpus_coding_workspace(
+        seed_directory,
+        workspace_directory,
+        session_context,
+        driver_context,
+    )
+    if not validation["status"].eq("pass").all():
+        typer.echo(validation.to_string(index=False))
+        raise typer.Exit(code=1)
+    payload = build_review_explorer_payload(
+        workspace_directory,
+        validation=validation,
+        git_commit=project_git_commit(PROJECT_ROOT),
+    )
+    write_review_explorer(payload, output_path)
+    typer.echo(
+        f"Wrote {output_path} for {payload['metadata']['workspace_id']}: "
+        f"{payload['metadata']['review_complete_count']} of "
+        f"{payload['metadata']['review_target_count']} review targets complete; "
+        f"status={payload['metadata']['release_status']}"
+    )
+
+
+@app.command("apply-full-corpus-review-ledger")
+def apply_full_corpus_review_ledger_command(
+    workspace_directory: Annotated[
+        Path, typer.Argument(help="Source full-corpus coding workspace directory.")
+    ],
+    ledger_path: Annotated[
+        Path, typer.Argument(help="Review ledger exported by the full-corpus console.")
+    ],
+    output_root: Annotated[
+        Path,
+        typer.Option(
+            help="Parent directory for a separate edited workspace with the same workspace ID."
+        ),
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_review_edits",
+    seed_directory: Annotated[
+        Path, typer.Option(help="Protected full-corpus seed-bundle directory.")
+    ] = PROJECT_ROOT / "data" / "manual" / "full_corpus_seed",
+    db_path: Annotated[Path, typer.Option(help="DuckDB database path.")] = DEFAULT_DB_PATH,
+) -> None:
+    """Apply browser-drafted final fields to a separate, validated workspace copy."""
+
+    output_directory, applied = apply_review_ledger(
+        workspace_directory,
+        ledger_path,
+        output_root,
+    )
+    with duckdb.connect(str(db_path), read_only=True) as connection:
+        session_context, driver_context = load_timing_review_context(connection)
+    validation = validate_edited_full_corpus_coding_workspace(
+        seed_directory,
+        output_directory,
+        session_context,
+        driver_context,
+    )
+    typer.echo(validation.to_string(index=False))
+    if not validation["status"].eq("pass").all():
+        raise typer.Exit(code=1)
+    typer.echo(
+        f"Wrote validated review workspace {output_directory}; "
+        + ", ".join(f"{name}={count} field edits" for name, count in applied.items())
+    )
 
 
 @app.command("build-analysis-features")

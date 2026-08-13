@@ -40,6 +40,34 @@ The generated workspace is intentionally git-ignored because it becomes local hu
 state. The source warehouse, rules, protected seed tables, code, tests, and this release record are
 committed. Do not edit `data/manual/full_corpus_seed/` or `workspace_manifest.json`.
 
+## Portable review console
+
+The generated [full-corpus review console](../explorer/full_corpus_review.html) makes all three
+worklists inspectable without a running Python process or DuckDB connection. The builder first runs
+the edited-workspace validator, then embeds the protected suggestions, official FIA URLs, evidence
+text, timing-quality flags, editable final fields, validation controls, and content hashes in a
+dependency-free HTML file.
+
+```powershell
+f1stewards build-full-corpus-review-explorer `
+  data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4
+```
+
+The console stores field drafts locally in the browser and exports a JSON delta ledger. The ledger
+records the workspace ID and exact current-workspace SHA-256, so it cannot be applied after the
+underlying worklists change. The importer accepts only documented final fields and writes a separate
+workspace under `data/manual/full_corpus_review_edits/`:
+
+```powershell
+f1stewards apply-full-corpus-review-ledger `
+  data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4 `
+  <exported-review-ledger.json>
+```
+
+This interface improves review throughput but does not relax the protocol. A browser draft is not
+an independent review, and the console cannot assert analytical release. Documents that require
+one-to-many adjudication splits still use the controlled CSV duplication procedure below.
+
 ## Worklists and editing boundary
 
 `document_review_worklist.csv` preserves one row per FIA outcome label. Only its final disposition,
