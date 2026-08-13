@@ -177,7 +177,9 @@ all 1,951 adjudication starters to protected source lineage and the complete tim
 All 260 primary candidates resolve to a loaded Race/Sprint session and accused-driver
 classification. Exact-starter and edited-workspace validators separately protect reproducibility
 while permitting final fields and traceable one-to-many adjudication splits. Human disposition and
-independent review remain required before substantive modeling.
+independent review remain required before substantive modeling. The executed
+[full-corpus readiness notebook](notebooks/04_full_corpus_readiness.ipynb) presents the denominator,
+seasonal review workload, SQL candidate profile, timing coverage, and explicit blocked model gate.
 
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active

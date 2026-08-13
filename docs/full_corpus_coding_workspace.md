@@ -2,6 +2,10 @@
 
 Status: deterministic starter generated and validated; final human coding has not begun.
 
+The executed [full-corpus readiness notebook](../notebooks/04_full_corpus_readiness.ipynb) is the
+recruiter-facing Jupyter view of this release. It uses the same hashes and worklists and preserves
+the blocked human-review gate in its conclusion.
+
 ## Release identity
 
 The current local workspace is `full-coding-8299dc9f9250`. It is derived from the committed
