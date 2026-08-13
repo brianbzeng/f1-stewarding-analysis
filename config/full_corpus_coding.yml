@@ -2,6 +2,12 @@ full_corpus_coding:
   schema_version: full_corpus_coding_v1
   source_document_class: steward_decision
 
+  exclusion_quality_control:
+    target_fraction: 0.10
+    minimum_per_stratum: 2
+    maximum_per_stratum: 8
+    hash_salt: f1-stewarding-exclusion-qa-v1
+
   primary_sessions:
     - Race
     - Sprint

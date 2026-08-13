@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import math
 import re
 from collections import Counter
 from pathlib import Path
@@ -15,6 +16,7 @@ import pandas as pd
 
 DOCUMENT_QUEUE_FILENAME = "document_review_queue.csv"
 ADJUDICATION_QUEUE_FILENAME = "adjudication_seed_queue.csv"
+EXCLUSION_QA_FILENAME = "exclusion_qa_sample.csv"
 QUEUE_MANIFEST_FILENAME = "manifest.json"
 
 DOCUMENT_REVIEW_COLUMNS = [
@@ -120,6 +122,34 @@ ADJUDICATION_SEED_COLUMNS = [
     "coding_notes",
 ]
 
+EXCLUSION_QA_COLUMNS = [
+    "exclusion_qa_id",
+    "document_id",
+    "event_id",
+    "season",
+    "round_number",
+    "event_name",
+    "title",
+    "source_url",
+    "version_state_suggestion",
+    "parser_review_required",
+    "session_type_suggestion",
+    "session_scope_suggestion",
+    "offence_family_suggestion",
+    "offence_family_group_suggestion",
+    "eligibility_basis",
+    "qa_stratum_id",
+    "qa_stratum_size",
+    "qa_selection_rank",
+    "qa_selection_sha256",
+    "qa_disposition",
+    "corrected_session_scope",
+    "corrected_offence_family",
+    "reviewer_id",
+    "review_status",
+    "review_notes",
+]
+
 FINAL_DOCUMENT_FIELDS = [
     "version_status_final",
     "session_scope_final",
@@ -147,6 +177,15 @@ FINAL_ADJUDICATION_FIELDS = [
     "coder_id",
     "review_status",
     "coding_notes",
+]
+
+FINAL_EXCLUSION_QA_FIELDS = [
+    "qa_disposition",
+    "corrected_session_scope",
+    "corrected_offence_family",
+    "reviewer_id",
+    "review_status",
+    "review_notes",
 ]
 
 
@@ -653,6 +692,84 @@ def build_full_corpus_coding_queues(
     return documents, candidates
 
 
+def build_exclusion_qa_sample(
+    documents: pd.DataFrame,
+    settings: dict[str, Any],
+) -> pd.DataFrame:
+    """Select a deterministic stratified audit sample of proposed scope exclusions."""
+
+    qa_settings = settings["exclusion_quality_control"]
+    excluded = documents.loc[
+        documents["eligibility_suggestion"].eq("out_of_scope_suggestion")
+    ].copy()
+    if excluded.empty:
+        return pd.DataFrame(columns=EXCLUSION_QA_COLUMNS)
+    excluded["qa_stratum_id"] = (
+        excluded["season"].astype(str)
+        + "|"
+        + excluded["session_scope_suggestion"].astype(str)
+        + "|"
+        + excluded["offence_family_suggestion"].astype(str)
+    )
+    excluded["qa_selection_sha256"] = excluded["document_id"].map(
+        lambda document_id: hashlib.sha256(
+            f"{qa_settings['hash_salt']}|{document_id}".encode()
+        ).hexdigest()
+    )
+
+    rows: list[dict[str, Any]] = []
+    for stratum_id, group in excluded.groupby("qa_stratum_id", sort=True):
+        stratum_size = len(group)
+        target = math.ceil(stratum_size * qa_settings["target_fraction"])
+        sample_size = min(
+            stratum_size,
+            qa_settings["maximum_per_stratum"],
+            max(qa_settings["minimum_per_stratum"], target),
+        )
+        selected = group.sort_values(
+            ["qa_selection_sha256", "document_id"], kind="stable"
+        ).head(sample_size)
+        for rank, (_, row) in enumerate(selected.iterrows(), start=1):
+            rows.append(
+                {
+                    "exclusion_qa_id": f"exclusion-qa-{row['document_id']}",
+                    "document_id": row["document_id"],
+                    "event_id": row["event_id"],
+                    "season": row["season"],
+                    "round_number": row["round_number"],
+                    "event_name": row["event_name"],
+                    "title": row["title"],
+                    "source_url": row["source_url"],
+                    "version_state_suggestion": row["version_state_suggestion"],
+                    "parser_review_required": row["parser_review_required"],
+                    "session_type_suggestion": row["session_type_suggestion"],
+                    "session_scope_suggestion": row["session_scope_suggestion"],
+                    "offence_family_suggestion": row["offence_family_suggestion"],
+                    "offence_family_group_suggestion": row[
+                        "offence_family_group_suggestion"
+                    ],
+                    "eligibility_basis": row["eligibility_basis"],
+                    "qa_stratum_id": stratum_id,
+                    "qa_stratum_size": stratum_size,
+                    "qa_selection_rank": rank,
+                    "qa_selection_sha256": row["qa_selection_sha256"],
+                    **{field: "" for field in FINAL_EXCLUSION_QA_FIELDS},
+                }
+            )
+    sample = pd.DataFrame(rows, columns=EXCLUSION_QA_COLUMNS).sort_values(
+        ["season", "qa_stratum_id", "qa_selection_rank", "document_id"],
+        kind="stable",
+        ignore_index=True,
+    )
+    if sample["document_id"].duplicated().any():
+        raise ValueError("Exclusion QA sample contains duplicate documents")
+    if not set(sample["document_id"]).issubset(set(excluded["document_id"])):
+        raise ValueError("Exclusion QA sample contains a non-exclusion document")
+    if not sample[FINAL_EXCLUSION_QA_FIELDS].eq("").all().all():
+        raise ValueError("Generated exclusion QA final fields must be blank")
+    return sample
+
+
 def _csv_bytes(frame: pd.DataFrame) -> bytes:
     stream = io.StringIO(newline="")
     frame.to_csv(stream, index=False, lineterminator="\n")
@@ -688,8 +805,10 @@ def build_queue_manifest(
     population: pd.DataFrame,
     documents: pd.DataFrame,
     candidates: pd.DataFrame,
+    exclusion_qa: pd.DataFrame,
     document_bytes: bytes,
     candidate_bytes: bytes,
+    exclusion_qa_bytes: bytes,
     settings: dict[str, Any],
     settings_sha256: str,
 ) -> dict[str, Any]:
@@ -728,6 +847,10 @@ def build_queue_manifest(
                 "sha256": _sha256(candidate_bytes),
                 "row_count": int(len(candidates)),
             },
+            EXCLUSION_QA_FILENAME: {
+                "sha256": _sha256(exclusion_qa_bytes),
+                "row_count": int(len(exclusion_qa)),
+            },
         },
         "eligibility_suggestion_counts": dict(
             sorted(Counter(documents["eligibility_suggestion"]).items())
@@ -735,6 +858,20 @@ def build_queue_manifest(
         "candidate_action_counts": dict(
             sorted(Counter(candidates["candidate_action_suggestion"]).items())
         ),
+        "exclusion_quality_control": {
+            "population_rows": int(
+                documents["eligibility_suggestion"].eq("out_of_scope_suggestion").sum()
+            ),
+            "sample_rows": int(len(exclusion_qa)),
+            "strata": int(exclusion_qa["qa_stratum_id"].nunique()),
+            "target_fraction": settings["exclusion_quality_control"]["target_fraction"],
+            "minimum_per_stratum": settings["exclusion_quality_control"][
+                "minimum_per_stratum"
+            ],
+            "maximum_per_stratum": settings["exclusion_quality_control"][
+                "maximum_per_stratum"
+            ],
+        },
         "interpretation_boundary": (
             "Machine suggestions prioritize manual review and are not final eligibility, "
             "fault, consistency, or fairness findings."
@@ -759,6 +896,7 @@ def write_full_corpus_seed_bundle(
     population: pd.DataFrame,
     documents: pd.DataFrame,
     candidates: pd.DataFrame,
+    exclusion_qa: pd.DataFrame,
     output_directory: Path,
     settings: dict[str, Any],
     settings_path: Path,
@@ -770,12 +908,15 @@ def write_full_corpus_seed_bundle(
     output_directory.mkdir(parents=True, exist_ok=True)
     document_bytes = _csv_bytes(documents)
     candidate_bytes = _csv_bytes(candidates)
+    exclusion_qa_bytes = _csv_bytes(exclusion_qa)
     manifest = build_queue_manifest(
         population,
         documents,
         candidates,
+        exclusion_qa,
         document_bytes,
         candidate_bytes,
+        exclusion_qa_bytes,
         settings,
         _sha256(settings_path.read_bytes()),
     )
@@ -785,6 +926,7 @@ def write_full_corpus_seed_bundle(
     payloads = {
         DOCUMENT_QUEUE_FILENAME: document_bytes,
         ADJUDICATION_QUEUE_FILENAME: candidate_bytes,
+        EXCLUSION_QA_FILENAME: exclusion_qa_bytes,
         QUEUE_MANIFEST_FILENAME: manifest_bytes,
     }
     statuses = {
@@ -798,6 +940,7 @@ def audit_full_corpus_seed_bundle(
     population: pd.DataFrame,
     documents: pd.DataFrame,
     candidates: pd.DataFrame,
+    exclusion_qa: pd.DataFrame,
     output_directory: Path,
     settings: dict[str, Any],
     settings_path: Path,
@@ -806,18 +949,22 @@ def audit_full_corpus_seed_bundle(
 
     document_bytes = _csv_bytes(documents)
     candidate_bytes = _csv_bytes(candidates)
+    exclusion_qa_bytes = _csv_bytes(exclusion_qa)
     expected_manifest = build_queue_manifest(
         population,
         documents,
         candidates,
+        exclusion_qa,
         document_bytes,
         candidate_bytes,
+        exclusion_qa_bytes,
         settings,
         _sha256(settings_path.read_bytes()),
     )
     expected = {
         DOCUMENT_QUEUE_FILENAME: document_bytes,
         ADJUDICATION_QUEUE_FILENAME: candidate_bytes,
+        EXCLUSION_QA_FILENAME: exclusion_qa_bytes,
         QUEUE_MANIFEST_FILENAME: (
             json.dumps(expected_manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
         ).encode("utf-8"),

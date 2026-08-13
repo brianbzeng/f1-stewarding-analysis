@@ -24,6 +24,7 @@ from f1stewards.acquisition.fia import (
 from f1stewards.catalog import build_study_event_catalog, write_study_event_catalog
 from f1stewards.coding_queue import (
     audit_full_corpus_seed_bundle,
+    build_exclusion_qa_sample,
     build_full_corpus_coding_queues,
     load_outcome_document_population,
     write_full_corpus_seed_bundle,
@@ -974,10 +975,12 @@ def build_full_coding_queues(
             connection, settings["source_document_class"]
         )
     documents, candidates = build_full_corpus_coding_queues(population, settings)
+    exclusion_qa = build_exclusion_qa_sample(documents, settings)
     manifest, statuses = write_full_corpus_seed_bundle(
         population,
         documents,
         candidates,
+        exclusion_qa,
         output_directory,
         settings,
         settings_path,
@@ -985,7 +988,8 @@ def build_full_coding_queues(
     )
     typer.echo(
         f"Full-corpus seed bundle at {output_directory}: "
-        f"{len(documents)} outcome labels, {len(candidates)} live decision seeds"
+        f"{len(documents)} outcome labels, {len(candidates)} live decision seeds, "
+        f"{len(exclusion_qa)} exclusion-QA rows"
     )
     typer.echo(
         "Files: " + ", ".join(f"{name}={status}" for name, status in statuses.items())
@@ -1014,10 +1018,12 @@ def audit_full_coding_queues(
             connection, settings["source_document_class"]
         )
     documents, candidates = build_full_corpus_coding_queues(population, settings)
+    exclusion_qa = build_exclusion_qa_sample(documents, settings)
     audit = audit_full_corpus_seed_bundle(
         population,
         documents,
         candidates,
+        exclusion_qa,
         output_directory,
         settings,
         settings_path,

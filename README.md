@@ -159,7 +159,9 @@ retains all 2,002 outcome labels, and its adjudication seed retains all 1,951 li
 content-confirmed decisions. Deterministic rules currently prioritize 250 primary Race/Sprint
 candidates and 66 secondary qualifying-impeding candidates; 454 ambiguous session or offence-family
 records remain mandatory manual review rather than automatic conclusions. The counts are triage
-workload, not final study results. See [the full-corpus coding workflow](docs/full_corpus_coding_workflow.md).
+workload, not final study results. A deterministic 375-row sample spans all 208 observed
+season/session/family exclusion strata so proposed exclusions receive a reproducible false-exclusion
+audit. See [the full-corpus coding workflow](docs/full_corpus_coding_workflow.md).
 
 Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
 including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active

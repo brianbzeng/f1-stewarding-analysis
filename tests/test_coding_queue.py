@@ -7,8 +7,10 @@ import pytest
 from f1stewards.coding_queue import (
     ADJUDICATION_QUEUE_FILENAME,
     DOCUMENT_QUEUE_FILENAME,
+    EXCLUSION_QA_FILENAME,
     QUEUE_MANIFEST_FILENAME,
     audit_full_corpus_seed_bundle,
+    build_exclusion_qa_sample,
     build_full_corpus_coding_queues,
     normalize_session_type,
     write_full_corpus_seed_bundle,
@@ -146,9 +148,8 @@ def test_session_normalization_preserves_primary_and_non_primary_distinction() -
 
 
 def test_full_corpus_queues_preserve_versions_and_only_seed_live_decisions() -> None:
-    documents, candidates = build_full_corpus_coding_queues(
-        sample_population(), load_full_corpus_coding_settings()
-    )
+    settings = load_full_corpus_coding_settings()
+    documents, candidates = build_full_corpus_coding_queues(sample_population(), settings)
 
     assert len(documents) == 8
     assert len(candidates) == 5
@@ -184,17 +185,25 @@ def test_full_corpus_queues_preserve_versions_and_only_seed_live_decisions() -> 
     assert primary["penalty_seconds_suggestion"] == 10
     assert primary["penalty_points_suggestion"] == 2
 
+    qa = build_exclusion_qa_sample(documents, settings)
+    assert qa["document_id"].tolist() == ["unsafe-release"]
+    assert qa["qa_stratum_size"].tolist() == [1]
+    assert qa["qa_selection_rank"].tolist() == [1]
+    assert qa["qa_disposition"].eq("").all()
+
 
 def test_seed_bundle_is_deterministic_protected_and_auditable(tmp_path: Path) -> None:
     population = sample_population()
     settings = load_full_corpus_coding_settings()
     settings_path = PROJECT_ROOT / "config" / "full_corpus_coding.yml"
     documents, candidates = build_full_corpus_coding_queues(population, settings)
+    exclusion_qa = build_exclusion_qa_sample(documents, settings)
 
     manifest, first_status = write_full_corpus_seed_bundle(
         population,
         documents,
         candidates,
+        exclusion_qa,
         tmp_path,
         settings,
         settings_path,
@@ -203,6 +212,7 @@ def test_seed_bundle_is_deterministic_protected_and_auditable(tmp_path: Path) ->
         population,
         documents,
         candidates,
+        exclusion_qa,
         tmp_path,
         settings,
         settings_path,
@@ -214,11 +224,13 @@ def test_seed_bundle_is_deterministic_protected_and_auditable(tmp_path: Path) ->
     assert manifest["source_counts"]["archive_outcome_labels"] == 8
     assert (tmp_path / DOCUMENT_QUEUE_FILENAME).exists()
     assert (tmp_path / ADJUDICATION_QUEUE_FILENAME).exists()
+    assert (tmp_path / EXCLUSION_QA_FILENAME).exists()
     assert (tmp_path / QUEUE_MANIFEST_FILENAME).exists()
     assert audit_full_corpus_seed_bundle(
         population,
         documents,
         candidates,
+        exclusion_qa,
         tmp_path,
         settings,
         settings_path,
@@ -230,6 +242,7 @@ def test_seed_bundle_is_deterministic_protected_and_auditable(tmp_path: Path) ->
             population,
             documents,
             candidates,
+            exclusion_qa,
             tmp_path,
             settings,
             settings_path,
@@ -238,6 +251,7 @@ def test_seed_bundle_is_deterministic_protected_and_auditable(tmp_path: Path) ->
         population,
         documents,
         candidates,
+        exclusion_qa,
         tmp_path,
         settings,
         settings_path,

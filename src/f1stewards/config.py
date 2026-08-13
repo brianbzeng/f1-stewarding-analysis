@@ -65,6 +65,7 @@ def load_full_corpus_coding_settings(path: Path | None = None) -> dict[str, Any]
     required = {
         "schema_version",
         "source_document_class",
+        "exclusion_quality_control",
         "primary_sessions",
         "secondary_sessions",
         "primary_incident_patterns",
@@ -114,6 +115,25 @@ def load_full_corpus_coding_settings(path: Path | None = None) -> dict[str, Any]
         raise ValueError("Primary sessions must remain Race and Sprint")
     if not isinstance(secondary_sessions, list) or "Qualifying" not in secondary_sessions:
         raise ValueError("Secondary sessions must include Qualifying")
+    qa = settings["exclusion_quality_control"]
+    if not isinstance(qa, dict):
+        raise ValueError("exclusion_quality_control must be a mapping")
+    qa_required = {
+        "target_fraction",
+        "minimum_per_stratum",
+        "maximum_per_stratum",
+        "hash_salt",
+    }
+    if missing := qa_required - set(qa):
+        raise ValueError(
+            f"Exclusion quality-control settings are missing: {', '.join(sorted(missing))}"
+        )
+    if not 0 < qa["target_fraction"] <= 1:
+        raise ValueError("Exclusion QA target_fraction must be in (0, 1]")
+    if not 1 <= qa["minimum_per_stratum"] <= qa["maximum_per_stratum"]:
+        raise ValueError("Exclusion QA stratum bounds are invalid")
+    if not isinstance(qa["hash_salt"], str) or not qa["hash_salt"]:
+        raise ValueError("Exclusion QA hash_salt must be non-empty")
     return settings
 
 

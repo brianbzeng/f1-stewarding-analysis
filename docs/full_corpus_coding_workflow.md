@@ -16,6 +16,7 @@ The protected seed bundle is in `data/manual/full_corpus_seed/`:
 |---|---:|---:|---|
 | `document_review_queue.csv` | one FIA archive outcome label | 2,002 | version, content, session, offence-family, and eligibility review |
 | `adjudication_seed_queue.csv` | one live content-confirmed decision document | 1,951 | source-rich starting rows that may be split, grouped, or excluded after review |
+| `exclusion_qa_sample.csv` | one proposed exclusion selected by frozen hash | 375 | stratified false-exclusion audit across season, session scope, and offence family |
 | `manifest.json` | one seed release | 1 | source/config hashes, output hashes, row counts, and suggestion counts |
 
 Run:
@@ -26,7 +27,7 @@ f1stewards audit-full-coding-queues
 ```
 
 The builder refuses to replace a differing bundle unless `--overwrite` is explicitly supplied. Use
-that option only after an intentional warehouse or rule change. The audit reconstructs all three
+that option only after an intentional warehouse or rule change. The audit reconstructs all four
 files from DuckDB and fails if any byte differs.
 
 ## Denominator and attrition contract
@@ -97,8 +98,10 @@ matches more than one family also stays manual rather than inheriting the first 
 8. Publish an attrition table from 2,002 labels to final adjudications, with a count and reason for
    every exclusion stage.
 
-Before final disposition, the out-of-scope suggestions must also receive a reproducible
-quality-control sample. Any discovered
+The frozen rules select 375 of the 1,181 out-of-scope suggestions across all 208 observed
+season/session/family strata. Selection uses a documented SHA-256 ordering, a 10% target, at least
+two rows per non-singleton stratum, and at most eight rows per stratum. This is a review workload,
+not a statistical estimate of an error rate. Any discovered
 false exclusion triggers a rule audit and full regeneration, not a one-row exception hidden in a
 notebook.
 

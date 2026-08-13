@@ -92,6 +92,7 @@ def test_full_corpus_coding_settings_match_frozen_primary_scope() -> None:
         "multiple_defensive_moves",
     }
     assert "qualifying_impeding" in settings["secondary_incident_patterns"]
+    assert settings["exclusion_quality_control"]["target_fraction"] == 0.1
 
 
 def test_evidence_profiles_bound_retrieval_scope() -> None:

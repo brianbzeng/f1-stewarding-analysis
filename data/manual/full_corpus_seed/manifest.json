@@ -16,6 +16,14 @@
     "version_exclusion_suggestion": 15,
     "version_resolution_required": 4
   },
+  "exclusion_quality_control": {
+    "maximum_per_stratum": 8,
+    "minimum_per_stratum": 2,
+    "population_rows": 1181,
+    "sample_rows": 375,
+    "strata": 208,
+    "target_fraction": 0.1
+  },
   "interpretation_boundary": "Machine suggestions prioritize manual review and are not final eligibility, fault, consistency, or fairness findings.",
   "outputs": {
     "adjudication_seed_queue.csv": {
@@ -25,10 +33,14 @@
     "document_review_queue.csv": {
       "row_count": 2002,
       "sha256": "cd0d42861eadf490265a1ebbea033635bf7bbdf447fded692fcc29cba6c201fc"
+    },
+    "exclusion_qa_sample.csv": {
+      "row_count": 375,
+      "sha256": "0f12784f2455539b8ced308def9ef731fc4efd5e5ac5b5f1dea4813ae21e7abd"
     }
   },
   "schema_version": "full_corpus_coding_v1",
-  "settings_sha256": "c337f10482ec6929346779466f82cf746305733ef7ea410ea97318d073f3970d",
+  "settings_sha256": "0f01fb7a460814e81ebcd4a582a4c7bbb415a8eb6a56f35c4a91aed661a3460a",
   "source_counts": {
     "archive_outcome_labels": 2002,
     "content_confirmed_decisions": 1951,
