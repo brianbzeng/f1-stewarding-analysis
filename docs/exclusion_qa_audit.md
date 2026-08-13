@@ -1,6 +1,6 @@
 # Exclusion Quality-Control Audit
 
-Status: first machine-assisted diagnostic complete; independent human disposition pending.
+Status: machine-assisted diagnostics complete; independent human disposition pending.
 
 ## Objective
 
@@ -10,7 +10,8 @@ legacy wording, or an overly broad strict-liability pattern.
 
 The audit population is not chosen by fame or analyst judgment. `exclusion_qa_sample.csv` uses a
 frozen SHA-256 ordering within season, normalized session scope, and suggested offence-family
-strata. The current seed selects 403 of 1,305 proposed exclusions and covers all 223 observed strata.
+strata. The current v4 seed selects 485 of 1,503 proposed exclusions and covers all 271 observed
+strata.
 
 ## First diagnostic and correction
 
@@ -32,31 +33,28 @@ advantage`. The primary-family screen now recognizes an intervening phrase rathe
 “left the track” and “gained an advantage” to be adjacent. Any simultaneous track-limit match is
 sent to manual offence review instead of automatic inclusion or exclusion.
 
-## Post-correction screen
+## V4 classifier audit
 
-The regenerated 403-row sample was joined one-to-one to the parsed Fact, Infringement, Decision,
-and Reason fields. A deliberately broader, separately written lexical screen found:
+The v4 refinement compared every regenerated suggestion with the prior protected release before any
+seed was overwritten. It recovered 35 primary Race/Sprint candidates and eight explicit qualifying-
+impeding candidates without losing any previously identified primary or secondary candidate. The
+35 primary additions were inspected as a set; they include legacy collision phrasing, the three 2018
+Abu Dhabi Alonso advantage decisions, and the 2024 Austrian Sprint forcing-off decision.
 
-- 61 rows with general driving-incident language;
-- 13 rows with one of the six primary-family phrases; and
-- 29 rows containing an impeding word form.
+That audit also caught a false-positive mechanism in an intermediate preview. Seven qualifying
+documents were being labeled as impeding solely because their Reason section said that a driver
+“did not impede” another car. Reason-text fallback is now restricted to primary-family recovery;
+qualifying impeding must be explicit in the title, Fact, or Infringement text. Regression tests cover
+both the negative phrasing and procedural-context cases such as impeding at pit exit.
 
-The source-level diagnostic of the primary- or secondary-session hits found no additional automatic
-rule change:
+Known Practice and other out-of-scope sessions now take precedence over family ambiguity, while an
+unknown session is never guessed from event context. After these corrections, 61 offence-family
+rows and 18 session rows remain manual rather than being forced into or out of scope. The resulting
+485-row exclusion sample contains 76 parser-warning documents that must be inspected from the
+official PDF before their exclusions can be accepted.
 
-- Race/Sprint collision phrases came from pit-lane unsafe releases, which are outside the on-track
-  primary population, or from a Race Director-instruction decision that explicitly found no unsafe
-  rejoin and no gained advantage.
-- Collision, track-limit, and unsafe-rejoin allegations in Qualifying remain outside the primary
-  Race/Sprint population and do not meet the separately defined qualifying-impeding population.
-- Qualifying documents that merely say drivers took steps “not to impede” were SC2-SC1 delta-time
-  or Race Director-instruction decisions, not impeding adjudications.
-- The Race-session impeding hit concerned equipment obstructing another car in the pit lane, not
-  the qualifying-impeding population.
-
-This is a diagnostic result, not independent review agreement. Fifty-nine sampled documents carry
-parser warnings and must be inspected from the official PDF before their exclusions can be accepted.
-No sample row is promoted to final exclusion merely because the broad screen found no conflict.
+This is a machine-assisted diagnostic result, not independent review agreement. No sample row is
+promoted to final exclusion merely because the regenerated screen found no conflict.
 
 ## Release rule
 

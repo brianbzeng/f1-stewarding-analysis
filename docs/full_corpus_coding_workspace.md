@@ -8,19 +8,19 @@ the blocked human-review gate in its conclusion.
 
 ## Release identity
 
-The current local workspace is `full-coding-4b0c0d5ddd72`. It is derived from the committed
-`full_corpus_coding_v3` seed release and the complete 197-session FastF1 review context.
+The current local workspace is `full-coding-02d451b08b7e`. It is derived from the committed
+`full_corpus_coding_v4` seed release and the complete 197-session FastF1 review context.
 
 | Item | Value |
 |---|---:|
 | Document dispositions | 2,002 |
 | Adjudication starter instances | 1,951 |
-| Stratified exclusion-QA rows | 403 |
+| Stratified exclusion-QA rows | 485 |
 | Timing sessions | 197 |
 | Driver classifications | 3,938 |
-| Protected seed-manifest SHA-256 | `6f3a48afe57632e0652f0b354ce14da3cf66465aca7ddb879f9127612b796330` |
+| Protected seed-manifest SHA-256 | `180b98963a04a626ff89ed933d342b6238c7c5d8d6b979fbec0d838482af5489` |
 | Timing-context SHA-256 | `3227b6dac56635caa08a71a9ba789cecc59bb4557786749d9f997d9531e35264` |
-| Workspace-content SHA-256 | `c32cee30d5a4030d87d82eb17973d6e59d994c8cbf61895cc76c37bb57271772` |
+| Workspace-content SHA-256 | `8fd7fc4f78f92dc93797176f0665ef69906246e96241f09e6721faec0ab8412a` |
 
 The workspace ID hashes the schema version, protected seed manifest, timing context, and generated
 worklist content. A source, timing, schema, or transformation change therefore creates a different
@@ -31,9 +31,9 @@ Generate and verify it with:
 ```powershell
 f1stewards build-full-coding-workspace
 f1stewards audit-full-coding-workspace `
-  data/manual/full_corpus_workspaces/full-coding-4b0c0d5ddd72
+  data/manual/full_corpus_workspaces/full-coding-02d451b08b7e
 f1stewards validate-edited-full-coding-workspace `
-  data/manual/full_corpus_workspaces/full-coding-4b0c0d5ddd72
+  data/manual/full_corpus_workspaces/full-coding-02d451b08b7e
 ```
 
 The generated workspace is intentionally git-ignored because it becomes local human working
@@ -63,7 +63,7 @@ IDs, retention of every `-01` starter, exact protected lineage, unique populated
 IDs, and mutually exclusive primary/secondary inclusion flags. The exact starter audit is stricter:
 it passes only before any final coding fields or row counts change.
 
-`exclusion_qa_worklist.csv` freezes the 403 hash-selected checks across all 223 proposed-exclusion
+`exclusion_qa_worklist.csv` freezes the 485 hash-selected checks across all 271 proposed-exclusion
 strata. Only QA disposition, corrections, reviewer, status, and notes may change. A false exclusion
 triggers a rule audit and complete queue regeneration; it must not become an undocumented one-row
 override.
@@ -76,7 +76,7 @@ priority is operational only and does not change the denominator or imply that a
 severe.
 
 Every primary candidate has a loaded Race/Sprint timing session and an accused-driver
-classification: 260 of 260 for each control. Secondary qualifying-impeding cases intentionally lack
+classification: 295 of 295 for each control. Secondary qualifying-impeding cases intentionally lack
 Race/Sprint timing joins at this stage because qualifying timing is outside the frozen FastF1
 session population.
 
@@ -84,7 +84,7 @@ The seed records how the accused-driver suggestion was obtained:
 
 | Basis | Starter rows | Primary candidates |
 |---|---:|---:|
-| Parsed decision heading | 1,653 | 259 |
+| Parsed decision heading | 1,653 | 294 |
 | First explicit `Car N` reference in the official title | 75 | 1 |
 | Unavailable | 223 | 0 |
 

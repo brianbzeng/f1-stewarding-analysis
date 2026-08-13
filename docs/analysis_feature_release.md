@@ -7,11 +7,11 @@ grains without treating machine suggestions as findings. It is built with:
 
 ```powershell
 f1stewards build-analysis-features `
-  data/manual/full_corpus_workspaces/full-coding-4b0c0d5ddd72
+  data/manual/full_corpus_workspaces/full-coding-02d451b08b7e
 ```
 
-The current content-addressed build is `features-841556c32f1f`. It uses workspace
-`full-coding-4b0c0d5ddd72`, the sourced 43-driver nationality registry, the controlled 28-label
+The current content-addressed build is `features-f518fc00aeb1`. It uses workspace
+`full-coding-02d451b08b7e`, the sourced 43-driver nationality registry, the controlled 28-label
 event-country crosswalk, all 3,938 Race/Sprint classifications, and the complete decision-document
 panel assignment register. The panel register contributes its own SHA-256 lineage field to the
 feature-build identity.
@@ -34,21 +34,21 @@ The current provisional build contains:
 
 | Diagnostic | Count |
 |---|---:|
-| Primary-candidate adjudication rows | 260 |
-| Accused-driver role rows | 260 |
-| Affected-driver role rows | 243 |
-| Total driver-role rows | 503 |
-| Rows with more than one affected driver | 13 |
+| Primary-candidate adjudication rows | 295 |
+| Accused-driver role rows | 295 |
+| Affected-driver role rows | 283 |
+| Total driver-role rows | 578 |
+| Rows with more than one affected driver | 19 |
 | Missing accused or affected identity joins | 0 |
-| Suggestions mapped to a binary sanction outcome | 252 |
-| `other` outcome suggestions withheld from binary mapping | 8 |
-| Suggested British accused-driver exposures | 34 |
-| Suggested accused-driver home-race exposures | 12 |
+| Suggestions mapped to a binary sanction outcome | 285 |
+| `other` outcome suggestions withheld from binary mapping | 10 |
+| Suggested British accused-driver exposures | 40 |
+| Suggested accused-driver home-race exposures | 13 |
 | Reporting-eligible rows | 0 |
-| Rows with complete document-panel context | 260 |
-| Distinct panels represented | 114 |
-| Exact document-signature panel assignments | 260 |
-| Four-member / five-member panel rows | 251 / 9 |
+| Rows with complete document-panel context | 295 |
+| Distinct panels represented | 124 |
+| Exact document-signature panel assignments | 295 |
+| Four-member / five-member panel rows | 285 / 10 |
 
 These are workload and design-coverage counts. They are not sanction rates, nationality effects,
 or evidence of bias.
@@ -74,7 +74,7 @@ all 19 lineage and editing controls, but correctly fails these substantive gates
 
 - 0 of 2,002 document dispositions independently reviewed;
 - 0 of 1,951 adjudication seeds independently reviewed;
-- 0 of 403 frozen exclusion-QA rows independently reviewed; and
+- 0 of 485 frozen exclusion-QA rows independently reviewed; and
 - no final reviewed primary population yet exists.
 
 Accordingly, `metadata.analysis_feature_builds.release_status` is

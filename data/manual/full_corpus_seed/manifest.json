@@ -1,46 +1,46 @@
 {
   "candidate_action_counts": {
-    "manual_scope_review": 271,
+    "manual_scope_review": 63,
     "manual_split_or_scope_review": 224,
-    "review_exclusion": 1131,
-    "review_primary_adjudication": 259,
-    "review_secondary_adjudication": 66
+    "review_exclusion": 1296,
+    "review_primary_adjudication": 294,
+    "review_secondary_adjudication": 74
   },
   "eligibility_suggestion_counts": {
     "content_exclusion_suggestion": 32,
-    "manual_offence_review": 254,
-    "manual_session_review": 66,
-    "out_of_scope_suggestion": 1305,
-    "primary_candidate": 260,
-    "secondary_candidate": 66,
+    "manual_offence_review": 61,
+    "manual_session_review": 18,
+    "out_of_scope_suggestion": 1503,
+    "primary_candidate": 295,
+    "secondary_candidate": 74,
     "version_exclusion_suggestion": 15,
     "version_resolution_required": 4
   },
   "exclusion_quality_control": {
     "maximum_per_stratum": 8,
     "minimum_per_stratum": 2,
-    "population_rows": 1305,
-    "sample_rows": 403,
-    "strata": 223,
+    "population_rows": 1503,
+    "sample_rows": 485,
+    "strata": 271,
     "target_fraction": 0.1
   },
   "interpretation_boundary": "Machine suggestions prioritize manual review and are not final eligibility, fault, consistency, or fairness findings.",
   "outputs": {
     "adjudication_seed_queue.csv": {
       "row_count": 1951,
-      "sha256": "46e01b4fa942d8a9751ced75289fe9965ff4eecf95851b007d860de20155683c"
+      "sha256": "328567007a60b20a5a52071cfb40ad7593661b6642840f9e920fc3ef389a5add"
     },
     "document_review_queue.csv": {
       "row_count": 2002,
-      "sha256": "044e90257256aae1005b0451904094e8a1621cc1a09a3a22e49f01469416a16b"
+      "sha256": "885a6914bd80fd0aed1c855b0979bfdd552bc5aec5364498bd6929952a6a90bb"
     },
     "exclusion_qa_sample.csv": {
-      "row_count": 403,
-      "sha256": "e1d5f36931ee95905e2cd220b9ca0d350c90c187193f71e8bdabd2abfd2afccd"
+      "row_count": 485,
+      "sha256": "e27751f19e19b9152e9a14d4af78cb96bfbec97b4c2e4bf408ef953e8ae10d30"
     }
   },
-  "schema_version": "full_corpus_coding_v3",
-  "settings_sha256": "1be12d9bbf01dfdea83d4fc644536b1bffc9fe7ba29abfc03ddbd23dfafae044",
+  "schema_version": "full_corpus_coding_v4",
+  "settings_sha256": "b85e4fd0180a12d561da6be1958bff1aac6fb4a5973f70c182730a51f09c2806",
   "source_counts": {
     "archive_outcome_labels": 2002,
     "content_confirmed_decisions": 1951,

@@ -324,6 +324,54 @@ def normalize_session_type(value: Any, season: Any = None) -> str:
     return "Other"
 
 
+def infer_session_type(row: pd.Series) -> str:
+    """Use only explicit source-language session references when the parsed field is blank."""
+
+    parsed = normalize_session_type(row.get("session_type"), row.get("season"))
+    if parsed != "Unknown":
+        return parsed
+
+    source_text = _one_line(
+        " ".join(
+            _text(row.get(field))
+            for field in (
+                "title",
+                "fact_text",
+                "infringement_text",
+                "decision_text",
+                "reason_text",
+            )
+        )
+    ).casefold()
+    observed: set[str] = set()
+    season = row.get("season")
+    if re.search(r"\bsprint\s+(?:qualifying|shootout)\b", source_text):
+        label = "Sprint Qualifying" if "sprint qualifying" in source_text else "Sprint Shootout"
+        observed.add(normalize_session_type(label, season))
+    if re.search(
+        r"\b(?:during|in|from)\s+(?:the\s+)?sprint\b|\belapsed\s+sprint\s+time\b",
+        source_text,
+    ):
+        observed.add("Sprint")
+    if re.search(
+        r"\b(?:during|in|from)\s+(?:the\s+)?qualifying\b|\bqualifying\s+session\b",
+        source_text,
+    ):
+        observed.add("Qualifying")
+    if re.search(
+        r"\b(?:during|in|from)\s+(?:the\s+)?(?:free\s+)?practice(?:\s+[123])?\b"
+        r"|\b(?:free\s+)?practice\s*[123]\b",
+        source_text,
+    ):
+        observed.add("Practice")
+    if re.search(
+        r"\b(?:during|in)\s+(?:the\s+)?race\b|\brace\s+lap\s+\d{1,3}\b",
+        source_text,
+    ):
+        observed.add("Race")
+    return next(iter(observed)) if len(observed) == 1 else "Unknown"
+
+
 def _session_scope(session: str, settings: dict[str, Any]) -> str:
     if session in settings["primary_sessions"]:
         return "primary_race_sprint"
@@ -334,17 +382,21 @@ def _session_scope(session: str, settings: dict[str, Any]) -> str:
     return "out_of_scope_session"
 
 
-def _classification_text(row: pd.Series) -> str:
+def _classification_text(row: pd.Series, *, include_reason: bool = False) -> str:
     values = (
         row.get("title"),
         row.get("fact_text"),
         row.get("infringement_text"),
+        row.get("reason_text") if include_reason else None,
     )
     return _one_line(" ".join(_text(value) for value in values)).casefold()
 
 
 def _family_matches(
-    text: str, settings: dict[str, Any]
+    text: str,
+    settings: dict[str, Any],
+    *,
+    incident_text: str | None = None,
 ) -> list[tuple[str, str]]:
     matches: list[tuple[str, str]] = []
     groups = (
@@ -355,6 +407,19 @@ def _family_matches(
     for group_name, families in groups:
         for family, patterns in families.items():
             if any(re.search(pattern, text, flags=re.IGNORECASE) for pattern in patterns):
+                matches.append((family, group_name))
+    if matches or not incident_text:
+        return matches
+
+    # Reasons can recover collisions hidden behind generic "incident" headings, but
+    # they frequently contain negated impeding language (for example, "did not
+    # impede"). Qualifying impeding therefore requires an explicit title/fact match.
+    for group_name, families in (("primary", settings["primary_incident_patterns"]),):
+        for family, patterns in families.items():
+            if any(
+                re.search(pattern, incident_text, flags=re.IGNORECASE)
+                for pattern in patterns
+            ):
                 matches.append((family, group_name))
     return matches
 
@@ -419,6 +484,18 @@ def _eligibility(
             "content_exclusion_suggestion",
             "Archive outcome label content-types as a non-decision or has no parsed decision body.",
         )
+    if session_scope == "out_of_scope_session":
+        return "out_of_scope_suggestion", "Observed session is outside the frozen study scope."
+    if session_scope == "secondary_qualifying":
+        if family_group == "secondary":
+            return (
+                "secondary_candidate",
+                f"Qualifying document matched secondary family {family}.",
+            )
+        return (
+            "out_of_scope_suggestion",
+            "Qualifying document did not match the frozen qualifying-impeding family.",
+        )
     if family_conflict:
         return (
             "manual_offence_review",
@@ -426,15 +503,11 @@ def _eligibility(
         )
     if session_scope == "primary_race_sprint" and family_group == "primary":
         return "primary_candidate", f"Race/Sprint document matched primary family {family}."
-    if session_scope == "secondary_qualifying" and family_group == "secondary":
-        return "secondary_candidate", f"Qualifying document matched secondary family {family}."
     if family_group == "excluded":
         return (
             "out_of_scope_suggestion",
             f"Document matched predefined excluded offence family {family}.",
         )
-    if session_scope == "out_of_scope_session":
-        return "out_of_scope_suggestion", "Observed session is outside the frozen study scope."
     if session_scope == "unknown":
         return "manual_session_review", "No reliable session label was parsed from the document."
     if family_group in {"primary", "secondary"}:
@@ -593,9 +666,13 @@ def build_full_corpus_coding_queues(
         content_status = _content_status(row)
         warnings = _parse_warnings(row.get("parser_warnings_json"))
         parser_review_required = bool(warnings)
-        session = normalize_session_type(row.get("session_type"), row.get("season"))
+        session = infer_session_type(row)
         session_scope = _session_scope(session, settings)
-        matches = _family_matches(_classification_text(row), settings)
+        matches = _family_matches(
+            _classification_text(row),
+            settings,
+            incident_text=_classification_text(row, include_reason=True),
+        )
         family, family_group = _selected_family(matches)
         matching_families = [match[0] for match in matches]
         family_conflict = _family_conflict(matches)
