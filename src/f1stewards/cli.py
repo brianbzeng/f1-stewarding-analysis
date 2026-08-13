@@ -437,6 +437,21 @@ def load_steward_country_evidence_command(
                 """,
                 params=[worklist_rows],
             ).df()
+            direct_code_worklist = connection.sql(
+                """
+                SELECT
+                    steward_id,
+                    full_name,
+                    resolution_status,
+                    observed_analysis_codes,
+                    decision_document_count,
+                    first_study_season,
+                    last_study_season
+                FROM analysis.v_steward_direct_code_research_worklist
+                LIMIT ?
+                """,
+                params=[worklist_rows],
+            ).df()
     except (FileNotFoundError, ValueError, duckdb.Error) as exc:
         typer.echo(str(exc))
         raise typer.Exit(code=1) from exc
@@ -447,6 +462,9 @@ def load_steward_country_evidence_command(
     if not worklist.empty:
         typer.echo("\nHighest-priority steward-country research worklist:")
         typer.echo(worklist.to_string(index=False))
+    if not direct_code_worklist.empty:
+        typer.echo("\nHighest-exposure stewards still lacking direct FIA/F1 code evidence:")
+        typer.echo(direct_code_worklist.to_string(index=False))
     typer.echo(f"Loaded {len(evidence)} dated steward-country evidence records")
     release = controls.loc[controls["gate_type"].eq("analysis_release")]
     if strict_release and not release["status"].eq("pass").all():

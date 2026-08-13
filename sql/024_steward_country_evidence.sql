@@ -26,6 +26,12 @@ WITH evidence AS (
     SELECT
         steward_id,
         count(*) AS evidence_records,
+        count(*) FILTER (
+            WHERE evidence_dimension IN (
+                'fia_published_country_code',
+                'formula1_competition_nationality'
+            )
+        ) AS direct_code_records,
         count(DISTINCT analysis_country_code) AS distinct_analysis_codes,
         min(observed_date) AS first_observed_date,
         max(observed_date) AS last_observed_date,
@@ -41,6 +47,7 @@ SELECT
     steward.steward_id,
     steward.full_name,
     coalesce(evidence.evidence_records, 0) AS evidence_records,
+    coalesce(evidence.direct_code_records, 0) AS direct_code_records,
     coalesce(evidence.distinct_analysis_codes, 0) AS distinct_analysis_codes,
     evidence.first_observed_date,
     evidence.last_observed_date,
@@ -49,7 +56,11 @@ SELECT
         WHEN evidence.steward_id IS NULL THEN 'no_source_evidence'
         WHEN evidence.distinct_analysis_codes > 1 THEN 'source_conflict_unresolved'
         ELSE 'single_observed_code_not_temporally_resolved'
-    END AS resolution_status
+    END AS resolution_status,
+    CASE
+        WHEN coalesce(evidence.direct_code_records, 0) > 0 THEN 'direct_code_observed'
+        ELSE 'no_direct_code_evidence'
+    END AS direct_code_status
 FROM curated.stewards AS steward
 LEFT JOIN evidence USING (steward_id);
 
@@ -85,6 +96,43 @@ SELECT
 FROM analysis.v_steward_country_evidence_summary AS summary
 JOIN exposure USING (steward_id)
 WHERE summary.resolution_status <> 'single_observed_code_not_temporally_resolved'
+ORDER BY
+    research_priority_tier,
+    exposure.decision_document_count DESC,
+    summary.full_name;
+
+CREATE OR REPLACE VIEW analysis.v_steward_direct_code_research_worklist AS
+WITH exposure AS (
+    SELECT
+        member.steward_id,
+        count(DISTINCT member.panel_id) AS panel_count,
+        count(DISTINCT assignment.document_id) AS decision_document_count,
+        min(event.season) AS first_study_season,
+        max(event.season) AS last_study_season
+    FROM curated.panel_members AS member
+    JOIN curated.panels AS panel USING (panel_id)
+    JOIN curated.document_panels AS assignment USING (panel_id)
+    JOIN metadata.events AS event ON event.event_id = panel.event_id
+    GROUP BY member.steward_id
+)
+SELECT
+    summary.steward_id,
+    summary.full_name,
+    summary.resolution_status,
+    summary.direct_code_status,
+    summary.evidence_records,
+    summary.observed_analysis_codes,
+    exposure.panel_count,
+    exposure.decision_document_count,
+    exposure.first_study_season,
+    exposure.last_study_season,
+    CASE summary.resolution_status
+        WHEN 'no_source_evidence' THEN 1
+        ELSE 2
+    END AS research_priority_tier
+FROM analysis.v_steward_country_evidence_summary AS summary
+JOIN exposure USING (steward_id)
+WHERE summary.direct_code_status = 'no_direct_code_evidence'
 ORDER BY
     research_priority_tier,
     exposure.decision_document_count DESC,

@@ -48,12 +48,12 @@ but cannot by themselves satisfy the final direct-code control.
 
 | Diagnostic | Result |
 |---|---:|
-| Official-source evidence records | 88 |
+| Official-source evidence records | 92 |
 | Panel steward identities | 83 |
-| Stewards with any evidence | 81 |
-| Stewards with direct FIA/F1 code evidence | 42 |
-| Stewards with one observed normalized code | 80 |
-| Stewards with no evidence yet | 2 |
+| Stewards with any evidence | 82 |
+| Stewards with direct FIA/F1 code evidence | 45 |
+| Stewards with one observed normalized code | 81 |
+| Stewards with no evidence yet | 1 |
 | Unresolved source conflicts | 1 |
 
 This is research progress, not an analytical result. Coverage is deliberately counted at identity
@@ -69,6 +69,10 @@ source-supported date intervals or explicitly quarantined.
 `analysis.v_steward_country_research_worklist` places conflicts first and then ranks unsourced
 identities by decision-document exposure. This makes the research queue operational without
 mistaking high-frequency coverage for population completeness.
+
+`analysis.v_steward_direct_code_research_worklist` separately ranks identities that have only ASN
+or biographical support but still lack the directly printed FIA/F1 code required for release. This
+prevents broad supporting coverage from hiding the stricter final-code backlog.
 
 The completed panel identity layer can still support event-grouped validation, panel fixed or
 random effects, and exact membership inspection. The main British-driver outcome design can adjust
