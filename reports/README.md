@@ -13,10 +13,12 @@ matching, and collision-harm work.
 
 ## The answer in brief
 
-The public evidence does not support a defensible claim that Formula 1 stewarding was systematically
-unfair, inconsistent, or nationally biased from 2018 through 2025. It also cannot clear every
-decision. The public record is incomplete before referral, broad incident labels omit the details
-that drive a ruling, and full competitive harm is rarely documented in a common form.
+The public evidence points to a stewarding system that was usually coherent after a written fault
+finding, but less predictable at the boundaries. It does not establish systematic unfairness or
+national bias, and it does not clear every decision. The deeper inconsistency audit finds changing
+or incomplete standards, limited live evidence, thin explanations, and a small number of unresolved
+judgment calls. The public record is also incomplete before referral, and full competitive harm is
+rarely documented in a common form.
 
 The clearest formal findings were internally coherent: all 76 decisions finding a driver wholly or
 predominantly to blame imposed a sanction, while all 24 racing-incident findings ended with no
@@ -33,7 +35,11 @@ barely ranked outcomes above chance (ROC AUC 0.558).
 - **966 public Race Control referral episodes**, including 177 high-confidence links to a primary
   decision.
 - **317 cases with at least five outcome-blind close neighbors**; nearest outcomes matched in 186
-  and differed in 131, which are review leads rather than an inconsistency rate.
+  and differed in 131 under a direct sporting-penalty definition. Of those differences, 87 began
+  with different written fault findings, 30 had no explicit fault threshold in either ruling, and
+  14 involved off-track advantage context.
+- **A source-cited controversy audit** covering Canada/Austria 2019, Silverstone, São Paulo and Abu
+  Dhabi 2021, Austin/Mexico 2024, and residual rule or reasoning gaps found in the corpus.
 - **33 contemporaneous 2025 guideline comparisons**: 21 plainly within guideline, seven within a
   contextual or mitigated range, and five requiring more context for substitution or escalation.
 - **A nine-decision independently reviewed impact pilot** showing that identical written seconds
@@ -51,6 +57,10 @@ The full-corpus audit is model-led and explicitly disclosed; it is not presented
 human double-coding. The impact pilot was independently reviewed. Timing is never treated as proof
 of damage, a different close-case outcome is never treated as proof of an error, and the public 2025
 guidelines are never applied retrospectively.
+
+The highlighted controversies explain where fan narratives come from, but they are selected case
+studies rather than a prevalence sample. Famous examples also cut in different nationality
+directions, so they cannot substitute for the gated nationality design.
 
 The proportionality release remains closed because fault, incident-caused harm, and realized
 sanction cost are not all confirmed for the same full-corpus cases. Missing information remains

@@ -11,14 +11,18 @@ Read the [report landing page](reports/README.md), the consolidated
 [executable Jupyter notebook](notebooks/12_study_v2_report.ipynb). The report combines the original
 pilot and full-corpus analysis with the strict source audit, referral funnel, incident timing,
 outcome-blind close-case matching, participant-level harm records, 2025 guideline comparison, and
-gated nationality diagnostic in one general-audience narrative.
+gated nationality diagnostic in one general-audience narrative. A dedicated inconsistency chapter
+decomposes the close-case disagreements and reads the strongest fan controversies against the
+official FIA record.
 
 The public record does not establish systematic unfairness or national bias, but it produces
 several bounded findings. All 76 formal decisions finding a driver wholly or predominantly to blame
 imposed a sanction; all 24 racing-incident findings ended with no further action. Broad incident
 labels still predict poorly, the realized burden of identical written penalties varies sharply,
-and the nationality design remains inconclusive. The report identifies which conclusions are
-descriptive, independently reviewed, screening-only, or withheld.
+and the nationality design remains inconclusive. The deeper inconsistency audit finds documented
+rule gaps, live-evidence limits, and residual judgment calls, but no one-direction nationality
+pattern. The report identifies which conclusions are descriptive, independently reviewed,
+screening-only, or withheld.
 
 ## Questions
 

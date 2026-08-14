@@ -70,7 +70,7 @@ def test_schema_and_pilot_upsert(tmp_path: Path) -> None:
     assert count == 3
     assert source_count == 11
     assert link_count == 11
-    assert claim_count == 22
+    assert claim_count == 23
     assert issue_count == 65
     assert code_issue_count == 9
     assert selected == [

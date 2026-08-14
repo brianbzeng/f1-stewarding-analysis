@@ -323,12 +323,14 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
         "What eight seasons of public evidence",
         "referral episodes. Only 177",
         "All 76",
+        "Where the consistency argument comes from",
+        "This is why 41% was too large",
         "Twenty-one of 33 comparable sanctions",
         "The 28 timing screens are research leads",
         "Simulated power for the planned 15-point difference",
         "Final conclusion.",
     )
-    decision_source_links = html.count("Official decision")
+    decision_source_links = html.count(">Official decision</a>")
     report_code_hidden = "strict_manifest =" not in html
     record(
         "integrated_html_report_built",
@@ -352,6 +354,7 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
         "claim-20": "final_model_reviewed_descriptive",
         "claim-21": "final_2025_guideline_descriptive",
         "claim-22": "final_screening_only",
+        "claim-23": "final_screening_only",
     }
     observed_claim_status = claims.set_index("claim_id")["status"].to_dict()
     record(
