@@ -47,15 +47,16 @@ os.environ.setdefault("MPLCONFIGDIR", str(ROOT / ".jupyter" / "mplconfig"))
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from IPython.display import Markdown, display
+from IPython.display import HTML, Markdown, display
 
+STRICT = ROOT / "data/manual/study_v2_strict_model_audit/strict-model-audit-0fe15fd6b052"
 REVIEW = ROOT / "data/manual/study_v2_review_packets/study-v2-review-7cb1b29b5251"
-REFERRAL = ROOT / "data/manual/study_v2_referrals/referrals-5d0559ad2878"
+REFERRAL = ROOT / "data/manual/study_v2_referrals/referrals-a4f9bd038101"
 CLOCK = ROOT / "data/manual/study_v2_incident_clock/incident-clock-3dc8bb350308"
-CONTEXT = ROOT / "data/manual/study_v2_incident_context/incident-context-a1de9ac2c8ea"
-CLOSE = ROOT / "data/manual/study_v2_close_cases/close-cases-36f9bc70de82"
-DAMAGE = ROOT / "data/manual/study_v2_damage/damage-screening-66381b550583"
-LAYERS = ROOT / "data/manual/study_v2_layers/study-v2-layers-a9b8ff776470"
+CONTEXT = ROOT / "data/manual/study_v2_incident_context/incident-context-707a44aafeb4"
+CLOSE = ROOT / "data/manual/study_v2_close_cases/close-cases-b175fe03fa80"
+DAMAGE = ROOT / "data/manual/study_v2_damage/damage-screening-23c77a57134e"
+LAYERS = ROOT / "data/manual/study_v2_layers/study-v2-layers-eed6774fb6c5"
 NATIONALITY = ROOT / "data/manual/study_v2_nationality/nationality-diagnostic-2b1b0ffdd961"
 GENERATED = ROOT / "reports/generated/study_v2"
 GENERATED.mkdir(parents=True, exist_ok=True)
@@ -83,19 +84,25 @@ def build() -> None:
         [
             markdown(
                 """
-# Study v2: protocol and independent review packet
+# Study v2: protocol and source audit
 
-This notebook checks the frozen design and the material prepared for independent human review.
-It does not treat GPT review as human review. A risk-based audit can validate selected records and
-estimate error rates, but it cannot upgrade unreviewed records.
+This notebook checks the frozen design, the strict GPT-5.6 Sol source audit, and the separate packet
+reserved for a future independent human audit. The model audit never writes into the human ledgers
+and is not presented as inter-rater agreement.
 """
             ),
             code(SETUP),
             code(
                 """
+strict_manifest = json.loads((STRICT / "manifest.json").read_text(encoding="utf-8"))
+strict_cases = pd.read_csv(STRICT / "strict_model_case_audit.csv", keep_default_na=False)
 manifest = json.loads((REVIEW / "manifest.json").read_text(encoding="utf-8"))
 review_summary = pd.DataFrame(
     [
+        {"packet": "Strict model audit: included decisions", "rows": strict_manifest["included_decisions"]},
+        {"packet": "Strict model audit: exclusion checks", "rows": strict_manifest["exclusion_sources"]},
+        {"packet": "Strict model audit: corrected included rows", "rows": strict_manifest["corrected_included_rows"]},
+        {"packet": "Strict model audit: unavailable public sources", "rows": strict_manifest["model_status_counts"]["model_unresolved_public_evidence"]},
         {"packet": "Reviewer A", "rows": manifest["reviewer_a_rows"]},
         {"packet": "Reviewer B", "rows": manifest["reviewer_b_rows"]},
         {"packet": "Reconciliation queue", "rows": len(pd.read_csv(REVIEW / "reconciliation_queue.csv"))},
@@ -104,13 +111,20 @@ review_summary = pd.DataFrame(
 display(review_summary)
 assert manifest["blind_to_model_final_fields"] is True
 assert manifest.get("independent_human_review_complete", False) is False
+assert strict_manifest["records_with_fia_citation"] == 920
+assert strict_manifest["pending_adversarial"] == 0
+assert strict_cases["review_disclosure"].eq("model_led_source_review_not_independent_human_annotation").all()
 """
             ),
             markdown(
                 """
-Reviewer A has every elevated-risk or included multi-party source plus a clean exclusion sample.
-Reviewer B has the highest-risk inclusions, a separate exclusion sample, and the published pilot.
-Disagreements go to reconciliation. The report stays model-reviewed until those ledgers are filled.
+The strict audit covers all 418 included decisions and 502 sampled exclusions. Every record carries
+an exact FIA source URL. Thirty-two included rows changed after source review: seven fault labels
+and 25 affected-driver lists. Four archive labels remain publicly unavailable and are kept as
+unresolved evidence rather than guessed.
+
+Reviewer A and Reviewer B remain blank, blind packets for anyone who later wants independent human
+validation. They are not a hidden requirement for reading this model-led portfolio report.
 """
             ),
         ],
@@ -135,7 +149,7 @@ context_manifest = json.loads((CONTEXT / "manifest.json").read_text(encoding="ut
 funnel = pd.read_csv(REFERRAL / "referral_funnel.csv")
 display(funnel)
 display(pd.DataFrame([referral_manifest, clock_manifest, context_manifest]).T)
-assert referral_manifest["high_confidence_link_count"] == 174
+assert referral_manifest["high_confidence_link_count"] == 177
 assert clock_manifest["known_validation_contained_count"] == 31
 assert clock_manifest["known_validation_case_count"] == 31
 """
@@ -303,22 +317,25 @@ review is also incomplete. The correct result is **inconclusive**, not evidence 
         [
             markdown(
                 """
-# The Cost of Discretion — Study v2 progress report
+# The Cost of Discretion — Study v2
 
 ## A stronger way to study Formula 1 stewarding
 
-The first report found a real limitation: formal FIA decisions alone do not contain enough common
-detail to call a ruling consistent or inconsistent. Study v2 builds the missing structure. It adds
-an independent-review packet, a public Race Control funnel, incident-lap windows, close-case
-matching, and one harm record per driver in a collision.
+Formal FIA decisions do not contain enough common detail to label every ruling fair or unfair.
+Study v2 builds the missing structure: a source audit, a public Race Control funnel, incident-lap
+windows, close-case matching, and one harm record per driver in a collision.
 
-The work below is reproducible, but it is not a finished fairness verdict. Human review is still
-open, and the report keeps every result behind the relevant gate.
+GPT-5.6 Sol reviewed every included decision and every sampled exclusion under a frozen protocol.
+That is a model-led source audit, not independent human annotation. The report is ready as a
+reproducible model-reviewed study, but it still withholds claims that need confirmed damage,
+counterfactual race effects, or human inter-rater evidence.
 """
             ),
             code(SETUP),
             code(
                 """
+strict = json.loads((STRICT / "manifest.json").read_text(encoding="utf-8"))
+strict_cases = pd.read_csv(STRICT / "strict_model_case_audit.csv", keep_default_na=False)
 review = json.loads((REVIEW / "manifest.json").read_text(encoding="utf-8"))
 referral = json.loads((REFERRAL / "manifest.json").read_text(encoding="utf-8"))
 clock = json.loads((CLOCK / "manifest.json").read_text(encoding="utf-8"))
@@ -328,7 +345,8 @@ layers = json.loads((LAYERS / "manifest.json").read_text(encoding="utf-8"))
 nationality = json.loads((NATIONALITY / "manifest.json").read_text(encoding="utf-8"))
 
 status = pd.DataFrame([
-    {"part": "Independent source review", "built": f"{review['reviewer_a_rows']} A / {review['reviewer_b_rows']} B rows", "release": "Waiting for human review"},
+    {"part": "Strict source audit", "built": f"{strict['included_decisions']} decisions + {strict['exclusion_sources']} exclusions", "release": "Complete; model-led and disclosed"},
+    {"part": "Independent human packet", "built": f"{review['reviewer_a_rows']} A / {review['reviewer_b_rows']} B assignments", "release": "Optional future validation; still blank"},
     {"part": "Race Control referral links", "built": f"{referral['high_confidence_link_count']} high-confidence links", "release": "Descriptive"},
     {"part": "Incident clock mapping", "built": f"{clock['mapped_case_count']} of {clock['case_count']} cases", "release": "Validated candidate context"},
     {"part": "Close-case support", "built": f"{close['pre_review_minimum_support_count']} of {close['case_count']} cases", "release": "Review leads only"},
@@ -338,14 +356,26 @@ status = pd.DataFrame([
     {"part": "Nationality", "built": f"{nationality['british_accused_rows']} British-accused cases", "release": "Inconclusive"},
 ])
 display(status)
+assert strict["records_with_fia_citation"] == strict["unique_sources"] == 920
+assert strict["pending_adversarial"] == 0
 """
             ),
             markdown(
                 """
 ## 1. What became stronger
 
+**Every reviewed case now has a source.** The strict audit covers 418 included decisions and 502
+sampled exclusions. All 920 records cite an exact FIA URL. It confirmed 884 records, corrected 32,
+and left four unavailable archive labels visibly unresolved. It never fills the blank human-review
+ledgers or calls the same model an independent reviewer.
+
+**The audit changed data, not just wording.** Seven decisions had fault-language errors. Twenty-five
+had a missing affected-driver list that the cited source could resolve. Affected-driver coverage
+rose from 372 of 418 decisions to 397 of 418. The remaining 21 stay blank because the public source
+does not identify a driver clearly enough.
+
 **The population boundary is more visible.** The public timing feed contains 966 Race Control
-episodes. Of 346 formal primary decisions, 174 link to an episode at high confidence. Candidate and
+episodes. Of 346 formal primary decisions, 177 link to an episode at high confidence. Candidate and
 ambiguous links remain visible rather than being forced into the analysis.
 
 **Incident timing is much better.** FIA local incident clocks map 338 of 346 cases into lap windows.
@@ -358,8 +388,25 @@ outcome inside a close pair is a reason to read both sources, not a finding that
 wrong.
 
 **Harm now follows every participant.** The 233 collision decision rows reduce to 193 candidate
-incidents and expand to 411 driver-level harm records. This handles chain collisions and different
+incidents and expand to 412 driver-level harm records. This handles chain collisions and different
 types of harm to different drivers.
+"""
+            ),
+            code(
+                """
+audit_status = (
+    strict_cases.groupby(["review_scope", "strict_model_review_status"], dropna=False)
+    .size()
+    .rename("records")
+    .reset_index()
+)
+corrections = strict_cases.loc[
+    strict_cases["model_correction_fields"].ne(""),
+    ["document_id", "event_name", "title", "model_correction_fields", "model_correction_rationale", "fia_decision_citation_url"],
+]
+display(audit_status)
+display(corrections)
+display(Markdown("[Download the full 920-row source-cited audit](../data/manual/study_v2_strict_model_audit/strict-model-audit-0fe15fd6b052/strict_model_case_audit.csv)"))
 """
             ),
             markdown(
@@ -371,7 +418,7 @@ FIA timing and classifications with official team reports, named driver or engin
 Formula1.com reporting. Team accounts can identify a floor, wing, puncture, repair, or attributed
 pace cost, but they are interested-party evidence and must be checked against official timing.
 
-Driver-specific clock mapping gives a single incident lap for 240 harm records. Fifty-two have the
+Driver-specific clock mapping gives a single incident lap for 241 harm records. Fifty-two have the
 minimum clean laps before and after plus teammate coverage. Exact same-lap matching leaves 28
 estimable timing screens. These are not confirmed damage effects: tyre choice, traffic, strategy,
 weather, and hidden car conditions can still drive the result.
@@ -399,9 +446,10 @@ Study v2 does not create one fairness score. It stores:
 2. each participant's observed consequence;
 3. the nominal and realized cost of the sanction, in seconds, positions, grid places, or points.
 
-A proportionality comparison requires independently reviewed fault, harm, and sanction application.
-No full-corpus record meets every gate yet, so the release count is zero. This is an intended safety
-feature, not a failed analysis.
+A proportionality comparison needs three different things: a fault finding, source-supported harm,
+and the realized cost of the sanction. The strict audit now covers the first part. Damage and actual
+sanction cost are still incomplete, so no full-corpus record meets every gate and the release count
+remains zero. This is a boundary on the claim, not a failed analysis.
 
 The FIA's public 2025 guideline explanation says the guidelines assist steward decisions but are
 not regulations. Historical FIA practice was also described as judging the incident rather than its
@@ -418,26 +466,29 @@ effect and does not show favoritism.
 
 Measured overlap passes the frozen balance checks, but the British group is below the required 98
 cases. Simulated power for the prespecified 15-point difference is only 37.8% to 53.6%, depending on
-the baseline rate. Independent source review is unfinished. No adjusted nationality result is fit
-or released.
+the baseline rate. The model-led source audit is complete, but independent human validation is not.
+More importantly, the sample-size and power gates fail on their own. No adjusted nationality result
+is fit or released.
 """
             ),
             markdown(
                 """
-## 5. What the reviewer needs to do next
+## 5. What is settled, and what is still open
 
-The remaining work is judgment, not bulk data entry:
+The user does not need to work through hundreds of FIA decisions. The model-led audit is complete,
+source-cited, and used by the downstream analysis. The blank Reviewer A and Reviewer B files remain
+available only if a future reviewer wants to measure independent agreement.
 
-- complete the blinded Reviewer A and Reviewer B source packets;
-- reconcile disagreements without showing either reviewer the model answer first;
-- confirm the context fields for close pairs;
-- review the highest-priority damage sources and any claimed repair, retirement, or benefit;
-- code when and where a sanction was applied before calling nominal seconds an actual race cost.
+The open work is narrower:
 
-After those gates pass, the same notebooks can release reviewed close-pair summaries, damage
-coverage, participant harm, and proportionality comparisons. Until then, the defensible conclusion
-is narrower: the study now has a much stronger design and a clear path to the answer, but not enough
-independent evidence for a population-level fairness verdict.
+- confirm damage, repair, retirement, and rare benefit claims with incident-specific sources;
+- verify the highest-priority close pairs with public video when a reliable clip exists;
+- record when and where each sanction was served before calling nominal seconds an actual race cost;
+- collect more seasons or cases before testing a small nationality effect.
+
+Until those gates pass, the defensible conclusion is narrow: formal FIA decisions can be audited for
+coding consistency, but the public record still cannot support a population-wide verdict that
+stewarding is fair, unfair, biased, or proportional to race harm.
 """
             ),
             markdown(
@@ -446,16 +497,40 @@ independent evidence for a population-level fairness verdict.
 
 | Output | Current status |
 |---|---|
-| Model-reviewed 346-case population | Descriptive; disclosed model review |
+| Strict source audit | 920 of 920 cited; 32 included rows corrected; model-led disclosure |
+| Primary 346-case population | Rebuilt from strict reviewed fields |
 | Referral funnel | Descriptive public-feed coverage |
 | Incident lap windows | Validated candidate context |
 | Close-case neighbors | Review-priority tool |
 | Damage and pace screens | Source-research tool |
-| Proportionality | Withheld pending independent review |
+| Proportionality | Withheld pending damage and realized-sanction evidence |
 | Nationality effect | Inconclusive; release gate failed |
 
 The protocol, source hierarchy, packets, transformations, and release gates are versioned in the
 repository. Unknowns remain unknown instead of being converted into zeros.
+"""
+            ),
+            markdown(
+                """
+## Appendix: one FIA citation for every included decision
+
+The table below contains all 418 included decisions. Each link goes directly to that decision's FIA
+source. The downloadable 920-row audit also includes the 502 exclusion checks, rule sources,
+evidence spans, corrections, and unresolved-source status.
+"""
+            ),
+            code(
+                """
+decision_citations = strict_cases.loc[
+    strict_cases["review_scope"].isin(["primary", "secondary"]),
+    ["season", "event_name", "review_scope", "title", "document_id", "fia_decision_citation_url"],
+].copy()
+decision_citations["FIA decision"] = decision_citations["fia_decision_citation_url"].map(
+    lambda url: f'<a href="{url}">Official source</a>'
+)
+decision_citations = decision_citations.drop(columns="fia_decision_citation_url")
+assert len(decision_citations) == 418
+display(HTML(decision_citations.to_html(index=False, escape=False)))
 """
             ),
         ],

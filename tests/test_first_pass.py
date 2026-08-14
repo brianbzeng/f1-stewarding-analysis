@@ -284,9 +284,17 @@ def test_first_pass_never_overwrites_preexisting_editable_values(tmp_path: Path)
     ("reason", "secondary", "expected"),
     [
         ("No driver was wholly or predominantly to blame.", False, "no_conclusion"),
+        ("None of the drivers was predominately at fault.", False, "no_conclusion"),
+        ("No one was predominantly at fault.", False, "no_conclusion"),
         ("Neither driver was predominantly to blame.", False, "no_conclusion"),
         ("The collision was not through the fault of either driver.", False, "no_conclusion"),
+        (
+            "We were not able to identify one or more drivers wholly or predominantly to blame.",
+            False,
+            "no_conclusion",
+        ),
         ("The Stewards considered this a racing incident.", False, "racing_incident"),
+        ("The collision was a racing “incident”.", False, "racing_incident"),
         (
             "This was a racing incident and no driver was predominantly to blame.",
             False,
@@ -296,7 +304,10 @@ def test_first_pass_never_overwrites_preexisting_editable_values(tmp_path: Path)
         ("The driver was wholly to blame.", False, "wholly_to_blame"),
         ("The driver was fully at fault.", False, "wholly_to_blame"),
         ("The driver was solely responsible.", False, "wholly_to_blame"),
+        ("The driver admitted the collision was his fault.", False, "wholly_to_blame"),
+        ("The driver freely admitted it was his mistake.", False, "wholly_to_blame"),
         ("The driver was predominately to blame.", False, "predominantly_to_blame"),
+        ("The driver was wholy or predeominantly to blame.", False, "predominantly_to_blame"),
         ("The driver was predominantly at fault.", False, "predominantly_to_blame"),
         ("The driver was mainly at fault.", False, "mainly_at_fault"),
         ("The car impeded another driver.", True, "not_applicable"),

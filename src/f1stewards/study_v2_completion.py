@@ -15,15 +15,17 @@ from f1stewards.config import (
     load_yaml,
 )
 from f1stewards.study_v2_review import validate_review_packet
+from f1stewards.study_v2_strict_audit import validate_strict_model_audit
 
 EXPECTED_RUN_IDS = {
+    "strict_model_audit": "strict-model-audit-0fe15fd6b052",
     "human_review": "study-v2-review-7cb1b29b5251",
-    "referral": "referrals-5d0559ad2878",
+    "referral": "referrals-a4f9bd038101",
     "incident_clock": "incident-clock-3dc8bb350308",
-    "incident_context": "incident-context-a1de9ac2c8ea",
-    "close_cases": "close-cases-36f9bc70de82",
-    "damage": "damage-screening-66381b550583",
-    "layers": "study-v2-layers-a9b8ff776470",
+    "incident_context": "incident-context-707a44aafeb4",
+    "close_cases": "close-cases-b175fe03fa80",
+    "damage": "damage-screening-23c77a57134e",
+    "layers": "study-v2-layers-eed6774fb6c5",
     "nationality": "nationality-diagnostic-2b1b0ffdd961",
 }
 
@@ -127,18 +129,37 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
         "A=496;B=158;blank;blind",
     )
 
+    strict_path = artifact_paths["strict_model_audit"]
+    strict_manifest = _manifest(strict_path)
+    strict_validation = validate_strict_model_audit(strict_path, allow_pending=False)
+    record(
+        "strict_model_source_audit_complete",
+        strict_validation["status"].eq("pass").all()
+        and strict_manifest["unique_sources"] == 920
+        and strict_manifest["records_with_fia_citation"] == 920
+        and strict_manifest["corrected_included_rows"] == 32
+        and strict_manifest["pending_adversarial"] == 0
+        and strict_manifest["human_review_ledgers_modified"] is False,
+        (
+            f"sources={strict_manifest['unique_sources']};citations="
+            f"{strict_manifest['records_with_fia_citation']};corrections="
+            f"{strict_manifest['corrected_included_rows']}"
+        ),
+        "920 source-cited;32 corrected;0 pending;model-led disclosure",
+    )
+
     referral = _manifest(artifact_paths["referral"])
     record(
         "race_control_referral_funnel_built",
         referral["episode_count"] == 966
-        and referral["high_confidence_link_count"] == 174
+        and referral["high_confidence_link_count"] == 177
         and referral["primary_adjudication_count"] == 346
         and referral["human_validation_complete"] is False,
         (
             f"episodes={referral['episode_count']};links={referral['high_confidence_link_count']};"
             f"cases={referral['primary_adjudication_count']}"
         ),
-        "966;174;346;human validation queued",
+        "966;177;346;human validation queued",
     )
 
     clock = _manifest(artifact_paths["incident_clock"])
@@ -204,8 +225,8 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
     record(
         "representative_collision_harm_screen",
         damage["candidate_incident_count"] == 193
-        and damage["participant_record_count"] == 411
-        and damage["participant_rows_with_incident_lap"] == 240
+        and damage["participant_record_count"] == 412
+        and damage["participant_rows_with_incident_lap"] == 241
         and damage["persistent_pace_primary_eligible_rows"] == 52
         and harm_screen["damage_state"].eq("unknown").all(),
         (
@@ -214,7 +235,7 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
             f"{damage['participant_rows_with_incident_lap']};pace="
             f"{damage['persistent_pace_primary_eligible_rows']}"
         ),
-        "193;411;240;52;no timing-only damage inference",
+        "193;412;241;52;no timing-only damage inference",
     )
     record(
         "independent_damage_review_queued",
@@ -243,7 +264,7 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
     record(
         "conduct_consequence_sanction_layers_separate",
         layers["conduct_rows"] == 346
-        and layers["consequence_rows"] == 411
+        and layers["consequence_rows"] == 412
         and layers["sanction_rows"] == 346
         and layers["pace_screen_rows"] == 52
         and layers["pace_screen_estimable_rows"] == 28
@@ -252,7 +273,7 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
             f"conduct={layers['conduct_rows']};consequence={layers['consequence_rows']};"
             f"sanction={layers['sanction_rows']};pace={layers['pace_screen_estimable_rows']}"
         ),
-        "346;411;346;28;no composite score",
+        "346;412;346;28;no composite score",
     )
     record(
         "proportionality_gate_closed",
@@ -291,11 +312,12 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
     )
     html = artifact_paths["report_html"].read_text(encoding="utf-8")
     report_markers = (
-        "Study v2 progress report",
+        "The Cost of Discretion — Study v2",
+        "920 of 920 cited",
         "966 Race Control",
-        "240 harm records",
+        "241 harm records",
         "37.8% to 53.6%",
-        "No full-corpus record meets every gate yet, so the release count is zero.",
+        "remains zero",
     )
     record(
         "integrated_html_report_built",
@@ -310,6 +332,7 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
         "claim-16": "study_v2_validated_candidate_context",
         "claim-17": "withheld_pending_context_review",
         "claim-18": "study_v2_screening_only",
+        "claim-19": "study_v2_model_audit_complete",
     }
     observed_claim_status = claims.set_index("claim_id")["status"].to_dict()
     record(

@@ -1,26 +1,28 @@
 control,status,observed,expected
 protocol_frozen,pass,study_v2_v1|2026-08-13,study_v2_v1|2026-08-13
-all_frozen_artifacts_exist,pass,10,10
+all_frozen_artifacts_exist,pass,11,11
+strict_model_audit_content_addressed_run,pass,strict-model-audit-0fe15fd6b052|strict-model-audit-0fe15fd6b052,strict-model-audit-0fe15fd6b052
 human_review_content_addressed_run,pass,study-v2-review-7cb1b29b5251|study-v2-review-7cb1b29b5251,study-v2-review-7cb1b29b5251
-referral_content_addressed_run,pass,referrals-5d0559ad2878|referrals-5d0559ad2878,referrals-5d0559ad2878
+referral_content_addressed_run,pass,referrals-a4f9bd038101|referrals-a4f9bd038101,referrals-a4f9bd038101
 incident_clock_content_addressed_run,pass,incident-clock-3dc8bb350308|incident-clock-3dc8bb350308,incident-clock-3dc8bb350308
-incident_context_content_addressed_run,pass,incident-context-a1de9ac2c8ea|incident-context-a1de9ac2c8ea,incident-context-a1de9ac2c8ea
-close_cases_content_addressed_run,pass,close-cases-36f9bc70de82|close-cases-36f9bc70de82,close-cases-36f9bc70de82
-damage_content_addressed_run,pass,damage-screening-66381b550583|damage-screening-66381b550583,damage-screening-66381b550583
-layers_content_addressed_run,pass,study-v2-layers-a9b8ff776470|study-v2-layers-a9b8ff776470,study-v2-layers-a9b8ff776470
+incident_context_content_addressed_run,pass,incident-context-707a44aafeb4|incident-context-707a44aafeb4,incident-context-707a44aafeb4
+close_cases_content_addressed_run,pass,close-cases-b175fe03fa80|close-cases-b175fe03fa80,close-cases-b175fe03fa80
+damage_content_addressed_run,pass,damage-screening-23c77a57134e|damage-screening-23c77a57134e,damage-screening-23c77a57134e
+layers_content_addressed_run,pass,study-v2-layers-eed6774fb6c5|study-v2-layers-eed6774fb6c5,study-v2-layers-eed6774fb6c5
 nationality_content_addressed_run,pass,nationality-diagnostic-2b1b0ffdd961|nationality-diagnostic-2b1b0ffdd961,nationality-diagnostic-2b1b0ffdd961
 damage_source_hierarchy_registered,pass,14,>=10 HTTPS source registries
 damage_seed_awaits_independent_review,pass,4,4 pending model-researched examples
 blind_human_review_packet_valid,pass,A=496;B=158,A=496;B=158;blank;blind
-race_control_referral_funnel_built,pass,episodes=966;links=174;cases=346,966;174;346;human validation queued
+strict_model_source_audit_complete,pass,sources=920;citations=920;corrections=32,920 source-cited;32 corrected;0 pending;model-led disclosure
+race_control_referral_funnel_built,pass,episodes=966;links=177;cases=346,966;177;346;human validation queued
 incident_clock_validation,pass,mapped=338/346;known=31/31,338/346 mapped;31/31 known laps contained
 incident_context_enrichment_built,pass,cases=346;clock=143;RC=12,346;143;12;pending human context review
 outcome_blind_close_case_matching,pass,cases=346;edges=1655;supported=317,346;1655;317;outcome-blind;human review queued
-representative_collision_harm_screen,pass,incidents=193;participants=411;laps=240;pace=52,193;411;240;52;no timing-only damage inference
+representative_collision_harm_screen,pass,incidents=193;participants=412;laps=241;pace=52,193;412;241;52;no timing-only damage inference
 independent_damage_review_queued,pass,{'pending': 4},all pending
-conduct_consequence_sanction_layers_separate,pass,conduct=346;consequence=411;sanction=346;pace=28,346;411;346;28;no composite score
+conduct_consequence_sanction_layers_separate,pass,conduct=346;consequence=412;sanction=346;pace=28,346;412;346;28;no composite score
 proportionality_gate_closed,pass,0,0 until independent conduct and harm review
 nationality_diagnostic_gated,pass,British=44;minimum_exposed_sample_not_met|target_power_not_met|independent_human_review_incomplete,44;sample and power gates fail;no adjusted effect
-notebook_sequence_executed,pass,07_study_v2_protocol_and_review.ipynb:code_cells=2;missing_counts=0;errors=0|08_study_v2_referral_and_context.ipynb:code_cells=3;missing_counts=0;errors=0|09_study_v2_close_cases.ipynb:code_cells=2;missing_counts=0;errors=0|10_study_v2_damage_and_harm.ipynb:code_cells=3;missing_counts=0;errors=0|11_study_v2_nationality.ipynb:code_cells=3;missing_counts=0;errors=0|12_study_v2_report.ipynb:code_cells=3;missing_counts=0;errors=0,07-12 executed with no error outputs
-integrated_html_report_built,pass,313113,nonempty report with all phase markers
-study_v2_claims_registered,pass,"{'claim-15': 'study_v2_descriptive', 'claim-16': 'study_v2_validated_candidate_context', 'claim-17': 'withheld_pending_context_review', 'claim-18': 'study_v2_screening_only'}","{'claim-15': 'study_v2_descriptive', 'claim-16': 'study_v2_validated_candidate_context', 'claim-17': 'withheld_pending_context_review', 'claim-18': 'study_v2_screening_only'}"
+notebook_sequence_executed,pass,07_study_v2_protocol_and_review.ipynb:code_cells=2;missing_counts=0;errors=0|08_study_v2_referral_and_context.ipynb:code_cells=3;missing_counts=0;errors=0|09_study_v2_close_cases.ipynb:code_cells=2;missing_counts=0;errors=0|10_study_v2_damage_and_harm.ipynb:code_cells=3;missing_counts=0;errors=0|11_study_v2_nationality.ipynb:code_cells=3;missing_counts=0;errors=0|12_study_v2_report.ipynb:code_cells=5;missing_counts=0;errors=0,07-12 executed with no error outputs
+integrated_html_report_built,pass,490893,nonempty report with all phase markers
+study_v2_claims_registered,pass,"{'claim-15': 'study_v2_descriptive', 'claim-16': 'study_v2_validated_candidate_context', 'claim-17': 'withheld_pending_context_review', 'claim-18': 'study_v2_screening_only', 'claim-19': 'study_v2_model_audit_complete'}","{'claim-15': 'study_v2_descriptive', 'claim-16': 'study_v2_validated_candidate_context', 'claim-17': 'withheld_pending_context_review', 'claim-18': 'study_v2_screening_only', 'claim-19': 'study_v2_model_audit_complete'}"

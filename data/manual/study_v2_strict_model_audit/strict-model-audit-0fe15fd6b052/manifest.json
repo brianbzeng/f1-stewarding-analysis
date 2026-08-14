@@ -1,0 +1,47 @@
+{
+  "analysis_adapter_included_rows": 418,
+  "analysis_adapter_scope": "418 included decisions only; excluded rows retain parent fields",
+  "corrected_field_counts": {
+    "affected_driver_numbers": 25,
+    "fault_language": 7
+  },
+  "corrected_included_rows": 32,
+  "disclosure": "model_led_source_review_not_independent_human_annotation",
+  "exclusion_source_review_counts": {
+    "source_confirmed_exclusion": 464,
+    "source_confirmed_exclusion_with_supporting_source": 2,
+    "source_unavailable": 4,
+    "version_pair_confirmed": 32
+  },
+  "exclusion_sources": 502,
+  "frozen_at": "2026-08-13",
+  "human_review_ledgers_modified": false,
+  "included_decisions": 418,
+  "included_with_evidence_span": 418,
+  "model_status_counts": {
+    "model_confirmed_from_cited_source": 884,
+    "model_corrected_from_cited_source": 32,
+    "model_unresolved_public_evidence": 4
+  },
+  "outputs": {
+    "adjudication_coding_worklist.csv": "c8fe81673f688927ca06556fbae6e2d659fc005af9e01e5dba7afdd77d4c0e1b",
+    "adversarial_review_queue.csv": "56102577cfe97a6efc2a95ac5e40aed6e434b0675b6039ac7de20ee7efd18952",
+    "audit_summary.csv": "4c841665e54e057277a2ad4f57b47b8ed877264fc1e7bf2896a704bd825eebfe",
+    "source_only_packet.csv": "98e16b726753a3afd2be202f921a821fd1d8a58cf74ccff94d48c53e81572f94",
+    "strict_model_case_audit.csv": "0fe15fd6b052cfd868c509f1bf23c6f5659bf64fba2f20e10e284812825dc0a2"
+  },
+  "parent_human_review_packet": "study-v2-review-7cb1b29b5251",
+  "parent_model_review_run": "model-review-3dacc1268f13",
+  "pending_adversarial": 0,
+  "primary_decisions": 346,
+  "records_with_fia_citation": 920,
+  "reviewer_model": "gpt-5.6-sol",
+  "rule_comparison_citations": 33,
+  "run_id": "strict-model-audit-0fe15fd6b052",
+  "schema_version": "study_v2_strict_model_audit_v1",
+  "secondary_decisions": 72,
+  "supporting_context_citations": 3,
+  "terminal_model_reviews": 920,
+  "unique_sources": 920,
+  "version_successor_citations": 32
+}

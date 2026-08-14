@@ -152,30 +152,41 @@ def explicit_fault_language(reason_text: Any, *, secondary: bool = False) -> str
     text = re.sub(r"\s+", " ", str(reason_text).casefold()).strip()
     if secondary:
         return "not_applicable"
-    if "racing incident" in text:
+    if re.search(r"\bracing\s+[\"'“”‘’]?incident[\"'“”‘’]?\b", text):
         return "racing_incident"
     if re.search(r"\b(?:both drivers|each driver).{0,80}\b(?:contributed|responsible)\b", text):
         return "shared_fault"
     no_fault_patterns = (
         r"\bno driver\b.{0,100}\b(?:blame|blamed|fault)\b",
+        r"\bnone of the drivers\b.{0,100}\b(?:blame|blamed|fault)\b",
+        r"\bno one\b.{0,100}\b(?:blame|blamed|fault)\b",
         r"\bneither (?:driver|car|was|were)\b.{0,100}\b(?:blame|blamed|fault)\b",
         r"\bnot (?:through )?the fault of either driver\b",
+        r"\bnot able to identify\b.{0,140}\b(?:driver|drivers)\b.{0,140}"
+        r"\b(?:blame|blamed|fault)\b",
         r"\b(?:did not|do not|cannot|could not) (?:consider|determine|find|believe)"
         r".{0,100}\b(?:either|any) driver\b.{0,100}\b(?:blame|fault)\b",
     )
     if any(re.search(pattern, text) for pattern in no_fault_patterns):
         return "no_conclusion"
-    if re.search(
-        r"\b(?:was|is|considered|found|judged|determined|deemed) "
-        r"(?:wholly|fully|solely) (?:to blame|at fault|responsible)\b",
-        text,
-    ) or re.search(r"\bwholly the fault of\b", text):
+    if (
+        re.search(
+            r"\b(?:was|is|considered|found|judged|determined|deemed) "
+            r"(?:wholly|fully|solely) (?:to blame|at fault|responsible)\b",
+            text,
+        )
+        or re.search(r"\bwholly the fault of\b", text)
+        or re.search(
+            r"\b(?:admitted|accepted).{0,60}\b(?:collision was his fault|it was his mistake)\b",
+            text,
+        )
+    ):
         return "wholly_to_blame"
     if re.search(
         r"\b(?:was|is|considered|found|judged|determined|deemed) "
         r"predomin(?:antly|ately|antely|atly) (?:to blame|at fault|responsible)\b",
         text,
-    ):
+    ) or re.search(r"\bwhol?ly or pre?d[e]?ominantly? to blame\b", text):
         return "predominantly_to_blame"
     if re.search(
         r"\b(?:was|is|considered|found|judged|determined|deemed) mainly at fault\b",

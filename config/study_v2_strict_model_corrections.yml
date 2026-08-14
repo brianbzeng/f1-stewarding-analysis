@@ -1,0 +1,144 @@
+strict_model_corrections:
+  schema_version: study_v2_strict_model_corrections_v1
+  disclosure: model_led_source_review_not_independent_human_annotation
+  records:
+    - document_id: fia-2018-sgp-21e75b934044
+      changes: {fault_language: no_conclusion}
+      evidence: "none of the drivers was predominantely at fault"
+      rationale: The source explicitly rejects predominant fault; the parent label reversed the finding.
+    - document_id: fia-2021-gbr-74d32cf58767
+      changes: {fault_language: no_conclusion}
+      evidence: "no one was predominantly at fault. The Stewards agree"
+      rationale: The source explicitly rejects predominant fault; the parent label reversed the finding.
+    - document_id: fia-2019-jpn-9be40f8bba4d
+      changes: {fault_language: no_conclusion}
+      evidence: "Car 16 is judged predominantly at fault for the incident"
+      rationale: The decision is addressed to Car 33; Car 16's fault cannot be assigned to the accused-driver role for Car 33.
+    - document_id: fia-2022-gbr-81e6a9badf51
+      changes: {fault_language: predominantly_to_blame}
+      evidence: "Car 22 was wholly or predominantly to blame for the collision"
+      rationale: The source makes the threshold fault finding; no_conclusion discards it.
+    - document_id: fia-2022-sau-626edbbd5a3a
+      changes: {fault_language: predominantly_to_blame}
+      evidence: "Car 23 was wholly or predominantly to blame for the collision"
+      rationale: The source makes the threshold fault finding; no_conclusion discards it.
+    - document_id: fia-2024-sau-675654dfe88e
+      changes: {fault_language: predominantly_to_blame}
+      evidence: "Car 20 was wholly or predominantly to blame"
+      rationale: The source makes the threshold fault finding; no_conclusion discards it.
+    - document_id: fia-2025-ned-644f47d1f6a0
+      changes: {fault_language: predominantly_to_blame}
+      evidence: "Car 55 was wholly or predominantly to blame for the collision"
+      rationale: The source makes the threshold fault finding; no_conclusion discards it.
+
+    - document_id: fia-2018-jpn-81677672dab7
+      changes: {affected_driver_numbers: "33"}
+      evidence: "Car 5 and 33 collided in turn 13"
+      rationale: The cited FIA fact identifies Car 33 as the counterparty.
+    - document_id: fia-2018-abu-b67f80da207e
+      changes: {affected_driver_numbers: "8"}
+      evidence: "Cars 27 & 8 collided in turn 9"
+      rationale: The cited FIA fact identifies Car 8 as the counterparty.
+    - document_id: fia-2020-70a-2f908d545c9e
+      changes: {affected_driver_numbers: "6"}
+      evidence: "striking Latifi’s car"
+      rationale: Latifi drove Car 6 at this event; the FIA reason names the directly struck counterparty.
+    - document_id: fia-2020-esp-bc594cf0008c
+      changes: {affected_driver_numbers: "8"}
+      evidence: "Grosjean avoided a collision by going off track"
+      rationale: Grosjean drove Car 8; the FIA reason identifies the alleged affected driver even though no breach was found.
+    - document_id: fia-2021-aut-01e04f2a38ce
+      changes: {affected_driver_numbers: "16"}
+      evidence: "LEC was forced off the track"
+      rationale: Leclerc drove Car 16; the FIA reason identifies the affected driver.
+    - document_id: fia-2021-aut-5c20f18ec25e
+      changes: {affected_driver_numbers: "16"}
+      evidence: "LEC was forced off the track"
+      rationale: Leclerc drove Car 16; the FIA reason identifies the affected driver.
+    - document_id: fia-2021-aut-f412d61f822f
+      changes: {affected_driver_numbers: "11"}
+      evidence: "PER was forced off the track"
+      rationale: Perez drove Car 11; the FIA reason identifies the affected driver.
+    - document_id: fia-2022-bhr-3f720bfded90
+      changes: {affected_driver_numbers: "4"}
+      evidence: "STR was overtaking NOR"
+      rationale: Norris drove Car 4; the source identifies the alleged counterparty even though no breach was found.
+    - document_id: fia-2022-mia-bbafb6bcc091
+      changes: {affected_driver_numbers: "31|23"}
+      evidence: "the time difference to the two following Cars (31 and 23) remained unchanged"
+      rationale: The source identifies both drivers potentially affected by the alleged lasting advantage.
+    - document_id: fia-2022-aut-ab1a77f87104
+      changes: {affected_driver_numbers: "4"}
+      evidence: "forcing Norris off"
+      rationale: Norris drove Car 4; the FIA reason identifies the affected driver.
+    - document_id: fia-2022-hun-12e2b5910b5d
+      changes: {affected_driver_numbers: "47"}
+      evidence: "ZHO attempted an overtake of MSC"
+      rationale: Schumacher drove Car 47; the FIA reason identifies the counterparty.
+    - document_id: fia-2022-mex-0c20b3af2f45
+      changes: {affected_driver_numbers: "18"}
+      evidence: "Gasly made a pass on Stroll"
+      rationale: Stroll drove Car 18; the FIA reason identifies the affected driver.
+    - document_id: fia-2022-mex-9975b4f5dd0e
+      changes: {affected_driver_numbers: "22"}
+      evidence: "attempt to pass Tsunoda"
+      rationale: Tsunoda drove Car 22; the FIA reason identifies the collision counterparty.
+    - document_id: fia-2023-gbr-c357ab019929
+      changes: {affected_driver_numbers: "10"}
+      evidence: "Stroll re-entered the circuit at an angle that caused him to collide with Gasly"
+      rationale: Gasly drove Car 10; the FIA reason identifies the collision counterparty.
+    - document_id: fia-2023-bel-114852357eb8
+      changes: {affected_driver_numbers: "11"}
+      evidence: "understeered into Perez"
+      rationale: Perez drove Car 11; the FIA reason identifies the collision counterparty.
+    - document_id: fia-2023-ned-26a60af9f412
+      changes: {affected_driver_numbers: "63"}
+      evidence: "understeered into Russell"
+      rationale: Russell drove Car 63; the FIA reason identifies the collision counterparty.
+    - document_id: fia-2023-ita-06048f646efe
+      changes: {affected_driver_numbers: "77"}
+      evidence: "hit Bottas who was already in the turn"
+      rationale: Bottas drove Car 77; the FIA reason identifies the collision counterparty.
+    - document_id: fia-2023-ita-695ef0d50644
+      changes: {affected_driver_numbers: "31"}
+      evidence: "rejoined after turn 2, passing Ocon"
+      rationale: Ocon drove Car 31; the FIA reason identifies the affected driver.
+    - document_id: fia-2023-ita-c07ce16b4e46
+      changes: {affected_driver_numbers: "81"}
+      evidence: "made contact with Piastri"
+      rationale: Piastri drove Car 81; the FIA reason identifies the collision counterparty.
+    - document_id: fia-2023-ita-de884677f296
+      changes: {affected_driver_numbers: "40"}
+      evidence: "gained the position over Lawson"
+      rationale: Lawson drove Car 40; the FIA reason identifies the affected driver.
+    - document_id: fia-2023-jpn-ce0c4d6ce752
+      changes: {affected_driver_numbers: "77"}
+      evidence: "BOT was about to overtake SAR at turn 11"
+      rationale: Bottas drove Car 77; the FIA reason identifies the collision counterparty.
+    - document_id: fia-2024-mex-11839f036c68
+      changes: {affected_driver_numbers: "18"}
+      evidence: "Stroll was attempting to overtake Perez"
+      rationale: Stroll drove Car 18; the source identifies the alleged counterparty even though no breach was found.
+    - document_id: fia-2024-mex-9398d22e8e7e
+      changes: {affected_driver_numbers: "4"}
+      evidence: "when he started being forced off the track"
+      rationale: Norris drove Car 4; the FIA reason identifies the affected driver.
+    - document_id: fia-2024-mex-f2d0b4da1ba3
+      changes: {affected_driver_numbers: "4"}
+      evidence: "Verstappen attempted to pass Norris on the inside at Turn 8"
+      rationale: Norris drove Car 4; the FIA reason identifies the affected driver.
+    - document_id: fia-2025-can-cb1693dfcc0a
+      changes: {affected_driver_numbers: "10"}
+      evidence: "GAS was forced off at T 13"
+      rationale: Gasly drove Car 10; the FIA reason identifies the affected driver.
+
+    - document_id: fia-2023-aus-0144b2323236
+      changes: {}
+      resolved_checks: [family]
+      evidence: "determined that it was a first lap racing incident"
+      rationale: The paired-car decision and first-lap racing-incident finding support the collision-family coding despite the extracted Fact omitting the word collision.
+    - document_id: fia-2023-aus-500bb4f284ba
+      changes: {}
+      resolved_checks: [family]
+      evidence: "determined that it was a first lap racing incident"
+      rationale: The paired-car decision and first-lap racing-incident finding support the collision-family coding despite the extracted Fact omitting the word collision.

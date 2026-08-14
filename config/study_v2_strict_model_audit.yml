@@ -1,0 +1,51 @@
+strict_model_audit:
+  schema_version: study_v2_strict_model_audit_v1
+  frozen_at: 2026-08-13
+  reviewer_model: gpt-5.6-sol
+  disclosure: model_led_source_review_not_independent_human_annotation
+  parent_model_review_run: model-review-3dacc1268f13
+  parent_human_review_packet: study-v2-review-7cb1b29b5251
+  correction_ledger: config/study_v2_strict_model_corrections.yml
+  exclusion_resolution_ledger: config/study_v2_strict_exclusion_resolutions.yml
+
+  population:
+    full_review_scopes: [primary, secondary]
+    exclusion_scope: exclusion_qa
+    expected_primary_decisions: 346
+    expected_secondary_decisions: 72
+    expected_exclusion_sources: 502
+    expected_unique_sources: 920
+
+  citation_contract:
+    require_fia_source_per_record: true
+    require_evidence_span_per_included_decision: true
+    require_rule_source_for_rule_comparison: true
+    require_exact_url_not_search_result: true
+    unresolved_citation_blocks_review_completion: true
+
+  review_contract:
+    do_not_overwrite_human_review_ledgers: true
+    do_not_apply_later_guidelines_retrospectively: true
+    separate_fia_finding_from_public_evidence_assessment: true
+    separate_fault_from_consequence: true
+    no_forced_binary_when_material_evidence_is_unavailable: true
+    timing_alone_cannot_establish_fault_or_damage: true
+    same_model_second_pass_is_adversarial_not_independent: true
+
+  public_guidelines:
+    driving_standards:
+      effective_from: 2025-02-20
+      title: 2025 Formula 1 Driving Standards Guidelines v4.1
+      url: https://www.fia.com/sites/default/files/f1_driving_standards_guidelines_version_4.1_feb_20_2025.pdf
+    penalty_guidelines:
+      effective_from: 2025-05-14
+      title: 2025 Formula 1 Penalty and Point Guidelines
+      url: https://www.fia.com/sites/default/files/2025_f1_guidelines_penalty_points_overview_-_14_may_clean_0.pdf
+    publication_explanation:
+      title: FIA publication and non-regulatory-status explanation
+      url: https://www.fia.com/news/fia-adds-further-transparency-fia-formula-one-world-championship-publication-stewards
+
+  terminal_statuses:
+    - model_confirmed_from_cited_source
+    - model_corrected_from_cited_source
+    - model_unresolved_public_evidence

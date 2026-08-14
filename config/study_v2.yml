@@ -115,13 +115,14 @@ study_v2:
     unresolved_human_fields_must_remain_visible: true
     notebook_sequence: [7, 8, 9, 10, 11, 12]
     artifacts:
+      strict_model_audit: data/manual/study_v2_strict_model_audit/strict-model-audit-0fe15fd6b052
       human_review: data/manual/study_v2_review_packets/study-v2-review-7cb1b29b5251
-      referral: data/manual/study_v2_referrals/referrals-5d0559ad2878
+      referral: data/manual/study_v2_referrals/referrals-a4f9bd038101
       incident_clock: data/manual/study_v2_incident_clock/incident-clock-3dc8bb350308
-      incident_context: data/manual/study_v2_incident_context/incident-context-a1de9ac2c8ea
-      close_cases: data/manual/study_v2_close_cases/close-cases-36f9bc70de82
-      damage: data/manual/study_v2_damage/damage-screening-66381b550583
-      layers: data/manual/study_v2_layers/study-v2-layers-a9b8ff776470
+      incident_context: data/manual/study_v2_incident_context/incident-context-707a44aafeb4
+      close_cases: data/manual/study_v2_close_cases/close-cases-b175fe03fa80
+      damage: data/manual/study_v2_damage/damage-screening-23c77a57134e
+      layers: data/manual/study_v2_layers/study-v2-layers-eed6774fb6c5
       nationality: data/manual/study_v2_nationality/nationality-diagnostic-2b1b0ffdd961
       report_notebook: notebooks/12_study_v2_report.ipynb
       report_html: reports/the_cost_of_discretion_study_v2.html

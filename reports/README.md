@@ -7,7 +7,7 @@ or a [code-free HTML report](the_cost_of_discretion.html).
 
 The follow-on [Study v2 report](the_cost_of_discretion_study_v2.html) and its
 [executable notebook](../notebooks/12_study_v2_report.ipynb) implement the improvement roadmap while
-keeping unfinished human-review gates visible.
+adding a strict source-cited model audit and keeping the remaining evidence gates visible.
 
 ### Main finding
 
@@ -28,11 +28,11 @@ The evidence system covers all 173 completed events from 2018 through 2025: 9,46
 records, 2,003 version-preserving outcome records, 1,984 local source files, and 1,935 effective
 steward decisions. The released primary set contains 346 formal Race/Sprint cases across 131 events.
 
-GPT-5.6 Sol completed a disclosed second pass over all 4,441 review obligations. This was a model-led
-review of extracted FIA evidence, structured checks, and targeted source inspection—not an
-independent human review or a claim that every PDF was reread line by line. The review found 16
-unlinked correction/replacement documents and several sanction-field errors. Four unavailable
-recalled records remain metadata-only exclusions; no source-unavailable record received an outcome.
+GPT-5.6 Sol completed a disclosed strict audit of all 418 included decisions and 502 sampled
+exclusions. Every one of the 920 audit rows cites an FIA source. The audit corrected seven fault
+labels and 25 affected-driver lists, confirmed 32 predecessor-successor version pairs, and retained
+four unavailable archive labels as unresolved public evidence. This is model-led source review, not
+independent human annotation.
 
 ![The source population narrows to 346 model-reviewed cases](generated/population_flow.png)
 
@@ -64,21 +64,23 @@ The result is **inconclusive**. It is not evidence of either bias or no bias.
 
 The next version now has executable scaffolding for all six recommendations:
 
-1. Blinded independent-review packets contain 496 Reviewer A and 158 Reviewer B assignments.
-2. The public Race Control feed yields 966 episodes and 174 high-confidence decision links.
+1. The strict model audit covers 920 source records with zero unresolved adversarial exceptions.
+   Blank blinded packets remain available for optional future independent human validation.
+2. The public Race Control feed yields 966 episodes and 177 high-confidence decision links.
 3. Outcome-blind matching gives at least five close neighbors to 317 of 346 cases.
 4. Conduct, participant harm, and sanction burden are stored in separate tables and units.
-5. Driver-specific timing gives 240 single-lap harm mappings and 28 estimable teammate-relative
+5. Driver-specific timing gives 241 single-lap harm mappings and 28 estimable teammate-relative
    pace screens; these remain source-research leads, not confirmed damage effects.
 6. Nationality remains gated and inconclusive: the British-accused cell is 44 versus the frozen
    minimum of 98, and the 15-point power target is not met.
 
-Human review has not been filled in. The proportionality release therefore remains at zero instead
-of turning unreviewed timing or model labels into a fairness verdict.
+The proportionality release remains at zero because damage, causal harm, and realized sanction cost
+are not complete enough for a population claim. The report does not turn timing screens or nominal
+penalties into a fairness verdict.
 
 The machine-verifiable [Study v2 completion audit](generated/study_v2/completion_audit.csv) checks
-25 protocol, artifact, gate, notebook, and report controls. It does not substitute for the queued
-independent review.
+27 protocol, citation, artifact, gate, notebook, and report controls. It preserves the distinction
+between model review and independent human review.
 
 ### Portfolio evidence
 

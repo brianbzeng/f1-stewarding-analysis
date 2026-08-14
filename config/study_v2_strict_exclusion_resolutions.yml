@@ -1,0 +1,23 @@
+strict_model_exclusion_resolutions:
+  schema_version: study_v2_strict_exclusion_resolutions_v1
+  disclosure: model_led_source_review_not_independent_human_annotation
+  records:
+    - document_id: fia-2019-ita-b42dad90f42f
+      reviewed_basis: version_predecessor_pair_review
+      successor_document_id: fia-2019-ita-aa4687bd7ef0
+      supporting_source_title: Corrected - Offence - Car 26 (Track Limits)
+      supporting_source_url: https://www.fia.com/sites/default/files/decision-document/2019%20Italian%20Grand%20Prix%20-%20Corrected%20-%20Offence%20-%20Car%2026%20(Track%20Limits).pdf
+      evidence: The later FIA document is explicitly titled Corrected and repeats the same Car 26, Practice 3 Turn 11 track-limits matter with the corrected ruling.
+      rationale: The earlier document is retained for provenance but excluded as the superseded predecessor.
+    - document_id: fia-2025-bel-91a490dae37f
+      reviewed_basis: outside_secondary_offence_scope
+      supporting_source_title: FIA Belgian Grand Prix decision-document index
+      supporting_source_url: https://www.fia.com/documents/champ/event/Belgian%20Grand%20Prix
+      evidence: The FIA index places Document 49 after the provisional Qualifying classification and before the final Qualifying classification on 26 July 2025.
+      rationale: The source is a Qualifying pit-lane procedure/collision decision; Study v2's Qualifying secondary population is restricted to impeding.
+    - document_id: fia-2025-mco-6f59e264b0c0
+      reviewed_basis: out_of_scope_session
+      supporting_source_title: Formula 1 Monaco Grand Prix FP1 report
+      supporting_source_url: https://www.formula1.com/en/latest/article/fp1-leclerc-leads-verstappen-and-norris-in-first-monaco-gp-practice-after.2kh1JyAOG8CEPTzPGrKVNI
+      evidence: The official Formula 1 FP1 report identifies the Stroll-Leclerc collision as occurring in Friday's opening practice session on 23 May 2025.
+      rationale: Study v2's primary population is limited to Race and Sprint decisions, so this Practice 1 collision is excluded by session.

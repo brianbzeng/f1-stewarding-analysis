@@ -1,0 +1,6 @@
+review_scope,strict_model_review_status,records
+exclusion_qa,model_confirmed_from_cited_source,498
+exclusion_qa,model_unresolved_public_evidence,4
+primary,model_confirmed_from_cited_source,314
+primary,model_corrected_from_cited_source,32
+secondary,model_confirmed_from_cited_source,72

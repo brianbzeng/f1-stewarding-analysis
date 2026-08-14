@@ -419,6 +419,7 @@ def load_study_v2_settings(path: Path | None = None) -> dict[str, Any]:
         raise ValueError("Nationality exposed effective sample size threshold is too small")
     release = settings["release"]
     expected_artifacts = {
+        "strict_model_audit",
         "human_review",
         "referral",
         "incident_clock",
