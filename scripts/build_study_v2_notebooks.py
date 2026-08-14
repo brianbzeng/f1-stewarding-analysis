@@ -4,12 +4,15 @@
 
 from __future__ import annotations
 
+import hashlib
 import os
 import subprocess
 import sys
 from pathlib import Path
 
 import nbformat
+
+from f1stewards.integrated_report_notebook import build_integrated_report_cells
 
 ROOT = Path(__file__).resolve().parents[1]
 NOTEBOOKS = ROOT / "notebooks"
@@ -64,6 +67,10 @@ GENERATED.mkdir(parents=True, exist_ok=True)
 
 
 def write(name: str, cells: list[nbformat.NotebookNode]) -> None:
+    for index, cell in enumerate(cells):
+        cell["id"] = hashlib.sha256(
+            f"{name}:{index}:{cell.cell_type}".encode()
+        ).hexdigest()[:8]
     notebook = nbformat.v4.new_notebook(
         cells=cells,
         metadata={
@@ -535,6 +542,8 @@ display(HTML(decision_citations.to_html(index=False, escape=False)))
             ),
         ],
     )
+    # Replace the earlier progress-report draft with the consolidated final narrative.
+    write("12_study_v2_report.ipynb", build_integrated_report_cells(SETUP))
 
 
 def execute_and_export() -> None:
@@ -567,6 +576,11 @@ def execute_and_export() -> None:
         cwd=ROOT,
         env=environment,
     )
+    for path in STUDY_V2_NOTEBOOKS:
+        notebook = nbformat.read(path, as_version=4)
+        for cell in notebook.cells:
+            cell.metadata.pop("execution", None)
+        nbformat.write(notebook, path)
     subprocess.run(
         [
             sys.executable,
@@ -575,6 +589,9 @@ def execute_and_export() -> None:
             "nbconvert",
             "--to",
             "html",
+            "--TemplateExporter.exclude_input=True",
+            "--TemplateExporter.exclude_input_prompt=True",
+            "--TemplateExporter.exclude_output_prompt=True",
             "--output-dir",
             str(ROOT / "reports"),
             "--output",
@@ -585,6 +602,19 @@ def execute_and_export() -> None:
         cwd=ROOT,
         env=environment,
     )
+
+    report_path = ROOT / "reports" / "the_cost_of_discretion_study_v2.html"
+    report_html = report_path.read_text(encoding="utf-8")
+    report_html = report_html.replace(
+        "<title>12_study_v2_report</title>",
+        (
+            "<title>The Cost of Discretion — Formula 1 Stewarding, 2018–2025</title>"
+            '<meta name="description" content="A source-cited data analysis of consistency, '
+            'competitive burden, and potential nationality effects in Formula 1 stewarding."/>'
+        ),
+        1,
+    )
+    report_path.write_text(report_html, encoding="utf-8")
 
 
 if __name__ == "__main__":

@@ -6,21 +6,19 @@ This project treats stewarding decisions as regulatory evidence, not fan opinion
 
 ## Final report
 
-Read the recruiter-facing [report landing page](reports/README.md), open the
-[executable Jupyter report](notebooks/06_final_oversight_report.ipynb), or download the
-[code-free HTML edition](reports/the_cost_of_discretion.html). The central finding is that nominal
-penalty severity and realized competitive burden are different quantities. The independently
-reviewed pilot demonstrates that distinction. A disclosed GPT-5.6 Sol review releases 346 primary
-cases for descriptive analysis; the report does not present that model review as independent human
-assurance. The broad consistency model is weak and the nationality result remains inconclusive.
+Read the [report landing page](reports/README.md), the consolidated
+[code-free final report](reports/the_cost_of_discretion_study_v2.html), or its
+[executable Jupyter notebook](notebooks/12_study_v2_report.ipynb). The report combines the original
+pilot and full-corpus analysis with the strict source audit, referral funnel, incident timing,
+outcome-blind close-case matching, participant-level harm records, 2025 guideline comparison, and
+gated nationality diagnostic in one general-audience narrative.
 
-The follow-on [Study v2 progress report](reports/the_cost_of_discretion_study_v2.html) implements
-the original report's six improvement recommendations. Its executable sequence is notebooks
-[07](notebooks/07_study_v2_protocol_and_review.ipynb) through
-[12](notebooks/12_study_v2_report.ipynb). It adds a risk-based human-review packet, a public Race
-Control referral funnel, validated incident-lap windows, outcome-blind close-case matching,
-driver-level harm records, damage-source research, and a gated nationality diagnostic. Results that
-still need human judgment remain withheld.
+The public record does not establish systematic unfairness or national bias, but it produces
+several bounded findings. All 76 formal decisions finding a driver wholly or predominantly to blame
+imposed a sanction; all 24 racing-incident findings ended with no further action. Broad incident
+labels still predict poorly, the realized burden of identical written penalties varies sharply,
+and the nationality design remains inconclusive. The report identifies which conclusions are
+descriptive, independently reviewed, screening-only, or withheld.
 
 ## Questions
 

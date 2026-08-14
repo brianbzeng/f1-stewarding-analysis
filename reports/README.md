@@ -1,89 +1,67 @@
 # The Cost of Discretion
 
-## What public FIA data can and cannot show about Formula 1 stewarding, 2018-2025
+## What eight seasons of public evidence can—and cannot—tell us about Formula 1 stewarding
 
-Read the completed report as an [executable Jupyter notebook](../notebooks/06_final_oversight_report.ipynb)
-or a [code-free HTML report](the_cost_of_discretion.html).
+Start with the consolidated [code-free final report](the_cost_of_discretion_study_v2.html). The
+same report is available as an [executable Jupyter notebook](../notebooks/12_study_v2_report.ipynb),
+where every figure and result is reproduced from the frozen analytical artifacts.
 
-The follow-on [Study v2 report](the_cost_of_discretion_study_v2.html) and its
-[executable notebook](../notebooks/12_study_v2_report.ipynb) implement the improvement roadmap while
-adding a strict source-cited model audit and keeping the remaining evidence gates visible.
+The earlier [v1 oversight report](the_cost_of_discretion.html) and notebooks 00–06 are retained as
+project history. The consolidated report combines their pilot, full-corpus, modeling, impact, and
+nationality results with the later source audit, referral funnel, incident timing, close-case
+matching, and collision-harm work.
 
-### Main finding
+## The answer in brief
 
-The penalty written in a stewarding decision is not always what it costs on track. The report keeps
-four facts separate: responsibility, the written penalty, its actual competitive cost, and harm to
-the affected driver.
+The public evidence does not support a defensible claim that Formula 1 stewarding was systematically
+unfair, inconsistent, or nationally biased from 2018 through 2025. It also cannot clear every
+decision. The public record is incomplete before referral, broad incident labels omit the details
+that drive a ruling, and full competitive harm is rarely documented in a common form.
 
-In the independently reviewed pilot, Perez's post-race five-second penalty cost two places, six
-points, and a podium. Colapinto's post-race five-second penalty changed no place or points. A served
-ten-second penalty changed strategy and traffic, so simply subtracting ten seconds from the final
-time would be misleading.
+The clearest formal findings were internally coherent: all 76 decisions finding a driver wholly or
+predominantly to blame imposed a sanction, while all 24 racing-incident findings ended with no
+further action. By contrast, a model based only on incident family, season, and multi-car status
+barely ranked outcomes above chance (ROC AUC 0.558).
 
-![Four reviewed cases show different competitive consequences for nominal sanctions](generated/pilot_harm_sanction_matrix.png)
+![Written fault findings and sanction outcomes](generated/study_v2/final_fault_language.png)
 
-### What the full dataset supports
+## What the final report includes
 
-The evidence system covers all 173 completed events from 2018 through 2025: 9,467 FIA archive
-records, 2,003 version-preserving outcome records, 1,984 local source files, and 1,935 effective
-steward decisions. The released primary set contains 346 formal Race/Sprint cases across 131 events.
+- **346 primary Race/Sprint decisions** across 131 events; 214 resulted in a sanction.
+- **418 included decisions and 502 sampled exclusions** in a strict, source-cited GPT-5.6 Sol audit.
+- **32 corrected included records** and one FIA citation for every included decision.
+- **966 public Race Control referral episodes**, including 177 high-confidence links to a primary
+  decision.
+- **317 cases with at least five outcome-blind close neighbors**; nearest outcomes matched in 186
+  and differed in 131, which are review leads rather than an inconsistency rate.
+- **33 contemporaneous 2025 guideline comparisons**: 21 plainly within guideline, seven within a
+  contextual or mitigated range, and five requiring more context for substitution or escalation.
+- **A nine-decision independently reviewed impact pilot** showing that identical written seconds
+  can produce very different position and points consequences.
+- **412 participant-level collision-harm records**, narrowed to 28 estimable timing screens that
+  remain research leads rather than confirmed damage effects.
+- **An inconclusive nationality diagnostic**: 44 British-accused cases versus the prespecified
+  minimum of 98.
 
-GPT-5.6 Sol completed a disclosed strict audit of all 418 included decisions and 502 sampled
-exclusions. Every one of the 920 audit rows cites an FIA source. The audit corrected seven fault
-labels and 25 affected-driver lists, confirmed 32 predecessor-successor version pairs, and retained
-four unavailable archive labels as unresolved public evidence. This is model-led source review, not
-independent human annotation.
+![Final study population](generated/study_v2/final_population_path.png)
 
-![The source population narrows to 346 model-reviewed cases](generated/population_flow.png)
+## Evidence boundaries
 
-Of the 346 cases, 214 received a sanction (61.8%). Rates vary by incident family and season, but
-these differences are descriptive and mix case facts, rule changes, mitigation, and referral.
+The full-corpus audit is model-led and explicitly disclosed; it is not presented as independent
+human double-coding. The impact pilot was independently reviewed. Timing is never treated as proof
+of damage, a different close-case outcome is never treated as proof of an error, and the public 2025
+guidelines are never applied retrospectively.
 
-![Sanction rates vary across incident types and seasons](generated/model_reviewed_sanction_rates.png)
+The proportionality release remains closed because fault, incident-caused harm, and realized
+sanction cost are not all confirmed for the same full-corpus cases. Missing information remains
+unknown rather than being converted into zero.
 
-### Consistency result
+## Technical evidence
 
-A grouped model using incident type, season, and multi-car status barely improved over a simple
-baseline. Its ROC AUC was 0.558. This does not prove inconsistent stewarding. It shows that broad
-case labels do not capture enough decision context to judge consistency or rank supposedly bad
-decisions.
-
-![Broad case labels do not predict decisions reliably](generated/grouped_model_calibration.png)
-
-### Nationality conclusion
-
-British accused drivers received sanctions in 25 of 44 cases (56.8%), compared with 189 of 302
-other-driver cases (62.6%). That raw 5.8-point difference is not an adjusted estimate. With only 44
-British-driver cases, the design is underpowered for subtle effects.
-
-The result is **inconclusive**. It is not evidence of either bias or no bias.
-
-![Simulation shows inadequate power for subtle nationality effects](generated/nationality_power.png)
-
-### Study v2 implementation
-
-The next version now has executable scaffolding for all six recommendations:
-
-1. The strict model audit covers 920 source records with zero unresolved adversarial exceptions.
-   Blank blinded packets remain available for optional future independent human validation.
-2. The public Race Control feed yields 966 episodes and 177 high-confidence decision links.
-3. Outcome-blind matching gives at least five close neighbors to 317 of 346 cases.
-4. Conduct, participant harm, and sanction burden are stored in separate tables and units.
-5. Driver-specific timing gives 241 single-lap harm mappings and 28 estimable teammate-relative
-   pace screens; these remain source-research leads, not confirmed damage effects.
-6. Nationality remains gated and inconclusive: the British-accused cell is 44 versus the frozen
-   minimum of 98, and the 15-point power target is not met.
-
-The proportionality release remains at zero because damage, causal harm, and realized sanction cost
-are not complete enough for a population claim. The report does not turn timing screens or nominal
-penalties into a fairness verdict.
+The project uses tested Python, Jupyter, DuckDB SQL, pandas, FastF1, partitioned Parquet, Git and
+GitHub Actions. The repository also contains a locally validated Snowflake/Snowsight deployment
+package without claiming that it has been run in a live Snowflake account.
 
 The machine-verifiable [Study v2 completion audit](generated/study_v2/completion_audit.csv) checks
-27 protocol, citation, artifact, gate, notebook, and report controls. It preserves the distinction
-between model review and independent human review.
-
-### Portfolio evidence
-
-The project uses tested Python, Jupyter, DuckDB SQL, FastF1 enrichment, traceable review records,
-Git/CI, and a locally validated Snowflake/Snowsight package. The report explicitly separates
-model-reviewed findings from independently human-reviewed pilot evidence.
+the source citations, immutable artifacts, release gates, executed notebooks, hidden-code public
+report, and final claim ledger.

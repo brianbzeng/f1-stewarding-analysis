@@ -311,7 +311,7 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
         "07-12 executed with no error outputs",
     )
     html = artifact_paths["report_html"].read_text(encoding="utf-8")
-    report_markers = (
+    _legacy_report_markers = (
         "The Cost of Discretion — Study v2",
         "920 of 920 cited",
         "966 Race Control",
@@ -319,11 +319,27 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
         "37.8% to 53.6%",
         "remains zero",
     )
+    final_report_markers = (
+        "What eight seasons of public evidence",
+        "referral episodes. Only 177",
+        "All 76",
+        "Twenty-one of 33 comparable sanctions",
+        "The 28 timing screens are research leads",
+        "Simulated power for the planned 15-point difference",
+        "Final conclusion.",
+    )
+    decision_source_links = html.count("Official decision")
+    report_code_hidden = "strict_manifest =" not in html
     record(
         "integrated_html_report_built",
-        all(marker in html for marker in report_markers),
-        artifact_paths["report_html"].stat().st_size,
-        "nonempty report with all phase markers",
+        all(marker in html for marker in final_report_markers)
+        and decision_source_links == 418
+        and report_code_hidden,
+        (
+            f"bytes={artifact_paths['report_html'].stat().st_size};"
+            f"decision_sources={decision_source_links};code_hidden={report_code_hidden}"
+        ),
+        "final narrative markers;418 decision sources;code hidden",
     )
 
     claims = pd.read_csv(root / "reports" / "claim_ledger.csv", keep_default_na=False)
@@ -333,6 +349,9 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
         "claim-17": "withheld_pending_context_review",
         "claim-18": "study_v2_screening_only",
         "claim-19": "study_v2_model_audit_complete",
+        "claim-20": "final_model_reviewed_descriptive",
+        "claim-21": "final_2025_guideline_descriptive",
+        "claim-22": "final_screening_only",
     }
     observed_claim_status = claims.set_index("claim_id")["status"].to_dict()
     record(
