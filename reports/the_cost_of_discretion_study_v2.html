@@ -7889,7 +7889,7 @@ nationality pattern, but they explain why fans do not experience the system as p
 <li><a href="#chapter-9">What I concluded</a></li>
 <li><a href="#chapter-10">Recommendations</a></li>
 <li><a href="#methods">Methods, limits, and reproducibility</a></li>
-<li><a href="#citations">Decision-level FIA sources</a></li>
+<li><a href="#citations">Sources and citations</a></li>
 </ol>
 </div>
 </div>
@@ -8537,10 +8537,15 @@ outside analysts cannot double-count a ruling.</li>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a id="methods"></a></p>
 <h2 id="Methods,-limitations,-and-reproducibility">Methods, limitations, and reproducibility<a class="anchor-link" href="#Methods,-limitations,-and-reproducibility">¶</a></h2><h3 id="Data-used">Data used<a class="anchor-link" href="#Data-used">¶</a></h3><ul>
-<li>Official FIA event indexes, decision PDFs, classifications, regulations, and public 2025 guidance.</li>
-<li>FastF1 timing and Race Control feeds for timing and process context—not for assigning fault.</li>
-<li>Official Formula 1, team, driver, or engineer reports for damage research, with interested-party
-claims kept distinct from FIA findings.</li>
+<li>Official FIA <a href="https://www.fia.com/events/fia-formula-one-world-championship">event and timing pages</a>,
+<a href="https://www.fia.com/documents/season">decision documents</a>, classifications,
+<a href="https://www.fia.com/regulation/category/110">Formula 1 regulations</a>, and the
+<a href="https://www.fia.com/regulation/category/123">International Sporting Code</a>.</li>
+<li><a href="https://docs.fastf1.dev/data_reference/index.html">FastF1 timing and Race Control feeds</a> for
+timing and process context—not for assigning fault.</li>
+<li><a href="https://www.formula1.com/en/latest/all">Official Formula 1 reporting</a>, team reports, and named
+driver or engineer accounts for damage research. Interested-party claims remain distinct from
+FIA findings and are checked against official timing where possible.</li>
 </ul>
 <h3 id="Analytical-design">Analytical design<a class="anchor-link" href="#Analytical-design">¶</a></h3><ul>
 <li><strong>Population:</strong> 173 completed championship events, 2018–2025.</li>
@@ -8641,7 +8646,116 @@ notebook retains it.</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a id="citations"></a></p>
-<h2 id="Decision-level-FIA-sources">Decision-level FIA sources<a class="anchor-link" href="#Decision-level-FIA-sources">¶</a></h2><p>Every one of the 418 included primary and secondary decisions has a direct FIA citation. The table
+<h2 id="Sources-and-citations">Sources and citations<a class="anchor-link" href="#Sources-and-citations">¶</a></h2><p>The study separates sources by what they can establish. Regulations and guidelines describe the
+standard; steward decisions establish the official finding; classifications and timing establish
+what happened on the clock; and attributed team or driver reports can provide damage details that
+are not available in the decision. A source is not used outside that role.</p>
+<h3 id="Rules-and-governing-material">Rules and governing material<a class="anchor-link" href="#Rules-and-governing-material">¶</a></h3><table>
+<thead>
+<tr>
+<th>Source</th>
+<th>How it was used</th>
+<th>Important limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.fia.com/regulation/category/110">FIA Formula 1 Regulations Archive</a></td>
+<td>Event-date Sporting Regulations and sanction authority</td>
+<td>The applicable issue can change during a season.</td>
+</tr>
+<tr>
+<td><a href="https://www.fia.com/regulation/category/123">FIA International Sporting Code and Appendices</a></td>
+<td>Steward powers, protests, reviews, appeals, and general driving rules</td>
+<td>Multiple editions may exist in the same year.</td>
+</tr>
+<tr>
+<td><a href="https://www.fia.com/sites/default/files/f1_driving_standards_guidelines_version_4.1_feb_20_2025.pdf">2025 F1 Driving Standards Guidelines, version 4.1</a></td>
+<td>The contemporaneous overtaking and driving-standard comparison in Chapter 6</td>
+<td>Guidance, not a regulation; not applied to earlier seasons.</td>
+</tr>
+<tr>
+<td><a href="https://www.fia.com/sites/default/files/2025_f1_guidelines_penalty_points_overview_-_14_may_clean_0.pdf">2025 FIA Penalty Guidelines</a></td>
+<td>Public sanction starting points and penalty-point ranges</td>
+<td>Context can justify mitigation, escalation, or substitution.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="FIA-process-and-policy-context">FIA process and policy context<a class="anchor-link" href="#FIA-process-and-policy-context">¶</a></h3><table>
+<thead>
+<tr>
+<th>Source</th>
+<th>How it was used</th>
+<th>Important limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.fia.com/news/fia-adds-further-transparency-fia-formula-one-world-championship-publication-stewards">FIA explanation of publishing the stewarding guidelines</a></td>
+<td>Status, purpose, and history of the public guidance</td>
+<td>Does not reconstruct every historical internal guideline.</td>
+</tr>
+<tr>
+<td><a href="https://www.fia.com/news/fia-insights-guiding-principles-how-fia-bringing-even-more-transparency-application-f1">FIA explanation of how the guidelines are applied</a></td>
+<td>Living-document status, evidence limits, and first-lap tolerance</td>
+<td>General explanation rather than a case ruling.</td>
+</tr>
+<tr>
+<td><a href="https://www.fia.com/news/fia-stewards-open-constructive-dialogue-formula-1-drivers">FIA steward–driver discussion on revising the guidelines</a></td>
+<td>Context for the post-Austin 2024 rule discussion</td>
+<td>Describes the reform process, not whether one driver deserved a penalty.</td>
+</tr>
+<tr>
+<td><a href="https://www.fia.com/sites/default/files/2021_f1_abu_dhabi_grand_prix_-_report_to_the_wmsc_-_19_march_2022.pdf">FIA 2021 Abu Dhabi review to the World Motor Sport Council</a></td>
+<td>Governance case study separating Race Control procedure from ordinary steward penalties</td>
+<td>Outside the study's driver-conduct penalty population.</td>
+</tr>
+<tr>
+<td><a href="https://www.formula1.com/en/latest/article/masi-backs-stewards-on-hamilton-penalty-adding-that-decisions-are-always.52AUb0ZpArxnTSoCDsfahy">Formula 1 interview with the 2021 Race Director</a></td>
+<td>Contemporary explanation that stewards assessed conduct rather than the eventual consequence</td>
+<td>An attributed policy explanation, not governing law.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Timing,-results,-and-damage-evidence">Timing, results, and damage evidence<a class="anchor-link" href="#Timing,-results,-and-damage-evidence">¶</a></h3><table>
+<thead>
+<tr>
+<th>Source</th>
+<th>How it was used</th>
+<th>Important limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.fia.com/events/fia-formula-one-world-championship">FIA event and timing pages</a></td>
+<td>Official classifications, grids, lap charts, pit-stop summaries, and Race Control records</td>
+<td>They establish observed results, not a no-incident counterfactual.</td>
+</tr>
+<tr>
+<td><a href="https://docs.fastf1.dev/data_reference/index.html">FastF1 data reference</a></td>
+<td>Lap timing, position, pit, track-status, and Race Control context</td>
+<td>Timing alone cannot prove damage, causation, or fault.</td>
+</tr>
+<tr>
+<td><a href="https://www.formula1.com/en/latest/all">Official Formula 1 race reporting</a></td>
+<td>Attributed interviews, race sequencing, and damage context</td>
+<td>Secondary to an FIA finding and explicitly attributed.</td>
+</tr>
+</tbody>
+</table>
+<p>The independently reviewed consequence pilot also used the following case-level, non-decision
+sources. They support only the particular fact described here:</p>
+<ul>
+<li><a href="https://www.formula1.com/en/latest/article/gasly-says-damage-with-hamilton-and-perez-finished-me-after-p13-result-at.4oooNkg91ON0oLVrNxcJSs">Gasly's Abu Dhabi 2023 damage account</a>: attributed diffuser damage and downforce loss, with earlier contact kept as a confounding cause.</li>
+<li><a href="https://www.formula1.com/en/latest/article/verstappen-beats-leclerc-to-victory-in-abu-dhabi-to-end-record-breaking-year.6pYEohQvxeey5ATWkXh8sQ">Official Abu Dhabi 2023 race report</a>: race order and incident sequence around the Pérez–Norris contact.</li>
+<li><a href="https://media.alpinecars.com/2025-formula-one-austrian-grand-prix-sunday/?lang=eng">Alpine's Austrian 2025 debrief</a>: Colapinto's first-party report that the car felt different after contact; coded as possible, not confirmed, damage.</li>
+<li><a href="https://www.formula1.com/en/latest/article/austria-lowdown-all-the-key-moments-as-the-mclarens-duel-red-bull-suffer-and.7DG4DaK04hYZKL97D6xjr9">Official Austrian 2025 race analysis</a>: the effect of backmarker traffic on Piastri's pursuit, without assigning an exact time loss.</li>
+<li><a href="https://www.formula1.com/en/latest/article/no-one-does-that-on-purpose-verstappen-gives-verdict-on-unlucky-race-ending.1WQnU9ao4YlVIuvewwaSOg">Verstappen's Austrian 2025 post-race account</a>: contextual confirmation of the race-ending collision, paired with the FIA classification.</li>
+<li><a href="https://www.formula1.com/en/latest/article/norris-wins-dramatic-wet-dry-british-gp-from-piastri-as-hulkenberg-claims.1puOD82avOZ8I0sca7fvLJ">Official British 2025 race report</a>: race context after Antonelli served the carried Austrian grid penalty; not used to invent a counterfactual finish.</li>
+</ul>
+<p>Third-party databases, media searches, broadcasts, photographs, and social posts could identify
+leads, but they did not establish the study's published fault or fairness findings.</p>
+<h3 id="Decision-level-FIA-sources">Decision-level FIA sources<a class="anchor-link" href="#Decision-level-FIA-sources">¶</a></h3><p>Every one of the 418 included primary and secondary decisions has a direct FIA citation. The table
 is collapsed to keep the main report readable. The downloadable audit also contains the 502
 exclusion checks, evidence passages, correction history, rule sources, confidence, and review
 status.</p>

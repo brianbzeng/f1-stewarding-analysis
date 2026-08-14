@@ -208,7 +208,7 @@ nationality pattern, but they explain why fans do not experience the system as p
 <li><a href="#chapter-9">What I concluded</a></li>
 <li><a href="#chapter-10">Recommendations</a></li>
 <li><a href="#methods">Methods, limits, and reproducibility</a></li>
-<li><a href="#citations">Decision-level FIA sources</a></li>
+<li><a href="#citations">Sources and citations</a></li>
 </ol>
 """
         ),
@@ -1102,10 +1102,15 @@ referral, reasoning, sanction, harm, and realized competitive burden.</div>
 
 ### Data used
 
-- Official FIA event indexes, decision PDFs, classifications, regulations, and public 2025 guidance.
-- FastF1 timing and Race Control feeds for timing and process context—not for assigning fault.
-- Official Formula 1, team, driver, or engineer reports for damage research, with interested-party
-  claims kept distinct from FIA findings.
+- Official FIA [event and timing pages](https://www.fia.com/events/fia-formula-one-world-championship),
+  [decision documents](https://www.fia.com/documents/season), classifications,
+  [Formula 1 regulations](https://www.fia.com/regulation/category/110), and the
+  [International Sporting Code](https://www.fia.com/regulation/category/123).
+- [FastF1 timing and Race Control feeds](https://docs.fastf1.dev/data_reference/index.html) for
+  timing and process context—not for assigning fault.
+- [Official Formula 1 reporting](https://www.formula1.com/en/latest/all), team reports, and named
+  driver or engineer accounts for damage research. Interested-party claims remain distinct from
+  FIA findings and are checked against official timing where possible.
 
 ### Analytical design
 
@@ -1164,7 +1169,54 @@ notebook retains it.
             """
 <a id="citations"></a>
 
-## Decision-level FIA sources
+## Sources and citations
+
+The study separates sources by what they can establish. Regulations and guidelines describe the
+standard; steward decisions establish the official finding; classifications and timing establish
+what happened on the clock; and attributed team or driver reports can provide damage details that
+are not available in the decision. A source is not used outside that role.
+
+### Rules and governing material
+
+| Source | How it was used | Important limit |
+|---|---|---|
+| [FIA Formula 1 Regulations Archive](https://www.fia.com/regulation/category/110) | Event-date Sporting Regulations and sanction authority | The applicable issue can change during a season. |
+| [FIA International Sporting Code and Appendices](https://www.fia.com/regulation/category/123) | Steward powers, protests, reviews, appeals, and general driving rules | Multiple editions may exist in the same year. |
+| [2025 F1 Driving Standards Guidelines, version 4.1](https://www.fia.com/sites/default/files/f1_driving_standards_guidelines_version_4.1_feb_20_2025.pdf) | The contemporaneous overtaking and driving-standard comparison in Chapter 6 | Guidance, not a regulation; not applied to earlier seasons. |
+| [2025 FIA Penalty Guidelines](https://www.fia.com/sites/default/files/2025_f1_guidelines_penalty_points_overview_-_14_may_clean_0.pdf) | Public sanction starting points and penalty-point ranges | Context can justify mitigation, escalation, or substitution. |
+
+### FIA process and policy context
+
+| Source | How it was used | Important limit |
+|---|---|---|
+| [FIA explanation of publishing the stewarding guidelines](https://www.fia.com/news/fia-adds-further-transparency-fia-formula-one-world-championship-publication-stewards) | Status, purpose, and history of the public guidance | Does not reconstruct every historical internal guideline. |
+| [FIA explanation of how the guidelines are applied](https://www.fia.com/news/fia-insights-guiding-principles-how-fia-bringing-even-more-transparency-application-f1) | Living-document status, evidence limits, and first-lap tolerance | General explanation rather than a case ruling. |
+| [FIA steward–driver discussion on revising the guidelines](https://www.fia.com/news/fia-stewards-open-constructive-dialogue-formula-1-drivers) | Context for the post-Austin 2024 rule discussion | Describes the reform process, not whether one driver deserved a penalty. |
+| [FIA 2021 Abu Dhabi review to the World Motor Sport Council](https://www.fia.com/sites/default/files/2021_f1_abu_dhabi_grand_prix_-_report_to_the_wmsc_-_19_march_2022.pdf) | Governance case study separating Race Control procedure from ordinary steward penalties | Outside the study's driver-conduct penalty population. |
+| [Formula 1 interview with the 2021 Race Director](https://www.formula1.com/en/latest/article/masi-backs-stewards-on-hamilton-penalty-adding-that-decisions-are-always.52AUb0ZpArxnTSoCDsfahy) | Contemporary explanation that stewards assessed conduct rather than the eventual consequence | An attributed policy explanation, not governing law. |
+
+### Timing, results, and damage evidence
+
+| Source | How it was used | Important limit |
+|---|---|---|
+| [FIA event and timing pages](https://www.fia.com/events/fia-formula-one-world-championship) | Official classifications, grids, lap charts, pit-stop summaries, and Race Control records | They establish observed results, not a no-incident counterfactual. |
+| [FastF1 data reference](https://docs.fastf1.dev/data_reference/index.html) | Lap timing, position, pit, track-status, and Race Control context | Timing alone cannot prove damage, causation, or fault. |
+| [Official Formula 1 race reporting](https://www.formula1.com/en/latest/all) | Attributed interviews, race sequencing, and damage context | Secondary to an FIA finding and explicitly attributed. |
+
+The independently reviewed consequence pilot also used the following case-level, non-decision
+sources. They support only the particular fact described here:
+
+- [Gasly's Abu Dhabi 2023 damage account](https://www.formula1.com/en/latest/article/gasly-says-damage-with-hamilton-and-perez-finished-me-after-p13-result-at.4oooNkg91ON0oLVrNxcJSs): attributed diffuser damage and downforce loss, with earlier contact kept as a confounding cause.
+- [Official Abu Dhabi 2023 race report](https://www.formula1.com/en/latest/article/verstappen-beats-leclerc-to-victory-in-abu-dhabi-to-end-record-breaking-year.6pYEohQvxeey5ATWkXh8sQ): race order and incident sequence around the Pérez–Norris contact.
+- [Alpine's Austrian 2025 debrief](https://media.alpinecars.com/2025-formula-one-austrian-grand-prix-sunday/?lang=eng): Colapinto's first-party report that the car felt different after contact; coded as possible, not confirmed, damage.
+- [Official Austrian 2025 race analysis](https://www.formula1.com/en/latest/article/austria-lowdown-all-the-key-moments-as-the-mclarens-duel-red-bull-suffer-and.7DG4DaK04hYZKL97D6xjr9): the effect of backmarker traffic on Piastri's pursuit, without assigning an exact time loss.
+- [Verstappen's Austrian 2025 post-race account](https://www.formula1.com/en/latest/article/no-one-does-that-on-purpose-verstappen-gives-verdict-on-unlucky-race-ending.1WQnU9ao4YlVIuvewwaSOg): contextual confirmation of the race-ending collision, paired with the FIA classification.
+- [Official British 2025 race report](https://www.formula1.com/en/latest/article/norris-wins-dramatic-wet-dry-british-gp-from-piastri-as-hulkenberg-claims.1puOD82avOZ8I0sca7fvLJ): race context after Antonelli served the carried Austrian grid penalty; not used to invent a counterfactual finish.
+
+Third-party databases, media searches, broadcasts, photographs, and social posts could identify
+leads, but they did not establish the study's published fault or fairness findings.
+
+### Decision-level FIA sources
 
 Every one of the 418 included primary and secondary decisions has a direct FIA citation. The table
 is collapsed to keep the main report readable. The downloadable audit also contains the 502
