@@ -20,6 +20,9 @@ def test_integrated_report_has_complete_narrative_and_source_gate() -> None:
     assert "Inconsistency audit and case studies" in markdown
     assert "Japan 2024" in markdown
     assert "São Paulo 2021" in markdown
+    assert "Brian Zeng" in markdown
+    assert "mailto:bzeng0000@gmail.com" in markdown
+    assert "https://brianbzeng.com" in markdown
     assert "–" not in markdown
     assert "—" not in markdown
     assert "assert int(disagreement_taxonomy.sum()) == 131" in code
@@ -35,6 +38,7 @@ def test_integrated_report_uses_colorblind_safe_palette_and_alt_text() -> None:
 
     for color in ("#0072B2", "#56B4E9", "#009E73", "#E69F00", "#D55E00"):
         assert color in code
+    assert "text-transform: uppercase" in code
     assert "alt_text" in code
     assert "Wilson 95% intervals" in code
 

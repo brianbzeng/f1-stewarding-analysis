@@ -325,16 +325,22 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
     )
     decision_source_links = html.count(">Official decision</a>")
     report_code_hidden = "strict_manifest =" not in html
+    author_links_present = all(
+        marker in html
+        for marker in ("Brian Zeng", "mailto:bzeng0000@gmail.com", "https://brianbzeng.com")
+    )
     record(
         "integrated_html_report_built",
         all(marker in html for marker in final_report_markers)
         and decision_source_links == 418
-        and report_code_hidden,
+        and report_code_hidden
+        and author_links_present,
         (
             f"bytes={artifact_paths['report_html'].stat().st_size};"
-            f"decision_sources={decision_source_links};code_hidden={report_code_hidden}"
+            f"decision_sources={decision_source_links};code_hidden={report_code_hidden};"
+            f"author_links={author_links_present}"
         ),
-        "final narrative markers;418 decision sources;code hidden",
+        "final narrative markers;418 decision sources;code hidden;author links present",
     )
     style_violations = audit_report_style(artifact_paths["report_html"])
     record(
