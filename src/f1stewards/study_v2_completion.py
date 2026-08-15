@@ -14,6 +14,7 @@ from f1stewards.config import (
     load_study_v2_settings,
     load_yaml,
 )
+from f1stewards.report_style import audit_report_style
 from f1stewards.study_v2_review import validate_review_packet
 from f1stewards.study_v2_strict_audit import validate_strict_model_audit
 
@@ -311,24 +312,16 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
         "07-12 executed with no error outputs",
     )
     html = artifact_paths["report_html"].read_text(encoding="utf-8")
-    _legacy_report_markers = (
-        "The Cost of Discretion — Study v2",
-        "920 of 920 cited",
-        "966 Race Control",
-        "241 harm records",
-        "37.8% to 53.6%",
-        "remains zero",
-    )
     final_report_markers = (
-        "What eight seasons of public evidence",
-        "referral episodes. Only 177",
-        "All 76",
-        "Where the consistency argument comes from",
-        "This is why 41% was too large",
-        "Twenty-one of 33 comparable sanctions",
-        "The 28 timing screens are research leads",
-        "Simulated power for the planned 15-point difference",
-        "Final conclusion.",
+        "Quantitative assessment of Formula 1 stewarding",
+        "177 high-confidence links",
+        "All 76 decisions",
+        "Inconsistency audit and case studies",
+        "41.3% is not an inconsistency rate",
+        "Of 33 comparable sanctions, 21",
+        "Only 28 of 412 participant records",
+        "15-point difference ranged from 37.8% to 53.6%",
+        "Final conclusion:",
     )
     decision_source_links = html.count(">Official decision</a>")
     report_code_hidden = "strict_manifest =" not in html
@@ -342,6 +335,13 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
             f"decision_sources={decision_source_links};code_hidden={report_code_hidden}"
         ),
         "final narrative markers;418 decision sources;code hidden",
+    )
+    style_violations = audit_report_style(artifact_paths["report_html"])
+    record(
+        "public_report_style_rules_pass",
+        not style_violations,
+        f"violations={len(style_violations)}",
+        "0 forbidden dashes, terms, long paragraphs, or multi-sentence bullets",
     )
 
     claims = pd.read_csv(root / "reports" / "claim_ledger.csv", keep_default_na=False)

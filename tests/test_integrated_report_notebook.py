@@ -12,14 +12,16 @@ def test_integrated_report_has_complete_narrative_and_source_gate() -> None:
         assert f'id="chapter-{chapter}"' in markdown
     assert 'id="methods"' in markdown
     assert 'id="citations"' in markdown
-    assert "The short answer" in markdown
+    assert "Primary result:" in markdown
     assert "Final conclusion" in markdown
     assert "model-led source audit" in markdown
-    assert "not independent human double-coding" in markdown
+    assert "no claim of full-corpus human inter-rater agreement" in markdown
     assert "never applied retrospectively" in markdown
-    assert "Where the consistency argument comes from" in markdown
+    assert "Inconsistency audit and case studies" in markdown
     assert "Japan 2024" in markdown
     assert "São Paulo 2021" in markdown
+    assert "–" not in markdown
+    assert "—" not in markdown
     assert "assert int(disagreement_taxonomy.sum()) == 131" in code
     assert "SETUP_SENTINEL = True" in code
     assert "assert len(decision_citations) == 418" in code

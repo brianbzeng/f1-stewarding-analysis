@@ -324,7 +324,7 @@ review is also incomplete. The correct result is **inconclusive**, not evidence 
         [
             markdown(
                 """
-# The Cost of Discretion — Study v2
+# The Cost of Discretion: Study v2
 
 ## A stronger way to study Formula 1 stewarding
 
@@ -608,7 +608,7 @@ def execute_and_export() -> None:
     report_html = report_html.replace(
         "<title>12_study_v2_report</title>",
         (
-            "<title>The Cost of Discretion — Formula 1 Stewarding, 2018–2025</title>"
+            "<title>The Cost of Discretion: Formula 1 Stewarding, 2018 to 2025</title>"
             '<meta name="description" content="A source-cited data analysis of consistency, '
             'competitive burden, and potential nationality effects in Formula 1 stewarding."/>'
         ),
