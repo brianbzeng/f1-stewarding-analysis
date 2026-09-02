@@ -36,16 +36,16 @@ another did not. These comparisons are understandable, but a television replay r
 full basis of a stewarding decision. The written ruling may include details about overlap, control,
 track position, or mitigation that are easy to miss during a race.
 
-We built this study to test whether the official record supports the belief that similar incidents
-receive inconsistent treatment. We follow each decision through three separate stages: the conduct
+This study tests whether the official record supports the belief that similar incidents receive
+inconsistent treatment. Each decision is followed through three separate stages: the conduct
 described by the stewards, their finding of responsibility, and the sanction they imposed. This
-separation lets us identify whether two cases differ because of the penalty or because the stewards
-first reached different conclusions about fault.
+separation identifies whether two cases differ because of the penalty or because the stewards first
+reached different conclusions about fault.
 
-We also examine two questions that often appear in public debate. First, does the written penalty
+Two additional questions address claims that often appear in public debate. First, does the written penalty
 reflect the actual competitive cost to the driver? Second, do the available decisions support the
-claim that British drivers receive favorable treatment? We treat both as secondary questions and
-only draw conclusions when the public evidence is strong enough.
+claim that British drivers receive favorable treatment? Both are treated as secondary questions,
+and conclusions are limited to what the public evidence can support.
 """
         ),
         _code(setup_source),
@@ -205,6 +205,7 @@ overall_rate = primary["sanction_outcome"].mean()
 <li><a href="#chapter-6">Checking decisions against the 2025 guidelines</a></li>
 <li><a href="#chapter-7">Separating penalties from race consequences</a></li>
 <li><a href="#chapter-8">Testing the nationality claim</a></li>
+<li><a href="#conclusion-tldr">Conclusion TL;DR</a></li>
 <li><a href="#chapter-9">Answering the research question</a></li>
 <li><a href="#chapter-10">Improving future stewarding analysis</a></li>
 <li><a href="#methods">Methods, limits, and reproducibility</a></li>
@@ -218,7 +219,7 @@ overall_rate = primary["sanction_outcome"].mean()
 
 ## Chapter 1: Defining a fair comparison
 
-We began by defining what consistency means in this setting. A consistent system should reach
+The analysis began by defining what consistency means in this setting. A consistent system should reach
 similar conclusions when the conduct and surrounding conditions are similar. It should not assign
 the same penalty to every collision, because two collisions can differ in overlap, driver control,
 track position, weather, or other facts used by the stewards.
@@ -227,7 +228,7 @@ Each FIA decision moves through three steps. The stewards describe the incident,
 responsibility each driver carried, and select an outcome such as no further action, a warning, or
 a sporting penalty. A difference at any one of these steps can produce two different final results.
 
-We separated the analysis into five questions so that one type of difference would not be mistaken
+The analysis separates the problem into five questions so that one type of difference is not mistaken
 for another:
 
 1. **Conduct:** Do comparable driving acts receive comparable responsibility findings?
@@ -236,17 +237,17 @@ for another:
 4. **Race cost:** What did the sanction actually cost after its timing and application are considered?
 5. **Nationality:** Do group differences remain credible after sample size and case context are checked?
 
-The nationality question tests a specific claim about favorable treatment for British drivers. We
-included it because the claim appears often in fan discussions, not because we assumed it was true.
+The nationality question tests a specific claim about favorable treatment for British drivers. It
+is included because the claim appears often in fan discussions, not because it is assumed to be true.
 The evidence needed to evaluate group bias is also different from the evidence needed to compare
 two individual incidents.
 
-We did not combine the five questions into one fairness score. A decision can be internally
+The five questions were not combined into one fairness score. A decision can be internally
 consistent because the penalty follows the written fault finding, even if an outside reviewer
 disagrees with that finding. A penalty can also be correct under the rules but create a much smaller
 or larger race cost than the same nominal penalty in another event.
 
-<div class="report-method"><strong>How we use the word consistent:</strong> A decision is
+<div class="report-method"><strong>How the report uses the word consistent:</strong> A decision is
 internally consistent when its formal outcome follows its written responsibility finding. Two
 decisions are comparable only when the public record describes similar incident conditions.</div>
 """
@@ -259,11 +260,12 @@ decisions are comparable only when the public record describes similar incident 
 
 The FIA publishes decisions as separate documents within each event archive. The same archive also
 contains classifications, summonses, technical reports, and corrected versions of earlier files.
-We therefore could not treat every archive entry as one stewarding decision.
+For this reason, every archive entry could not be treated as one stewarding decision.
 
-We collected 9,467 files from 173 completed championship events and screened them in stages. At
-each stage, we kept only records that could answer the research question and preserved the direct
-FIA source. The figure below shows how the broad archive became the main Race and Sprint dataset.
+A total of 9,467 files were collected from 173 completed championship events and screened in stages.
+Only records that could answer the research question were retained, and the direct FIA source was
+preserved at every stage. The figure below shows how the broad archive became the main Race and
+Sprint dataset.
 """
         ),
         _code(
@@ -297,7 +299,7 @@ for index, ((count, label), color) in enumerate(zip(flow, flow_colors, strict=Tr
     ax.text(x + 1.225, 0.91, "\\n".join(textwrap.wrap(label, width=31)), ha="center", va="center", fontsize=10, color=text_color)
     if index < len(flow) - 1:
         ax.annotate("", xy=(x + 2.92, 1.18), xytext=(x + 2.52, 1.18), arrowprops={"arrowstyle": "->", "color": CHARCOAL, "lw": 1.6})
-ax.set_title("How we built the main decision dataset", fontsize=15, pad=10)
+ax.set_title("How the main decision dataset was built", fontsize=15, pad=10)
 save_and_show(
     fig,
     "final_population_path.png",
@@ -308,14 +310,15 @@ save_and_show(
         ),
         _markdown(
             """
-The title screen identified 2,003 files that could contain a steward outcome. We then opened the
-source documents, removed administrative files and duplicate versions, and excluded decisions
-outside the selected incident categories. This process left 418 verified decisions with direct FIA
-citations.
+The title screen identified 2,003 files that could contain a steward outcome. The source documents
+were then opened, administrative files and duplicate versions were removed, and decisions outside
+the selected incident categories were excluded. This process left 418 verified decisions with
+direct FIA citations.
 
-The main analysis uses 346 decisions about driver conduct during a Race or Sprint. We kept 72
-qualifying impeding decisions as a separate supporting dataset because qualifying and racing create
-different conditions. Mixing them would make the main sanction rate harder to interpret.
+The main analysis uses 346 decisions about driver conduct during a Race or Sprint. Another 72
+qualifying impeding decisions were kept as a separate supporting dataset because qualifying and
+racing create different conditions. Mixing them would make the main sanction rate harder to
+interpret.
 
 ### What one row represents
 
@@ -326,19 +329,19 @@ happened to every affected participant.
 
 ### What the dataset does not contain
 
-The dataset contains formal decisions, not every comparable action that occurred on track. We found
-high-confidence Race Control referral links for 177 of the 346 main decisions, but that coverage was
-not enough to build a complete set of incidents that were noted, investigated, or ignored. The
-results are therefore conditional on an incident reaching the published decision stage.
+The dataset contains formal decisions, not every comparable action that occurred on track.
+High-confidence Race Control referral links were found for 177 of the 346 main decisions, but that
+coverage was not enough to build a complete set of incidents that were noted, investigated, or
+ignored. The results are therefore conditional on an incident reaching the published decision stage.
 
-We also treated missing information as unknown. If a document did not describe overlap, damage, or
-mitigation, we did not assume that the condition was absent. This choice reduces the number of cases
+Missing information was also treated as unknown. If a document did not describe overlap, damage, or
+mitigation, the condition was not assumed to be absent. This choice reduces the number of cases
 available for some comparisons, but it prevents silence in a short ruling from becoming false
 evidence.
 
-These limits determine what the study can answer. We can test patterns within published decisions,
-but we cannot estimate how often comparable conduct was never referred. We also cannot assign fault
-from lap timing or a race result when the supporting incident evidence is missing.
+These limits determine what the study can answer. Patterns can be tested within published decisions,
+but the rate at which comparable conduct was never referred cannot be estimated. Fault also cannot
+be assigned from lap timing or a race result when the supporting incident evidence is missing.
 """
         ),
         _markdown(
@@ -347,12 +350,12 @@ from lap timing or a race result when the supporting incident evidence is missin
 
 ## Chapter 3: Exploring the published decisions
 
-Before comparing individual cases, we examined the overall shape of the dataset. The 346 main
+Before individual cases were compared, the overall shape of the dataset was examined. The 346 main
 decisions came from 131 Race or Sprint events, and 214 decisions (61.8%) ended in some form of
-sanction. This percentage describes published decisions in our selected categories, not the chance
+sanction. This percentage describes published decisions in the selected categories, not the chance
 that any action on track will be penalized.
 
-We first grouped the decisions by incident type. This gives us a baseline for understanding which
+The decisions were first grouped by incident type. This provides a baseline for understanding which
 categories usually lead to sanctions and which categories contain more uncertainty. A difference
 between categories is not evidence of unfair treatment by itself, because the conduct and decision
 standard can also differ.
@@ -456,13 +459,13 @@ For example, the unsafe-rejoin rate is based on eight decisions, while the movin
 is based on only two.
 
 The annual sanction rate also changes across the study period, from 40.9% in 2019 to 75.9% in 2021.
-We cannot interpret this range as a direct change in steward strictness because the mix of incidents,
+This range cannot be interpreted as a direct change in steward strictness because the mix of incidents,
 available evidence, referral practice, and guidance can change by season. The season plot identifies
 variation that needs explanation rather than giving the explanation itself.
 
 This exploratory step showed that incident type and season are related to the observed rate, but
-neither tells us how the stewards reasoned through a case. We therefore moved from broad categories
-to the responsibility language written in each decision.
+neither explains how the stewards reasoned through a case. The analysis therefore moves from broad
+categories to the responsibility language written in each decision.
 """
         ),
         _markdown(
@@ -472,15 +475,15 @@ to the responsibility language written in each decision.
 ## Chapter 4: Testing how decisions are made
 
 The exploratory results describe the outcome, but they do not explain why the stewards reached it.
-For that reason, we tested the decision process at three levels. We first compared the written fault
-finding with the final outcome, then tested how much broad case labels could predict, and finally
-matched cases using the detailed context available before the outcome.
+For that reason, the decision process was tested at three levels. The written fault finding was
+first compared with the final outcome, then the predictive value of broad case labels was measured,
+and finally cases were matched using the detailed context available before the outcome.
 
 ### Does the written fault finding match the outcome?
 
-This is the most direct test of internal consistency. If the stewards write that one driver was
-wholly or predominantly to blame, we would expect a sanction to follow. If they classify the event
-as a racing incident, we would normally expect no further action.
+This is the most direct test of internal consistency. A finding that one driver was wholly or
+predominantly to blame should normally lead to a sanction. A racing-incident finding should normally
+lead to no further action.
 """
         ),
         _code(
@@ -538,24 +541,24 @@ assert not primary.loc[racing_incident, "sanction_outcome"].any()
             """
 The clearest responsibility findings align exactly with the final outcome. All 76 decisions that
 found a driver wholly or predominantly to blame imposed a sanction, while all 24 racing-incident
-findings ended with no further action. Within these 100 decisions, we found no case where the formal
-outcome contradicted the written responsibility finding.
+findings ended with no further action. Within these 100 decisions, no formal outcome contradicted
+the written responsibility finding.
 
 This result measures internal agreement, not whether the stewards assigned fault correctly. To
-answer that second question, we would need to reconstruct the evidence and apply the relevant rule
-independently in every case. The distinction matters because fans may reasonably disagree with a
-fault finding even when the penalty follows that finding in a consistent way.
+answer that second question, the evidence would need to be reconstructed and the relevant rule
+applied independently in every case. The distinction matters because fans may reasonably disagree
+with a fault finding even when the penalty follows that finding in a consistent way.
 
 The middle categories are less direct. Some decisions do not state a clear blame threshold, while
-off-track advantage cases depend on whether an advantage was gained, retained, or returned. We next
-tested whether simpler labels could explain these outcomes without using the final fault finding.
+off-track advantage cases depend on whether an advantage was gained, retained, or returned. The next
+test asks whether simpler labels can explain these outcomes without using the final fault finding.
 
 ### Can broad case labels predict the outcome?
 
-We fit a simple model using incident type, season, and whether more than two cars were involved. The
-purpose was not to automate stewarding or decide which driver deserved a penalty. We used the model
-as a diagnostic test of whether broad labels contain enough information to reproduce outcomes at
-events the model had not seen.
+A simple model was fit using incident type, season, and whether more than two cars were involved. Its
+purpose was not to automate stewarding or decide which driver deserved a penalty. Instead, the model
+served as a diagnostic test of whether broad labels contain enough information to reproduce outcomes
+at events it had not seen.
 """
         ),
         _code(
@@ -614,21 +617,20 @@ sanction rate to every decision. These values show that the three broad labels a
 predictive information.
 
 This weak performance is useful because it rules out a simple explanation. Knowing that a case was
-a collision in a particular season is not enough to anticipate the outcome. We therefore needed a
-comparison method that included more of the incident context recorded before the stewards reached
-their finding.
+a collision in a particular season is not enough to anticipate the outcome. A stronger comparison
+therefore needed more of the incident context recorded before the stewards reached their finding.
 
-### What happens when we compare similar cases?
+### What happens when similar cases are compared?
 
-We matched decisions using incident type, session, guideline era, first-lap status, wet conditions,
-restarts, overlap, and attacker line. We intentionally excluded the later fault finding, penalty,
-damage, retirement, and finishing result. This design prevents the outcome from deciding which cases
-count as similar.
+Decisions were matched using incident type, session, guideline era, first-lap status, wet conditions,
+restarts, overlap, and attacker line. The later fault finding, penalty, damage, retirement, and
+finishing result were intentionally excluded. This design prevents the outcome from deciding which
+cases count as similar.
 
-We also separated warnings and reprimands from penalties that directly change time, position, or the
-starting grid. Of the 346 main decisions, 317 had at least five possible comparison cases and could
-enter the matching screen. This support rule prevented isolated cases from being compared with a
-single weak match.
+Warnings and reprimands were also separated from penalties that directly change time, position, or
+the starting grid. Of the 346 main decisions, 317 had at least five possible comparison cases and
+could enter the matching screen. This support rule prevented isolated cases from being compared with
+a single weak match.
 
 The closest available case had the same direct-penalty outcome in 186 decisions (58.7%) and a
 different outcome in 131 decisions (41.3%). The 131 differences identify cases that need additional
@@ -646,10 +648,10 @@ rate.</div>
 
 ## Chapter 5: Investigating different outcomes
 
-The matching screen left us with 131 decisions whose closest comparison had a different
-direct-penalty outcome. We then restored the written responsibility finding that had been excluded
-from the matching step. This allowed us to test whether the outcomes differed because the stewards
-first reached different conclusions about fault.
+The matching screen produced 131 decisions whose closest comparison had a different direct-penalty
+outcome. The written responsibility finding that had been excluded from the matching step was then
+restored. This tests whether the outcomes differed because the stewards first reached different
+conclusions about fault.
 
 This distinction changes the interpretation of a disputed pair. If two incidents receive different
 fault findings, the later difference in penalties may follow the written reasoning correctly. The
@@ -728,7 +730,7 @@ save_and_show(
 
 The written fault finding differed in 87 of the 131 pairs (66.4%). In these pairs, the sanction
 usually followed the finding, so the disagreement begins with the stewards' assessment of
-responsibility. Our matching fields may not contain every detail needed to decide whether that
+responsibility. The matching fields may not contain every detail needed to decide whether that
 difference was justified.
 
 Another 30 pairs (22.9%) had no explicit fault threshold in either ruling. A reader can see the
@@ -738,15 +740,15 @@ whether the advantage was retained, returned, or caused by another driver.
 
 This second review gives the 41.3% result a more useful meaning. Most different outcomes are linked
 to a different fault assessment, while the remaining cases are difficult to compare because the
-public reasoning is incomplete or uses a different decision framework. We still cannot convert
-these categories into a confirmed error count.
+public reasoning is incomplete or uses a different decision framework. These categories still
+cannot be converted into a confirmed error count.
 
 ### How well-known controversies fit the analysis
 
-We next applied the same framework to several well-known controversies. These examples show where
+The same framework was next applied to several well-known controversies. These examples show where
 fan criticism comes from and why two incidents that look similar can produce different official
-results. We selected them for explanatory value, so they are not a random sample and cannot measure
-how often controversial decisions occur.
+results. The cases were selected for explanatory value, so they are not a random sample and cannot
+measure how often controversial decisions occur.
 
 | Case and source | Recorded parameters | Assessment |
 |---|---|---|
@@ -795,13 +797,13 @@ strongest basis, even though the evidence is not sufficient to label the decisio
 
 Historical penalty comparisons have a basic limitation: the public ruling does not always state the
 starting penalty the stewards considered. In 2025, the FIA published Formula 1 driving standards and
-penalty guidance that made this process easier to evaluate. We used these documents as a benchmark
-for decisions made while that public guidance was in effect.
+penalty guidance that made this process easier to evaluate. These documents provide a benchmark for
+decisions made while that public guidance was in effect.
 
-We found 33 sanctions from 2025 that could be mapped to a published starting point. For each one, we
-recorded whether the sanction plainly matched the guidance, fit the published range after context or
-mitigation, or used a substitution or escalation that needed more explanation. We never applied the
-2025 guidance retrospectively to decisions from 2018 through 2024.
+The analysis found 33 sanctions from 2025 that could be mapped to a published starting point. Each
+sanction was classified by whether it plainly matched the guidance, fit the published range after
+context or mitigation, or used a substitution or escalation that needed more explanation. The 2025
+guidance was never applied retrospectively to decisions from 2018 through 2024.
 """
         ),
         _code(
@@ -869,12 +871,12 @@ save_and_show(
         _markdown(
             """
 Of the 33 comparable sanctions, 21 (63.6%) matched the published starting point without additional
-interpretation. Seven more (21.2%) remained within the published range after we considered the
-context or mitigation described by the stewards. Together, 28 of the 33 sanctions fit the public
+interpretation. Seven more (21.2%) remained within the published range after the context or
+mitigation described by the stewards was considered. Together, 28 of the 33 sanctions fit the public
 guidance or its stated range.
 
 The remaining five sanctions (15.2%) used a substitution or escalation that required more context
-than the public decision supplied. We classified these as transparency questions rather than rule
+than the public decision supplied. These were classified as transparency questions rather than rule
 violations because the stewards may have considered evidence that was not included in the document.
 The data support a question about explanation, not a conclusion that the sanction was improper.
 
@@ -900,11 +902,11 @@ therefore misses part of the result.
 
 Incident harm creates a separate measurement problem. Contact can cause a brief delay, a puncture,
 a repair stop, lasting damage, or a retirement. In a multi-car incident, each participant can suffer
-a different outcome, so we recorded harm at the driver level instead of assigning one consequence
+a different outcome, so harm was recorded at the driver level instead of assigning one consequence
 to the entire incident.
 
-We first tested this structure on nine source-supported decisions. The examples below show why we
-kept the written sanction, its realized competitive burden, and the harm from the incident in
+This structure was first tested on nine source-supported decisions. The examples below show why the
+written sanction, its realized competitive burden, and the harm from the incident were kept in
 separate fields.
 """
         ),
@@ -950,7 +952,7 @@ finish. Colapinto's five-second Austria 2025 penalty changed neither his positio
 Penalties served before the finish are harder to reconstruct. Tsunoda served ten seconds during the
 race, so subtracting ten seconds from his final time would ignore changes in strategy and traffic.
 Antonelli's three-place grid penalty moved his starting position from P7 to P10 at the next event,
-but we could not isolate its effect on his finishing position.
+but its effect on his finishing position could not be isolated.
 
 The nine harm records included one incident-caused retirement, three observed one-place losses, and
 one possible damage report without an immediate place loss. These cases confirmed that harm must be
@@ -1005,13 +1007,13 @@ screen, which makes a population-level damage estimate impractical with the avai
 
 A slower pace after contact can identify a case for further source review, but it cannot establish
 damage by itself. Tyres, traffic, strategy, weather, or an unrelated car problem can create the same
-pattern. We therefore treated the 28 timing results as research leads rather than confirmed effects.
+pattern. The 28 timing results were therefore treated as research leads rather than confirmed effects.
 
 No case in the full dataset contained all three forms of evidence needed for a proportionality
-conclusion: a clear fault finding, source-confirmed harm, and a measurable realized penalty cost. We
-can describe the pilot examples, but we cannot claim that FIA penalties are generally proportional
-or disproportional to race harm. Withholding that conclusion prevents a severe outcome from being
-treated as automatic proof that another driver deserved a larger penalty.
+conclusion: a clear fault finding, source-confirmed harm, and a measurable realized penalty cost.
+The pilot examples can be described, but the data cannot show whether FIA penalties are generally
+proportional or disproportional to race harm. Withholding that conclusion prevents a severe outcome
+from being treated as automatic proof that another driver deserved a larger penalty.
 """
         ),
         _markdown(
@@ -1022,8 +1024,8 @@ treated as automatic proof that another driver deserved a larger penalty.
 
 Claims of favorable treatment for British drivers appear frequently after high-profile stewarding
 decisions. A collection of memorable examples cannot test that claim because fans are more likely
-to remember unusual or championship-relevant incidents. We needed to compare the full group of
-British accused drivers with the other accused drivers in the main dataset.
+to remember unusual or championship-relevant incidents. A useful test must compare the full group
+of British accused drivers with the other accused drivers in the main dataset.
 
 This analysis asks whether the observed sanction rate differs by driver nationality. It does not
 judge any individual driver or steward, and it does not assume that a raw group difference is caused
@@ -1089,7 +1091,7 @@ decisions, below the prespecified minimum of 98. Simulated power to detect a 15-
 
 The controversy examples from Chapter 5 cannot solve this problem because they were chosen for
 explanation rather than representation. FIA documents identify the stewarding panel but do not
-publish individual votes, which also prevents us from linking a decision to one steward's
+publish individual votes, which also prevents a decision from being linked to one steward's
 nationality. These limitations keep the nationality analysis descriptive.
 
 <div class="report-answer"><strong>Nationality result:</strong> The observed sanction rate was not
@@ -1101,12 +1103,21 @@ not proof that nationality bias is absent.</div>
         _markdown(
             """
 <a id="chapter-9"></a>
+<a id="conclusion-tldr"></a>
 
 ## Chapter 9: Answering the research question
 
-We began by asking whether Formula 1 stewarding treats similar incidents consistently. The results
+### TL;DR
+
+<div class="report-answer"><strong>Short answer:</strong> Formula 1 stewarding is consistent after
+a clear responsibility finding, but meaningfully inconsistent at the point where responsibility is
+assigned. The closest matched case had a different direct-penalty outcome in 131 of 317 decisions
+(41.3%), and 87 of those 131 differences began with a different written fault finding. This is
+evidence of uneven judgment at the boundary, not a 41.3% stewarding error rate.</div>
+
+The study asks whether Formula 1 stewarding treats similar incidents consistently. The results
 do not support a single yes-or-no answer because consistency changes depending on which part of the
-decision process we measure. The summary below connects each research question to the evidence used
+decision process is measured. The summary below connects each research question to the evidence used
 to answer it.
 
 | Question | Main evidence | Conclusion |
@@ -1131,17 +1142,23 @@ sanctions also followed the public starting point or its stated range.
 The more difficult question is whether the stewards assigned responsibility consistently across
 similar incidents. Among the 131 closest matches with different direct-penalty outcomes, 87 also had
 different written fault findings. Some of those differences may reflect incident details missing
-from our structured data, while others remain difficult to explain from the public reasons.
+from the structured data, while others remain difficult to explain from the public reasons.
 
-<div class="report-answer"><strong>Conclusion:</strong> The available evidence does not establish
-systematic inconsistency or nationality bias in Formula 1 stewarding. It also does not show that
-every fault finding was correct. The strongest evidence supports consistency between the written
-finding and the sanction, while the largest uncertainty remains in how responsibility is assigned.</div>
+<div class="report-answer"><strong>Conclusion:</strong> The available evidence shows meaningful
+inconsistency in how responsibility is assigned near the decision boundary, but not a systematic
+breakdown across the full stewarding process. Written findings and sanctions align strongly, while
+similar-looking cases can still receive different fault assessments. The nationality analysis
+remains inconclusive.</div>
 
 This conclusion is narrower than a claim that the FIA is always fair. The study cannot measure
 comparable incidents that were never referred, and it cannot reconstruct every camera angle or
 piece of telemetry used by the stewards. It also lacks complete measures of incident harm,
 in-race penalty cost, and individual steward votes.
+
+Stewards often make these decisions quickly with limited live evidence, which makes some variation
+understandable. Time pressure is context, however, not proof that a particular difference was
+justified. The public record still needs a clearer explanation when comparable incidents receive
+different responsibility findings.
 
 ### Evidence needed for a stronger answer
 
@@ -1201,7 +1218,7 @@ but only if the incident context remains comparable over time.
 
 ## Methods, limitations, and reproducibility
 
-This section records the technical choices behind the report. We keep these details separate from
+This section records the technical choices behind the report. These details are kept separate from
 the main narrative so the results remain readable while the analysis can still be reproduced and
 audited.
 
@@ -1219,7 +1236,7 @@ audited.
 
 ### Analytical design
 
-We stored the study as a set of linked tables rather than one combined fairness score. The conduct
+The study is stored as a set of linked tables rather than one combined fairness score. The conduct
 table records the accused driver and written finding, the consequence table records harm to each
 affected driver, and the sanction table records the formal outcome and how it was applied.
 
@@ -1255,7 +1272,7 @@ question that the public data cannot answer reliably.
 
 ### Evidence status
 
-We assigned a release status to each major finding before writing the conclusion. Descriptive
+A release status was assigned to each major finding before the conclusion was written. Descriptive
 results were released when the source and unit of analysis were complete, while claims requiring
 missing context or failed statistical gates were withheld.
 
@@ -1293,13 +1310,13 @@ The public HTML hides code for readability. The notebook retains the executable 
 
 ## Sources and citations
 
-We used each source for a specific purpose. FIA regulations and guidelines define the decision
+Each source serves a specific purpose. FIA regulations and guidelines define the decision
 standard, while steward decisions record the official finding for one incident. Classifications and
 timing establish observed race results, and attributed team or driver reports provide limited
 case-specific damage evidence.
 
-We did not use timing data, news reports, or team statements to assign fault. The tables below state
-the role and limitation of each source group so that a reader can separate governing evidence from
+Timing data, news reports, and team statements were not used to assign fault. The tables below state
+the role and limitation of each source group, allowing governing evidence to be separated from
 supporting context.
 
 ### Rules and governing material
@@ -1344,10 +1361,10 @@ leads, but they did not establish the study's published fault or fairness findin
 
 ### Decision-level FIA sources
 
-Every included primary and secondary decision has a direct FIA citation. We collapsed the 418-row
-table so the source audit remains available without interrupting the main report. The downloadable
-file also contains 502 exclusion checks, evidence passages, correction history, rule sources,
-confidence fields, and review status.
+Every included primary and secondary decision has a direct FIA citation. The 418-row table is
+collapsed so the source audit remains available without interrupting the main report. The
+downloadable file also contains 502 exclusion checks, evidence passages, correction history, rule
+sources, confidence fields, and review status.
 """
         ),
         _code(

@@ -19,8 +19,10 @@ difference at one stage is not mistaken for a difference at another.
 
 The public evidence shows strong agreement between clear written fault findings and final outcomes.
 The harder question is whether responsibility was assigned consistently across similar incidents.
-The available data do not establish systematic inconsistency or nationality bias, but incomplete
-context prevents the report from clearing every decision.
+The available data show meaningful inconsistency in how responsibility is assigned near the
+decision boundary, but not a systematic breakdown across the full stewarding process. The
+nationality result remains inconclusive, and incomplete context prevents the report from clearing
+every decision.
 
 The clearest formal findings were internally coherent: all 76 decisions finding a driver wholly or
 predominantly to blame imposed a sanction, while all 24 racing-incident findings ended with no

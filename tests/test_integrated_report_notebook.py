@@ -12,7 +12,11 @@ def test_integrated_report_has_complete_narrative_and_source_gate() -> None:
         assert f'id="chapter-{chapter}"' in markdown
     assert 'id="methods"' in markdown
     assert 'id="citations"' in markdown
+    assert 'id="conclusion-tldr"' in markdown
+    assert 'href="#conclusion-tldr"' in markdown
     assert "Main finding:" in markdown
+    assert "Short answer:" in markdown
+    assert "meaningfully inconsistent" in markdown
     assert "Conclusion:" in markdown
     assert "model-led source audit" in markdown
     assert "no claim of full-corpus human inter-rater agreement" in markdown
