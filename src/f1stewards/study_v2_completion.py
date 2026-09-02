@@ -313,15 +313,15 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
     )
     html = artifact_paths["report_html"].read_text(encoding="utf-8")
     final_report_markers = (
-        "Does Formula 1 Stewarding Treat Similar Incidents the Same Way?",
-        "high-confidence referral links for 177 of the 346 main decisions",
+        "How Consistent Is Formula 1 Stewarding?",
+        "high-confidence Race Control referral links for 177 of the 346 main decisions",
         "All 76 decisions",
-        "Where similar cases still diverge",
-        "41.3% is not an inconsistency rate",
+        "Investigating different outcomes",
+        "It is a review rate, not an estimated stewarding error",
         "Of the 33 comparable sanctions, 21",
-        "Only 28 of the 412 driver-specific records",
-        "Simulated power to detect a",
-        "Final conclusion:",
+        "Only 28 records (6.8%)",
+        "Simulated power to detect a 15-point difference",
+        "Conclusion:",
     )
     decision_source_links = html.count(">Official decision</a>")
     report_code_hidden = "strict_manifest =" not in html
@@ -347,7 +347,7 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
         "public_report_style_rules_pass",
         not style_violations,
         f"violations={len(style_violations)}",
-        "0 forbidden dashes, terms, long paragraphs, or multi-sentence bullets",
+        "0 forbidden dashes, terms, overlong paragraphs, or multi-sentence bullets",
     )
 
     claims = pd.read_csv(root / "reports" / "claim_ledger.csv", keep_default_na=False)

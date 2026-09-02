@@ -1,4 +1,4 @@
-# Does Formula 1 Stewarding Treat Similar Incidents the Same Way?
+# How Consistent Is Formula 1 Stewarding?
 
 An auditable analysis of consistency, potential nationality effects, and competitive impact in Formula One stewarding decisions from 2018 through 2025.
 

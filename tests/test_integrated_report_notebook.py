@@ -12,12 +12,12 @@ def test_integrated_report_has_complete_narrative_and_source_gate() -> None:
         assert f'id="chapter-{chapter}"' in markdown
     assert 'id="methods"' in markdown
     assert 'id="citations"' in markdown
-    assert "Primary result:" in markdown
-    assert "Final conclusion" in markdown
+    assert "Main finding:" in markdown
+    assert "Conclusion:" in markdown
     assert "model-led source audit" in markdown
     assert "no claim of full-corpus human inter-rater agreement" in markdown
     assert "never applied retrospectively" in markdown
-    assert "Where similar cases still diverge" in markdown
+    assert "Investigating different outcomes" in markdown
     assert "Japan 2024" in markdown
     assert "São Paulo 2021" in markdown
     assert "Brian Zeng" in markdown

@@ -608,7 +608,7 @@ def execute_and_export() -> None:
     report_html = report_html.replace(
         "<title>12_study_v2_report</title>",
         (
-            "<title>Does Formula 1 Stewarding Treat Similar Incidents the Same Way?</title>"
+            "<title>How Consistent Is Formula 1 Stewarding?</title>"
             '<meta name="description" content="A data analysis of Formula 1 stewarding '
             'consistency, penalty burden, and nationality claims from 2018 to 2025."/>'
         ),

@@ -1,24 +1,26 @@
-# Does Formula 1 Stewarding Treat Similar Incidents the Same Way?
+# How Consistent Is Formula 1 Stewarding?
 
-## A data analysis of stewarding consistency, 2018 to 2025
+## What FIA decisions from 2018 to 2025 show about fault, penalties, and fairness
 
 Start with the consolidated [code-free final report](the_cost_of_discretion_study_v2.html). The
 same report is available as an [executable Jupyter notebook](../notebooks/12_study_v2_report.ipynb),
 where every figure and result is reproduced from the frozen analytical artifacts.
 
-The earlier [v1 oversight report](the_cost_of_discretion.html) and notebooks 00–06 are retained as
+The earlier [v1 oversight report](the_cost_of_discretion.html) and notebooks 00-06 are retained as
 project history. The consolidated report combines their pilot, full-corpus, modeling, impact, and
 nationality results with the later source audit, referral funnel, incident timing, close-case
 matching, and collision-harm work.
 
 ## The answer in brief
 
-The public evidence points to a stewarding system that was usually coherent after a written fault
-finding, but less predictable at the boundaries. It does not establish systematic unfairness or
-national bias, and it does not clear every decision. The deeper inconsistency audit finds changing
-or incomplete standards, limited live evidence, thin explanations, and a small number of unresolved
-judgment calls. The public record is also incomplete before referral, and full competitive harm is
-rarely documented in a common form.
+The report asks whether similar incidents receive similar treatment. It separates the conduct
+described by the stewards, the written responsibility finding, and the final sanction so a
+difference at one stage is not mistaken for a difference at another.
+
+The public evidence shows strong agreement between clear written fault findings and final outcomes.
+The harder question is whether responsibility was assigned consistently across similar incidents.
+The available data do not establish systematic inconsistency or nationality bias, but incomplete
+context prevents the report from clearing every decision.
 
 The clearest formal findings were internally coherent: all 76 decisions finding a driver wholly or
 predominantly to blame imposed a sanction, while all 24 racing-incident findings ended with no
