@@ -21,7 +21,7 @@ def build_integrated_report_cells(setup_source: str) -> list[nbformat.NotebookNo
     return [
         _markdown(
             """
-# The Cost of Discretion
+# Does Formula 1 Stewarding Treat Similar Incidents the Same Way?
 
 <div class="report-author">
 <strong>Brian Zeng</strong><br>
@@ -29,23 +29,20 @@ def build_integrated_report_cells(setup_source: str) -> list[nbformat.NotebookNo
 <a href="https://brianbzeng.com">brianbzeng.com</a>
 </div>
 
-## Quantitative assessment of Formula 1 stewarding, 2018 to 2025
+## A data analysis of stewarding consistency, 2018 to 2025
 
-**Final integrated report | 2018 to 2025 seasons | Analytical data frozen August 13, 2026 |
-Narrative sources checked August 14, 2026**
+Formula 1 stewards decide whether an on-track incident broke the rules and whether a driver should
+receive a penalty. Those decisions often become controversial when two incidents look similar to
+viewers but produce different written findings or penalties.
 
-The dataset contains 346 Race and Sprint decisions from 131 events. Stewards imposed a sanction in
-214 cases (61.8%) and took no further action in 132 cases (38.2%).
+This study asks a narrower question than whether every decision was correct: does the public record
+show a consistent path from the facts described by the stewards, to the finding of responsibility,
+to the final sanction? It also examines where that path becomes difficult to compare, how much a
+penalty can affect a race, and whether the available data support claims of nationality bias.
 
-All 76 decisions that found a driver wholly or predominantly to blame imposed a sanction. All 24
-racing-incident findings ended with no further action.
-
-The nearest-neighbor screen found different direct-penalty outcomes in 131 of 317 supported cases
-(41.3%). Of those 131 differences, 87 (66.4%) also had different written fault findings.
-
-British accused drivers received sanctions in 25 of 44 decisions (56.8%), compared with 189 of 302
-other-driver decisions (62.6%). The 44 British-driver cases fell below the prespecified minimum of
-98, so the nationality result remains inconclusive.
+The analysis follows the standard data science process. It defines the questions, builds a dataset
+from FIA documents, explores the decisions, tests consistency, investigates exceptions, and states
+what the evidence cannot establish.
 """
         ),
         _code(setup_source),
@@ -185,39 +182,23 @@ assert close_manifest["pre_review_minimum_support_count"] == 317
 assert len(pilot_adjudications) == 9
 
 overall_rate = primary["sanction_outcome"].mean()
-overview = [
-    ("346", "primary Race/Sprint decisions"),
-    (f"{overall_rate:.1%}", "ended with a sanction"),
-    ("920", "source-cited audit records"),
-    ("32", "included records corrected"),
-]
-overview_html = '<div class="stat-grid">' + ''.join(
-    f'<div class="stat-item"><div class="stat-value">{value}</div><div class="stat-label">{label}</div></div>'
-    for value, label in overview
-) + '</div>'
-display(HTML(overview_html))
 """
         ),
         _markdown(
             """
-<div class="report-answer"><strong>Primary result:</strong> The 100 clearest responsibility findings
-produced 100 outcomes aligned with the written finding: 76 blame findings led to sanctions and 24
-racing-incident findings led to no further action. This measures internal consistency after the
-fault finding, not whether each fault finding was correct.</div>
-
 ### Index
 
 <ol class="toc">
-<li><a href="#chapter-1">Analytical framework</a></li>
-<li><a href="#chapter-2">Data construction and quality control</a></li>
-<li><a href="#chapter-3">Descriptive results</a></li>
-<li><a href="#chapter-4">Consistency tests</a></li>
-<li><a href="#chapter-5">Inconsistency audit and case studies</a></li>
-<li><a href="#chapter-6">2025 guideline comparison</a></li>
-<li><a href="#chapter-7">Penalty burden and incident harm</a></li>
-<li><a href="#chapter-8">Nationality analysis</a></li>
-<li><a href="#chapter-9">Results summary</a></li>
-<li><a href="#chapter-10">Recommendations</a></li>
+<li><a href="#chapter-1">The question: what would consistent stewarding look like?</a></li>
+<li><a href="#chapter-2">Turning FIA documents into analyzable data</a></li>
+<li><a href="#chapter-3">What the formal decisions look like</a></li>
+<li><a href="#chapter-4">Do written findings lead to consistent outcomes?</a></li>
+<li><a href="#chapter-5">Where similar cases still diverge</a></li>
+<li><a href="#chapter-6">What the 2025 public guidelines add</a></li>
+<li><a href="#chapter-7">Why penalty length is not the same as race cost</a></li>
+<li><a href="#chapter-8">Testing the claim of British-driver bias</a></li>
+<li><a href="#chapter-9">What the study can and cannot conclude</a></li>
+<li><a href="#chapter-10">What better stewarding data would look like</a></li>
 <li><a href="#methods">Methods, limits, and reproducibility</a></li>
 <li><a href="#citations">Sources and citations</a></li>
 </ol>
@@ -227,119 +208,136 @@ fault finding, not whether each fault finding was correct.</div>
             """
 <a id="chapter-1"></a>
 
-## Chapter 1: Analytical framework
+## Chapter 1: The question: what would consistent stewarding look like?
 
-The analysis divides fairness into five testable components:
+An FIA decision has three main parts. The stewards describe what happened, decide how much
+responsibility a driver carried, and choose an outcome such as no further action, a warning, or a
+sporting penalty.
 
-1. **Conduct:** Comparable driving acts should receive comparable fault findings.
-2. **Sanction:** Comparable fault findings should receive comparable penalties.
-3. **Consequence:** Harm must be measured separately for each affected driver.
-4. **Competitive burden:** Penalty cost must reflect how and when the sanction was applied.
-5. **Distribution:** Group outcome differences require adequate samples and comparable case context.
+A consistent system should treat comparable conduct in comparable ways. That does not mean every
+collision must receive the same penalty, because position, overlap, driver control, track
+conditions, and mitigating factors can change the decision.
 
-The study does not calculate a composite fairness score. Conduct, harm, and sanction burden remain
-separate because each measure uses different evidence.
+The study therefore separates five questions:
 
-<div class="report-method"><strong>Study rule:</strong> A proportionality claim requires separate
-evidence for fault, incident-caused harm, and realized sanction cost.</div>
+1. **Conduct:** Do comparable driving acts receive comparable responsibility findings?
+2. **Sanction:** Do comparable responsibility findings receive comparable penalties?
+3. **Consequence:** What happened to each driver affected by the incident?
+4. **Race cost:** What did the sanction actually cost after its timing and application are considered?
+5. **Nationality:** Do group differences remain credible after sample size and case context are checked?
+
+The nationality question tests a specific claim that British drivers may receive favorable
+treatment. It is a secondary analysis, not the starting assumption of the report.
+
+The study does not combine these questions into one fairness score. A steward can describe fault
+consistently while a fixed penalty still creates very different race costs, and a harmful outcome
+does not by itself prove that the original driving act deserved a harsher finding.
+
+<div class="report-method"><strong>Interpretation rule:</strong> This report calls a decision
+internally consistent when the written responsibility finding and the formal outcome agree. It calls
+two decisions comparable only when the available incident context is similar.</div>
 """
         ),
         _markdown(
             """
 <a id="chapter-2"></a>
 
-## Chapter 2: Data construction and quality control
+## Chapter 2: Turning FIA documents into analyzable data
 
-The source inventory contains 9,467 FIA event documents from 173 completed championship events.
-The final analytical population contains 346 Race and Sprint decisions from 131 events.
+The FIA does not publish one analysis-ready table of stewarding decisions. Its event archives also
+contain classifications, summonses, technical reports, corrected rulings, and several versions of
+the same document, so counting search results would overstate the number of decisions.
+
+The collection process began with 9,467 documents from 173 championship events. Each record then
+passed through a sequence of filters designed to answer a simple question: is this a current,
+source-supported steward decision that belongs in the study?
 """
         ),
         _code(
             """
 flow = [
-    ("9,467", "FIA event documents"),
-    ("2,003", "outcome records checked"),
-    ("1,984", "local source files"),
-    ("1,935", "current decision versions"),
-    ("418", "included decisions"),
-    ("346", "primary Race/Sprint cases"),
+    ("9,467", "Documents listed across FIA event archives"),
+    ("2,003", "Records that could contain a steward outcome"),
+    ("418", "Verified decisions relevant to the study"),
+    ("346", "Race and Sprint driver-conduct decisions analyzed"),
 ]
 
-fig, ax = plt.subplots(figsize=(14, 3.5))
-ax.set_xlim(0, len(flow) * 2.25)
-ax.set_ylim(0, 2.2)
+fig, ax = plt.subplots(figsize=(13, 4.0))
+ax.set_xlim(0, len(flow) * 3.05)
+ax.set_ylim(0, 2.5)
 ax.axis("off")
-flow_colors = [BLUE, SKY, GREEN, ORANGE, PURPLE, VERMILLION]
+flow_colors = [BLUE, SKY, GREEN, ORANGE]
 for index, ((count, label), color) in enumerate(zip(flow, flow_colors, strict=True)):
-    x = index * 2.25 + 0.08
+    x = index * 3.05 + 0.08
     box = patches.FancyBboxPatch(
-        (x, 0.48),
-        1.72,
-        1.12,
+        (x, 0.50),
+        2.45,
+        1.35,
         boxstyle="round,pad=0.03,rounding_size=0.05",
         facecolor=color,
         edgecolor=CHARCOAL,
         linewidth=0.8,
     )
     ax.add_patch(box)
-    text_color = "white" if color in {BLUE, GREEN, VERMILLION, PURPLE} else CHARCOAL
-    ax.text(x + 0.86, 1.20, count, ha="center", va="center", fontsize=17, fontweight="bold", color=text_color)
-    ax.text(x + 0.86, 0.82, "\\n".join(textwrap.wrap(label, width=21)), ha="center", va="center", fontsize=9.5, color=text_color)
+    text_color = "white" if color in {BLUE, GREEN} else CHARCOAL
+    ax.text(x + 1.225, 1.38, count, ha="center", va="center", fontsize=19, fontweight="bold", color=text_color)
+    ax.text(x + 1.225, 0.91, "\\n".join(textwrap.wrap(label, width=31)), ha="center", va="center", fontsize=10, color=text_color)
     if index < len(flow) - 1:
-        ax.annotate("", xy=(x + 2.10, 1.04), xytext=(x + 1.78, 1.04), arrowprops={"arrowstyle": "->", "color": CHARCOAL, "lw": 1.4})
-ax.set_title("From public archive to the final analytical population", fontsize=15, pad=8)
+        ax.annotate("", xy=(x + 2.92, 1.18), xytext=(x + 2.52, 1.18), arrowprops={"arrowstyle": "->", "color": CHARCOAL, "lw": 1.6})
+ax.set_title("Four filters turn the FIA archive into the main study dataset", fontsize=15, pad=10)
 save_and_show(
     fig,
     "final_population_path.png",
-    "Six-stage source path from 9,467 FIA event documents to 346 primary Race and Sprint cases.",
-    "Counts describe different stages of the evidence pipeline; they are not all independent documents or incidents.",
+    "Four filters reduce 9,467 FIA archive documents to 346 Race and Sprint driver-conduct decisions.",
+    "The 418 verified decisions include 346 Race and Sprint cases used in the main analysis and 72 qualifying impeding cases used only as supporting material.",
 )
 """
         ),
         _markdown(
             """
-The Race Control linkage produced the following counts:
+The first filter identified 2,003 archive records that might contain a steward outcome. The source
+review then removed administrative files, duplicate versions, and decisions outside the selected
+incident types, leaving 418 verified decisions with direct FIA citations.
 
-- **16,039 messages:** All collected Race and Sprint Race Control messages.
-- **1,815 process messages:** Messages describing noted, investigated, or sanctioned states.
-- **966 referral episodes:** Process messages grouped into incident-level sequences.
-- **177 high-confidence links:** Primary decisions linked to a referral episode, 51.2% of 346.
-- **153 candidate links:** Primary decisions requiring further context review, 44.2% of 346.
-- **16 unmatched decisions:** Formal decisions without a referral match, 4.6% of 346.
+The main analysis uses 346 decisions about driver conduct during a Race or Sprint. The remaining 72
+decisions concern qualifying impeding and appear only where they add supporting context, so they are
+never mixed into the main sanction rate.
 
-The Race Control feed therefore does not provide a complete denominator for all comparable acts.
+### What one row represents
 
-### Data constraints
+One row represents one accused driver in one formal decision. A multi-car crash can therefore
+create several decision rows, while harm to each affected driver is stored separately so one
+driver's retirement does not overwrite another driver's puncture or time loss.
 
-- **Version control:** The source audit marked 32 records as corrected to prevent duplicate rulings.
-- **Referral coverage:** Formal PDFs include referred cases but exclude unobserved non-referrals.
-- **Multi-car incidents:** One incident can produce several accused-driver and affected-driver records.
-- **Damage coding:** Floors, tyres, wings, repair stops, and retirements require separate evidence fields.
-- **Broad labels:** An incident-family label does not record overlap, control, space, or mitigation.
+### What the dataset does not contain
 
-The final dataset followed a nine-decision pilot, a full source inventory, a model-led source audit,
-and participant-level timing and harm screens. The report uses only the final corrected population.
+Formal decisions show incidents that reached the stewards, not every comparable act on track. Race
+Control messages produced high-confidence referral links for 177 of the 346 main decisions, which
+was not enough to construct a complete population of investigated and uninvestigated incidents.
 
-### How the source review worked
+The analysis also cannot infer missing facts from silence. If a decision does not describe overlap,
+damage, or mitigation, that field remains unknown instead of being coded as absent.
 
-GPT-5.6 Sol checked all 418 included decisions and 502 sampled exclusions against a cited source
-under a frozen protocol. The 920-row audit confirmed 884 records, corrected 32 included records,
-and marked four archive labels as unresolved because no public source file was recoverable.
-
-All 418 included decisions have an FIA citation and an evidence passage. The full audit is
-model-led, while the separate nine-decision pilot received independent review.
+These limits shape every later result. The report can test patterns inside published decisions, but
+it cannot estimate how often similar conduct was never referred or decide fault from timing data
+alone.
 """
         ),
         _markdown(
             """
 <a id="chapter-3"></a>
 
-## Chapter 3: Descriptive results
+## Chapter 3: What the formal decisions look like
 
-The primary population contains 346 accused-driver decisions from 131 Race or Sprint events. A
-sanction was imposed in 214 cases (61.8%); 132 ended with no further action.
+The first step is descriptive. The main dataset contains 346 accused-driver decisions from 131 Race
+or Sprint events, and stewards imposed some form of sanction in 214 decisions (61.8%).
 
-These rates describe formal decisions, not every incident that occurred.
+That percentage is not the rate at which all on-track incidents are punished. It describes only
+the incidents that produced a formal FIA decision and passed the study filters in Chapter 2.
+
+Incident type provides the first useful comparison. If one category receives sanctions more often
+than another, the difference can identify where the rules or case facts deserve closer study, but
+the raw rate cannot establish inconsistency on its own.
 """
         ),
         _code(
@@ -366,10 +364,14 @@ season[["low", "high"]] = season.apply(
     lambda row: pd.Series(wilson_interval(int(row["sanctions"]), int(row["cases"]))), axis=1
 )
 
-fig, axes = plt.subplots(1, 2, figsize=(14, 5.7), gridspec_kw={"width_ratios": [1.2, 1]})
+family["display_label"] = family.apply(
+    lambda row: f'{row["label"]}  (n={int(row["cases"])})', axis=1
+)
+
+fig, ax = plt.subplots(figsize=(11.5, 6.2))
 y = np.arange(len(family))
-axes[0].barh(y, family["rate"], color=BLUE, edgecolor=CHARCOAL, linewidth=0.6)
-axes[0].errorbar(
+ax.barh(y, family["rate"], color=BLUE, edgecolor=CHARCOAL, linewidth=0.6)
+ax.errorbar(
     family["rate"],
     y,
     xerr=[family["rate"] - family["low"], family["high"] - family["rate"]],
@@ -378,17 +380,26 @@ axes[0].errorbar(
     capsize=3,
     linewidth=1,
 )
-axes[0].set_yticks(y, family["label"])
-axes[0].set_xlim(0, 1.08)
-axes[0].xaxis.set_major_formatter(PercentFormatter(1))
-axes[0].axvline(overall_rate, color=CHARCOAL, linestyle="--", linewidth=1.2)
-axes[0].set_title("Sanction rate by incident family")
-axes[0].set_xlabel("Formal decisions ending in a sanction")
-axes[0].set_ylabel("")
+ax.set_yticks(y, family["display_label"])
+ax.set_xlim(0, 1.0)
+ax.xaxis.set_major_formatter(PercentFormatter(1))
+ax.axvline(overall_rate, color=CHARCOAL, linestyle="--", linewidth=1.2, label="All decisions: 61.8%")
+ax.set_title("Raw sanction rates differ by incident type")
+ax.set_xlabel("Share of formal decisions ending in a sanction")
+ax.set_ylabel("")
 for index, row in family.reset_index(drop=True).iterrows():
-    axes[0].text(min(row["rate"] + 0.025, 0.96), index, f'{row["rate"]:.0%}  n={int(row["cases"])}', va="center", fontsize=9)
+    ax.text(0.025, index, f'{row["rate"]:.0%}', va="center", color="white", fontweight="bold")
+ax.legend(loc="lower right")
+fig.tight_layout()
+save_and_show(
+    fig,
+    "final_sanction_rates.png",
+    "Horizontal bars show raw sanction rates and 95 percent confidence intervals for six incident types.",
+    "Sample sizes appear in the category labels. The black intervals show statistical uncertainty, and the dashed line marks the 61.8% rate across all 346 decisions.",
+)
 
-axes[1].errorbar(
+fig, ax = plt.subplots(figsize=(10.8, 5.2))
+ax.errorbar(
     season["season"],
     season["rate"],
     yerr=[season["rate"] - season["low"], season["high"] - season["rate"]],
@@ -398,50 +409,60 @@ axes[1].errorbar(
     capsize=3,
     linewidth=2,
 )
-axes[1].axhline(overall_rate, color=CHARCOAL, linestyle="--", linewidth=1.2, label="Overall 61.8%")
-axes[1].set_ylim(0, 1)
-axes[1].yaxis.set_major_formatter(PercentFormatter(1))
-axes[1].set_title("Sanction rate by season")
-axes[1].set_xlabel("Season")
-axes[1].set_ylabel("Formal decisions ending in a sanction")
-axes[1].legend(loc="lower right")
-fig.suptitle("Formal outcomes vary, but small groups carry wide uncertainty", fontsize=16, fontweight="bold")
+ax.axhline(overall_rate, color=CHARCOAL, linestyle="--", linewidth=1.2, label="All decisions: 61.8%")
+ax.set_ylim(0.25, 0.95)
+ax.yaxis.set_major_formatter(PercentFormatter(1))
+ax.set_title("The raw sanction rate changes by season")
+ax.set_xlabel("Season")
+ax.set_ylabel("Share of formal decisions ending in a sanction")
+ax.legend(loc="lower right")
 fig.tight_layout()
 save_and_show(
     fig,
-    "final_sanction_rates.png",
-    "Two panels showing sanction rates with 95 percent intervals by incident family and season.",
-    "The dashed line is the overall 61.8% rate. Intervals are Wilson 95% intervals; they widen sharply for small incident families.",
+    "final_season_rates.png",
+    "Annual raw sanction rates with 95 percent confidence intervals from 2018 through 2025.",
+    "The annual rate ranges from 40.9% in 2019 to 75.9% in 2021. The figure does not adjust for changes in incident mix, written responsibility, or stewarding guidance.",
 )
 """
         ),
         _markdown(
             """
-- **Causing a collision:** 137 sanctions in 233 decisions (58.8%).
-- **Gaining an advantage off track:** 41 sanctions in 54 decisions (75.9%).
-- **Forcing another driver off track:** 23 sanctions in 43 decisions (53.5%).
-- **Small groups:** Eight unsafe-rejoin decisions and two moving-under-braking decisions are insufficient for stable comparisons.
+Causing a collision dominates the dataset, with 233 of the 346 decisions. Stewards imposed a
+sanction in 137 of those cases (58.8%), compared with 41 of 54 gaining-an-advantage cases (75.9%)
+and 23 of 43 forcing-another-driver-off cases (53.5%).
 
-Season rates range from 40.9% in 2019 to 75.9% in 2021. That does not prove standards changed from
-one year to the next.
+The smaller categories are much less stable. Unsafe rejoining contains eight decisions, moving
+under braking contains two, and multiple defensive moves contains six, so their wide intervals are
+more informative than their point estimates.
 
-The seasonal comparison mixes incident facts, rule eras, responsibility findings, mitigation, and
-referral choices.
+The annual rate ranges from 40.9% in 2019 to 75.9% in 2021. That difference could reflect changes in
+incident mix, evidence, rule interpretation, or referral practice, so the report does not treat it
+as proof that one season was stricter than another.
+
+This descriptive stage shows where variation exists, but not why. The next stage tests whether the
+written responsibility finding provides a clearer explanation of the outcome than broad labels such
+as season or incident type.
 """
         ),
         _markdown(
             """
 <a id="chapter-4"></a>
 
-## Chapter 4: Consistency tests
+## Chapter 4: Do written findings lead to consistent outcomes?
 
-The consistency analysis used three tests:
+The descriptive rates in Chapter 3 group incidents by broad labels. Stewarding decisions rely on
+more specific facts, so the consistency analysis moves closer to the reasoning recorded in each
+document.
 
-1. **Responsibility alignment:** Compare the written fault finding with the formal outcome.
-2. **Predictive validation:** Test broad incident labels on held-out events.
-3. **Close-case screening:** Match cases without using the observed sanction or fault finding.
+Three tests address different parts of that reasoning. The first checks whether the written
+responsibility finding agrees with the formal outcome, the second measures how much broad labels
+can predict, and the third compares each case with its closest available matches.
 
-### Written responsibility and the decision
+### Test 1: Does the written finding match the outcome?
+
+This is the most direct internal check. A decision that calls an event a racing incident should not
+normally impose a penalty, while a finding that one driver was wholly or predominantly to blame
+should normally lead to a sanction.
 """
         ),
         _code(
@@ -462,24 +483,29 @@ fault = (
 fault["rate"] = fault["sanctions"] / fault["cases"]
 fault["label"] = fault["reviewed_fault_language"].map(fault_labels).fillna("Other")
 fault = fault.sort_values("rate")
+fault["display_label"] = fault.apply(
+    lambda row: f'{row["label"]}  (n={int(row["cases"])})', axis=1
+)
 
-fig, ax = plt.subplots(figsize=(10, 5.2))
+fig, ax = plt.subplots(figsize=(11, 5.6))
 y = np.arange(len(fault))
 ax.barh(y, fault["rate"], color=GREEN, edgecolor=CHARCOAL, linewidth=0.6)
-ax.set_yticks(y, fault["label"])
-ax.set_xlim(0, 1.12)
+ax.set_yticks(y, fault["display_label"])
+ax.set_xlim(0, 1.0)
 ax.xaxis.set_major_formatter(PercentFormatter(1))
-ax.set_xlabel("Decisions ending in a sanction")
+ax.set_xlabel("Share of decisions ending in a sanction")
 ax.set_ylabel("")
-ax.set_title("The clearest written findings map closely to the outcome")
+ax.set_title("Clear responsibility findings align with the formal outcome")
 for index, row in fault.reset_index(drop=True).iterrows():
-    ax.text(min(row["rate"] + 0.02, 1.01), index, f'{row["rate"]:.0%}  n={int(row["cases"])}', va="center")
+    label_x = 0.025 if row["rate"] >= 0.16 else row["rate"] + 0.02
+    label_color = "white" if row["rate"] >= 0.16 else CHARCOAL
+    ax.text(label_x, index, f'{row["rate"]:.0%}', va="center", color=label_color, fontweight="bold")
 fig.tight_layout()
 save_and_show(
     fig,
     "final_fault_language.png",
     "Sanction rates for six categories of written FIA responsibility language.",
-    "All 76 decisions finding a driver wholly or predominantly to blame imposed a sanction; all 24 racing-incident findings ended with no further action.",
+    "Sample sizes appear beside each category. All 76 decisions finding a driver wholly or predominantly to blame imposed a sanction, while all 24 racing-incident findings ended with no further action.",
 )
 
 explicit_blame = primary["reviewed_fault_language"].isin(["wholly_to_blame", "predominantly_to_blame"])
@@ -492,13 +518,23 @@ assert not primary.loc[racing_incident, "sanction_outcome"].any()
         ),
         _markdown(
             """
-All 76 decisions that found a driver wholly or predominantly to blame imposed a sanction. All 24
-racing-incident findings ended with no further action.
+The result is exact for the two clearest ends of the responsibility scale. All 76 decisions that
+found a driver wholly or predominantly to blame imposed a sanction, and all 24 racing-incident
+findings ended with no further action.
 
-These 100 decisions show complete outcome alignment after the written fault finding. They do not
-test whether the fault finding itself was correct.
+Those 100 decisions show complete agreement between the published finding and the published
+outcome. They do not prove that the stewards reached the correct finding, because that would require
+reconstructing the incident evidence and applying the rule independently in every case.
 
-### Broad labels and close comparisons
+The middle categories explain why sanction rates alone can mislead. Decisions with no explicit
+blame threshold or with off-track advantage findings cover several factual situations, so the next
+tests ask how much can be learned before the final responsibility finding is known.
+
+### Test 2: Can broad case labels predict the outcome?
+
+A simple model used only the incident type, season, and whether more than two cars were involved.
+The goal was not to automate stewarding, but to measure whether those broad labels carry enough
+information to reproduce the pattern of decisions at events the model had not seen.
 """
         ),
         _code(
@@ -525,52 +561,53 @@ nearest_counts = pd.Series(
 )
 assert nearest_counts.sum() == 317
 
-fig, axes = plt.subplots(1, 2, figsize=(13, 4.8), gridspec_kw={"width_ratios": [1, 1.15]})
-axes[0].set_xlim(0.48, 1.0)
-axes[0].set_ylim(-0.4, 0.4)
-axes[0].axvline(0.5, color=CHARCOAL, linestyle="--", linewidth=1.2)
-axes[0].scatter([model_auc], [0], s=180, color=BLUE, edgecolor=CHARCOAL, marker="o", zorder=3)
-axes[0].text(0.505, -0.22, "chance\\n0.50", ha="left", va="top", fontsize=9)
-axes[0].text(model_auc + 0.015, 0.17, f"broad-label model\\n{model_auc:.3f}", ha="left", va="bottom", fontweight="bold")
-axes[0].text(1.0, -0.22, "perfect ranking\\n1.00", ha="right", va="top", fontsize=9)
-axes[0].set_yticks([])
-axes[0].set_xlabel("ROC AUC")
-axes[0].set_title("Broad labels show limited ranking performance")
-axes[0].grid(False)
-
-bars = axes[1].barh(
+nearest_rates = nearest_counts / nearest_counts.sum()
+fig, ax = plt.subplots(figsize=(10.5, 4.6))
+bars = ax.barh(
     ["Same outcome", "Different outcome"],
-    nearest_counts.values,
-    color=[BLUE, ORANGE],
+    nearest_rates.values,
+    color=[GREEN, ORANGE],
     edgecolor=CHARCOAL,
     linewidth=0.6,
 )
-axes[1].set_xlim(0, 220)
-axes[1].set_xlabel("Cases with at least five available neighbors")
-axes[1].set_title("Closest available match: 59% same, 41% different")
-for bar, count in zip(bars, nearest_counts.values, strict=True):
-    axes[1].text(bar.get_width() + 4, bar.get_y() + bar.get_height() / 2, f"{count} ({count / 317:.0%})", va="center")
-fig.suptitle("Similarity screening identifies questions, not verdicts", fontsize=16, fontweight="bold")
+ax.set_xlim(0, 0.7)
+ax.xaxis.set_major_formatter(PercentFormatter(1))
+ax.set_xlabel("Share of 317 decisions with enough comparison cases")
+ax.set_title("The closest matched decision had the same direct-penalty outcome in 59% of cases")
+for bar, count, rate in zip(bars, nearest_counts.values, nearest_rates.values, strict=True):
+    ax.text(0.02, bar.get_y() + bar.get_height() / 2, f"{count} cases  ({rate:.1%})", va="center", color="white", fontweight="bold")
 fig.tight_layout()
 save_and_show(
     fig,
     "final_similarity_screen.png",
-    "A broad-label model scores 0.558 ROC AUC and nearest matched cases have the same direct sporting-penalty result in 186 of 317 supported cases.",
-    f"The broad model improved Brier score over its baseline by only {model_brier_gain:.4f}. Matching excluded fault, penalty, damage, retirement, and finishing result; warnings and reprimands were separated from penalties with direct race or grid burden.",
+    "The closest matched decision had the same direct sporting-penalty outcome in 186 of 317 cases and a different outcome in 131 cases.",
+    "The matching step did not use the eventual fault finding, penalty, damage, retirement, or finishing result. Warnings and reprimands were kept separate from penalties that directly changed race time, position, or the grid.",
 )
 """
         ),
         _markdown(
             """
-A model using incident family, season, and multi-car status produced ROC AUC 0.558 against a 0.500
-chance-ranking reference. Its Brier score improved by 0.0005 over the sanction-rate baseline.
+A model using those three labels produced a ROC AUC of 0.558, where 0.500 represents chance ranking
+and 1.000 represents perfect ranking. Its Brier score improved by only 0.0005 over a baseline that
+used the overall sanction rate.
 
-The outcome-blind screen matched incident family, session, guideline era, first-lap status, wet
-track, restart, overlap, and attacker-line context. Warnings and reprimands were excluded from the
-direct-penalty outcome because they did not change race time, position, or the grid.
+In plain terms, broad labels add very little predictive information. This negative result supports
+the decision to compare detailed case context instead of treating every collision or every season
+as equivalent.
 
-Among 317 cases with at least five available neighbors, 186 nearest matches had the same
-direct-penalty outcome (58.7%). The remaining 131 had different outcomes (41.3%).
+### Test 3: What happens when similar cases are compared?
+
+The matching screen compared decisions on incident type, session, guideline era, first-lap status,
+wet conditions, restarts, overlap, and attacker line. It deliberately excluded the later fault
+finding, penalty, damage, retirement, and finishing result so the outcome could not define the match.
+
+Warnings and reprimands were kept separate from direct sporting penalties because they do not
+immediately change race time, position, or the starting grid. Of the 346 main decisions, 317 had at
+least five possible comparison cases and could enter the screen.
+
+The closest match produced the same direct-penalty outcome in 186 cases (58.7%) and a different
+outcome in 131 cases (41.3%). That split identifies where the investigation should continue, but it
+does not show that stewards made 131 mistakes.
 
 <div class="report-note"><strong>41.3% is not an inconsistency rate:</strong> The matching fields
 remain incomplete, and the screen excludes the later fault finding. The 131 differences are review
@@ -581,14 +618,16 @@ candidates, not confirmed errors.</div>
             """
 <a id="chapter-5"></a>
 
-## Chapter 5: Inconsistency audit and case studies
+## Chapter 5: Where similar cases still diverge
 
-The nearest-neighbor screen identified 131 different direct-penalty outcomes among 317 supported
-comparisons (41.3%). The audit then classified all 131 differences by written fault language and
-off-track context.
+Chapter 4 left 131 matched cases with different direct-penalty outcomes. The next step restores the
+written responsibility finding that was intentionally hidden during matching and asks whether it
+explains why the outcomes diverged.
 
-The five case studies below explain specific public controversies. They do not estimate the
-frequency of disputed decisions in the 346-case population.
+This distinction matters because two incidents can look similar before adjudication but receive
+different penalties after the stewards assign different levels of responsibility. That pattern may
+raise a question about the fault finding, but it is not an internal mismatch between finding and
+sanction.
 """
         ),
         _code(
@@ -626,24 +665,27 @@ assert int(disagreement_taxonomy.sum()) == 131
 
 fig, ax = plt.subplots(figsize=(11, 4.8))
 display_order = disagreement_taxonomy.sort_values()
+display_rates = display_order / display_order.sum()
 bars = ax.barh(
     display_order.index,
-    display_order.values,
+    display_rates.values,
     color=[SKY, ORANGE, BLUE],
     edgecolor=CHARCOAL,
     linewidth=0.6,
 )
-ax.set_xlim(0, 100)
-ax.set_xlabel("Nearest-neighbor cases with a different direct sporting-penalty outcome")
+ax.set_xlim(0, 0.84)
+ax.xaxis.set_major_formatter(PercentFormatter(1))
+ax.set_xlabel("Share of the 131 different-outcome matches")
 ax.set_ylabel("")
-ax.set_title("The 131 close-case disagreements do not all mean the same thing")
-for bar, count in zip(bars, display_order.values, strict=True):
+ax.set_title("Most different outcomes also contain a different written fault finding")
+for bar, count, rate in zip(bars, display_order.values, display_rates.values, strict=True):
     ax.text(
-        count + 2,
+        rate + 0.012,
         bar.get_y() + bar.get_height() / 2,
-        f"{count} ({count / 131:.0%})",
+        f"{count} cases  ({rate:.1%})",
         va="center",
         fontweight="bold",
+        color=CHARCOAL,
     )
 fig.tight_layout()
 save_and_show(
@@ -656,16 +698,29 @@ save_and_show(
         ),
         _markdown(
             """
-### What the 131 disagreements actually contain
+### What explains the 131 different outcomes?
 
 - **Different written fault finding, 87 of 131 (66.4%):** The paired decisions used different responsibility thresholds.
 - **No explicit fault threshold, 30 of 131 (22.9%):** Both rulings required the reader to infer responsibility from the reasons.
 - **Off-track advantage context, 14 of 131 (10.7%):** The outcome depended on whether an advantage was retained, returned, or caused by being forced off.
 
-The 41.3% result is a screening rate, not an error rate. The 87 different fault findings account for
-66.4% of the screened outcome differences.
+The largest group contains 87 pairs in which the stewards published different responsibility
+findings. The sanction then followed that finding, so the unresolved question is whether the
+different fault assessments were justified by facts that the matching data could not fully capture.
 
-### Five selected controversies
+Another 30 pairs provide no explicit responsibility threshold in either document, which makes the
+reasoning difficult to compare from the public text. The remaining 14 depend on whether an off-track
+advantage was gained, returned, or caused by another driver.
+
+This audit reduces a broad 41.3% difference rate to more specific questions about how responsibility
+and advantage are described. It still cannot turn an incomplete public record into a definitive
+error count.
+
+### How well-known controversies fit the framework
+
+The following cases were selected because they show why fans question stewarding consistency and
+why broad comparisons can fail. They are explanatory examples, not a random sample and not an
+estimate of how often controversial decisions occur.
 
 | Case and source | Recorded parameters | Assessment |
 |---|---|---|
@@ -693,10 +748,18 @@ remaining 44 contain no explicit shared threshold or depend on off-track advanta
             """
 <a id="chapter-6"></a>
 
-## Chapter 6: 2025 guideline comparison
+## Chapter 6: What the 2025 public guidelines add
 
-The analysis compared 33 sanctions from 2025 with the public driving and penalty guidelines in
-force that season. The guidelines were not applied to decisions from 2018 through 2024.
+Historical comparisons are difficult because the public decision gives the final sanction but not
+always the starting point the stewards used. The FIA's publication of Formula 1 driving standards
+and penalty guidance in 2025 created a clearer reference for decisions from that season.
+
+The analysis identified 33 sanctions from 2025 that could be mapped to a published starting point.
+It asked whether each sanction was plainly within the guidance, within range after context or
+mitigation, or dependent on an unexplained substitution or escalation.
+
+This is a contemporaneous comparison only. The 2025 guidance is never applied to decisions from
+2018 through 2024 because doing so would judge earlier decisions against a later public standard.
 """
         ),
         _code(
@@ -736,33 +799,44 @@ assert guideline_summary.to_dict() == {
     "Substitution or escalation needs context": 5,
 }
 
-fig, ax = plt.subplots(figsize=(10, 4.6))
-labels = ["Plainly within\\nguideline", "Within range; context\\nor mitigation noted", "Substitution/escalation\\nneeds more context"]
-bars = ax.bar(labels, guideline_summary.values, color=[GREEN, SKY, ORANGE], edgecolor=CHARCOAL, linewidth=0.7)
-ax.set_ylim(0, 25)
-ax.set_ylabel("2025 decisions")
-ax.set_title("Thirty-three sanctions could be compared with the public 2025 guidance")
-ax.grid(axis="y")
-ax.grid(axis="x", visible=False)
-for bar, value in zip(bars, guideline_summary.values, strict=True):
-    ax.text(bar.get_x() + bar.get_width() / 2, value + 0.6, str(value), ha="center", va="bottom", fontweight="bold")
+guideline_rates = guideline_summary / guideline_summary.sum()
+fig, ax = plt.subplots(figsize=(11, 5.1))
+labels = [
+    "Within the published starting point",
+    "Within range after context or mitigation",
+    "Substitution or escalation needs more context",
+]
+bars = ax.barh(labels, guideline_rates.values, color=[GREEN, SKY, ORANGE], edgecolor=CHARCOAL, linewidth=0.7)
+ax.invert_yaxis()
+ax.set_xlim(0, 0.78)
+ax.xaxis.set_major_formatter(PercentFormatter(1))
+ax.set_xlabel("Share of 33 comparable 2025 sanctions")
+ax.set_ylabel("")
+ax.set_title("Most comparable 2025 sanctions follow the published starting point")
+for bar, value, rate in zip(bars, guideline_summary.values, guideline_rates.values, strict=True):
+    ax.text(rate + 0.012, bar.get_y() + bar.get_height() / 2, f"{value} cases  ({rate:.1%})", ha="left", va="center", fontweight="bold", color=CHARCOAL)
 fig.tight_layout()
 save_and_show(
     fig,
     "final_guideline_comparison.png",
     "Of 33 comparable 2025 sanctions, 21 were plainly within guideline, seven were within range with context or mitigation noted, and five required more context for a substitution or escalation.",
-    "This comparison describes conformity with the public starting points. It does not independently decide whether the underlying fault finding was correct.",
+    "This comparison measures whether the sanction fits the public starting point after the stewards made a fault finding. It does not independently decide whether that fault finding was correct.",
 )
 """
         ),
         _markdown(
             """
-Of 33 comparable sanctions, 21 (63.6%) were plainly within the public starting point. Seven (21.2%)
-were within range with mitigation or context, and five (15.2%) required additional context for a
-substitution or escalation.
+Of the 33 comparable sanctions, 21 (63.6%) matched the published starting point without further
+interpretation. Another seven (21.2%) remained within the published range after the reason given by
+the stewards was considered.
 
-The independently reviewed Austrian 2025 pilot matched the baseline in four of five decisions
-(80.0%). The fifth decision documented mitigation.
+Five sanctions (15.2%) used a substitution or escalation that required more context than the public
+decision supplied. The analysis treats those five as transparency questions, not guideline
+violations, because the stewards may have considered evidence or mitigation that was not published.
+
+This result shows what public guidance can improve. A stated starting point makes similar sanctions
+easier to compare, while an explicit explanation for every departure would make the remaining
+judgment calls easier to audit.
 
 - [FIA Formula 1 Driving Standards Guidelines, version 4.1](https://www.fia.com/sites/default/files/f1_driving_standards_guidelines_version_4.1_feb_20_2025.pdf)
 - [FIA 2025 Penalty Guidelines](https://www.fia.com/sites/default/files/2025_f1_guidelines_penalty_points_overview_-_14_may_clean_0.pdf)
@@ -772,10 +846,18 @@ The independently reviewed Austrian 2025 pilot matched the baseline in four of f
             """
 <a id="chapter-7"></a>
 
-## Chapter 7: Penalty burden and incident harm
+## Chapter 7: Why penalty length is not the same as race cost
 
-The independently reviewed pilot contains nine decisions. Two nominal five-second penalties
-produced different observed position and points effects.
+A five-second penalty sounds fixed, but its competitive cost depends on when it is applied and on
+the gaps between cars. It can change several positions after the finish, change no position at all,
+or alter strategy and traffic when it is served during the race.
+
+The same problem applies to incident harm. A collision can cause no measurable loss, a temporary
+delay, a repair stop, lasting car damage, or a retirement, and a multi-car incident can affect each
+participant differently.
+
+The study first tested these distinctions on nine source-supported decisions. The examples below
+show why nominal seconds, realized penalty cost, and incident harm must remain separate fields.
 """
         ),
         _code(
@@ -828,36 +910,34 @@ stores a separate harm record for each participant.
         _code(
             """
 harm_flow = [
-    ("233", "collision decision rows"),
-    ("193", "candidate incidents"),
-    ("412", "driver-level harm records"),
-    ("241", "single-lap driver mappings"),
-    ("52", "pace-screen candidates"),
-    ("28", "estimable timing screens"),
+    ("233", "Decision rows involving a collision"),
+    ("193", "Distinct incidents after related rows were grouped"),
+    ("412", "Driver-specific records for possible harm"),
+    ("28", "Timing screens with enough comparison data"),
 ]
-fig, ax = plt.subplots(figsize=(14, 3.5))
-ax.set_xlim(0, len(harm_flow) * 2.25)
-ax.set_ylim(0, 2.2)
+fig, ax = plt.subplots(figsize=(13, 4.0))
+ax.set_xlim(0, len(harm_flow) * 3.05)
+ax.set_ylim(0, 2.5)
 ax.axis("off")
-harm_colors = [BLUE, SKY, GREEN, ORANGE, PURPLE, VERMILLION]
+harm_colors = [BLUE, SKY, GREEN, ORANGE]
 for index, ((count, label), color) in enumerate(zip(harm_flow, harm_colors, strict=True)):
-    x = index * 2.25 + 0.08
+    x = index * 3.05 + 0.08
     box = patches.FancyBboxPatch(
-        (x, 0.48), 1.72, 1.12, boxstyle="round,pad=0.03,rounding_size=0.05", facecolor=color, edgecolor=CHARCOAL, linewidth=0.8
+        (x, 0.50), 2.45, 1.35, boxstyle="round,pad=0.03,rounding_size=0.05", facecolor=color, edgecolor=CHARCOAL, linewidth=0.8
     )
     ax.add_patch(box)
-    text_color = "white" if color in {BLUE, GREEN, VERMILLION, PURPLE} else CHARCOAL
-    ax.text(x + 0.86, 1.20, count, ha="center", va="center", fontsize=17, fontweight="bold", color=text_color)
-    ax.text(x + 0.86, 0.82, "\\n".join(textwrap.wrap(label, width=19)), ha="center", va="center", fontsize=9.2, color=text_color)
+    text_color = "white" if color in {BLUE, GREEN} else CHARCOAL
+    ax.text(x + 1.225, 1.38, count, ha="center", va="center", fontsize=19, fontweight="bold", color=text_color)
+    ax.text(x + 1.225, 0.91, "\\n".join(textwrap.wrap(label, width=31)), ha="center", va="center", fontsize=10, color=text_color)
     if index < len(harm_flow) - 1:
-        ax.annotate("", xy=(x + 2.10, 1.04), xytext=(x + 1.78, 1.04), arrowprops={"arrowstyle": "->", "color": CHARCOAL, "lw": 1.4})
-ax.text(5.38, 0.23, "The count rises here because one incident can create several driver records.", ha="center", va="center", fontsize=9.5)
-ax.set_title("Damage research narrows quickly when timing and comparison rules are enforced", fontsize=15, pad=8)
+        ax.annotate("", xy=(x + 2.92, 1.18), xytext=(x + 2.52, 1.18), arrowprops={"arrowstyle": "->", "color": CHARCOAL, "lw": 1.6})
+ax.text(6.1, 0.25, "The count rises because one incident can affect several drivers.", ha="center", va="center", fontsize=10)
+ax.set_title("Public timing supports only a small screen for possible race harm", fontsize=15, pad=10)
 save_and_show(
     fig,
     "final_harm_path.png",
-    "Collision-harm workflow from 233 decision rows to 28 estimable timing screens, expanding to 412 driver-level harm records before narrowing.",
-    "The 28 timing screens are research leads, not confirmed damage effects. Tyres, traffic, strategy, weather, and hidden car conditions remain alternative explanations.",
+    "The harm workflow groups 233 collision decision rows into 193 incidents, expands them to 412 driver-specific records, and retains 28 records for timing screens.",
+    "The 28 timing screens are research leads, not confirmed damage effects. Tyres, traffic, strategy, weather, and hidden car conditions remain alternative explanations for a pace change.",
 )
 assert damage_manifest["candidate_incident_count"] == 193
 assert damage_manifest["participant_record_count"] == 412
@@ -867,26 +947,36 @@ assert layers_manifest["pace_screen_estimable_rows"] == 28
         ),
         _markdown(
             """
-Only 28 of 412 participant records (6.8%) had enough clean, same-lap teammate data for a timing
-screen. These 28 records remain screening results because public timing cannot isolate damage from
-tyres, traffic, strategy, weather, or hidden car conditions.
+Only 28 of the 412 driver-specific records (6.8%) had enough same-lap teammate data for a timing
+screen. A slower post-incident pace can identify a case worth researching, but timing alone cannot
+separate damage from tyres, traffic, strategy, weather, or an unreported car problem.
 
-Zero cases passed the prespecified proportionality release gate. A case requires separate evidence
-for fault, incident-caused harm, and realized sanction cost before a proportionality conclusion is
-released.
+No full-corpus case contained all three forms of evidence required for a proportionality conclusion:
+a clear fault finding, source-confirmed incident harm, and a measurable realized penalty cost. The
+report therefore presents the case examples but does not claim that FIA penalties are generally
+proportional or disproportional to race harm.
+
+That withheld result is part of the analysis. It prevents a severe outcome, such as a puncture or
+retirement, from being treated as automatic proof that another driver deserved a larger penalty.
 """
         ),
         _markdown(
             """
 <a id="chapter-8"></a>
 
-## Chapter 8: Nationality analysis
+## Chapter 8: Testing the claim of British-driver bias
 
-British accused drivers were sanctioned in 25 of 44 decisions (56.8%). Other accused drivers were
-sanctioned in 189 of 302 decisions (62.6%), a raw difference of -5.8 percentage points.
+Claims of British favoritism appear in public debates about Formula 1 stewarding, especially when a
+high-profile decision benefits or harms a British driver. Selected controversies cannot test that
+claim because memorable cases are not a representative sample.
 
-The 95% Wilson interval was 42.2% to 70.3% for British drivers and 57.0% to 67.9% for other drivers.
-The intervals overlap by 10.9 percentage points.
+The study instead compares every British accused driver in the 346-decision main dataset with all
+other accused drivers. This is a test of group-level sanction patterns, not a judgment about any
+individual driver or steward.
+
+The raw comparison is only a starting point. A credible nationality result also needs enough
+British cases, overlap in incident context, and statistical power to detect a difference of the
+size defined before the analysis.
 """
         ),
         _code(
@@ -902,9 +992,12 @@ nationality_plot[["low", "high"]] = nationality_plot.apply(
     lambda row: pd.Series(wilson_interval(int(row["sanctions"]), int(row["cases"]))), axis=1
 )
 
-fig, axes = plt.subplots(1, 2, figsize=(12.5, 4.7), gridspec_kw={"width_ratios": [1.25, 1]})
+nationality_plot["display_label"] = nationality_plot.apply(
+    lambda row: f'{row["group"]}  ({int(row["sanctions"])} of {int(row["cases"])})', axis=1
+)
+fig, ax = plt.subplots(figsize=(10.8, 3.6))
 y = np.arange(len(nationality_plot))
-axes[0].errorbar(
+ax.errorbar(
     nationality_plot["rate"],
     y,
     xerr=[nationality_plot["rate"] - nationality_plot["low"], nationality_plot["high"] - nationality_plot["rate"]],
@@ -914,80 +1007,96 @@ axes[0].errorbar(
     ecolor=CHARCOAL,
     capsize=4,
 )
-axes[0].set_yticks(y, nationality_plot["group"])
-axes[0].invert_yaxis()
-axes[0].set_xlim(0.35, 0.78)
-axes[0].xaxis.set_major_formatter(PercentFormatter(1))
-axes[0].set_xlabel("Sanction rate with 95% interval")
-axes[0].set_title("Raw rates overlap substantially")
+ax.set_yticks(y, nationality_plot["display_label"])
+ax.invert_yaxis()
+ax.set_xlim(0.35, 0.78)
+ax.xaxis.set_major_formatter(PercentFormatter(1))
+ax.set_xlabel("Raw sanction rate with 95% confidence interval")
+ax.set_title("The uncertainty ranges for the two raw sanction rates overlap")
 for index, row in nationality_plot.iterrows():
-    axes[0].text(row["rate"] + 0.018, index, f'{row["rate"]:.1%}  n={int(row["cases"])}', va="center")
-
-sample_bars = axes[1].barh(["Observed British cases", "Prespecified minimum"], [44, 98], color=[ORANGE, SKY], edgecolor=CHARCOAL, linewidth=0.6)
-axes[1].set_xlim(0, 112)
-axes[1].set_xlabel("British-accused decisions")
-axes[1].set_title("The planned sample-size gate fails")
-for bar, value in zip(sample_bars, [44, 98], strict=True):
-    axes[1].text(value + 3, bar.get_y() + bar.get_height() / 2, str(value), va="center", fontweight="bold")
-fig.suptitle("The nationality result is inconclusive", fontsize=16, fontweight="bold")
+    ax.text(0.755, index, f'{row["rate"]:.1%}', va="center", ha="right", fontweight="bold")
 fig.tight_layout()
 save_and_show(
     fig,
     "final_nationality_result.png",
-    "British accused drivers have a 56.8 percent raw sanction rate versus 62.6 percent for other drivers, with overlapping 95 percent intervals; only 44 British cases are available against a minimum target of 98.",
-    "The raw difference is not an adjusted effect and the design lacks power for the prespecified 15-point difference.",
+    "British accused drivers have a 56.8 percent raw sanction rate and other accused drivers have a 62.6 percent rate, with overlapping 95 percent confidence intervals.",
+    "The British group contains 44 decisions, below the prespecified minimum of 98. The raw 5.8-point difference is not an adjusted effect and the study lacks power for the planned 15-point test.",
 )
 """
         ),
         _markdown(
             """
-The British group contains 44 cases against a prespecified minimum of 98. Simulated power for a
-15-point difference ranged from 37.8% to 53.6%, below the 80% design target.
+British accused drivers received sanctions in 25 of 44 decisions (56.8%), compared with 189 of 302
+decisions for other drivers (62.6%). The British interval extends from 42.2% to 70.3% and the other
+group's interval extends from 57.0% to 67.9%, so the raw estimates overlap substantially.
 
-The five controversy cases in Chapter 5 were selected for explanation, not nationality estimation.
-They include decisions that helped and harmed British drivers, so they cannot replace the 346-case
-population.
+The British group also falls below the prespecified minimum of 98 cases. Simulated power to detect a
+15-point difference ranges from 37.8% to 53.6%, well below the study's 80% target, which means a real
+difference of that size could easily remain undetected.
 
-FIA decisions list panel members but not individual votes. The same-nationality panel analysis was
-withheld because its country-evidence and overlap gates failed.
+The controversy examples in Chapter 5 cannot repair this weakness because they were selected for
+explanation and include decisions that both helped and harmed British drivers. FIA documents also
+list the stewarding panel but do not publish individual votes, so the study cannot assign an outcome
+to one steward's nationality.
 
-**Result:** The -5.8-point raw difference is inconclusive because N=44 fell below the required 98
-and simulated power remained below 80%.
+<div class="report-answer"><strong>Nationality result:</strong> The observed data do not show a
+higher sanction rate for British accused drivers, but the sample is too small to rule out a
+meaningful difference. The correct conclusion is inconclusive, not proof of bias and not proof that
+bias is absent.</div>
 """
         ),
         _markdown(
             """
 <a id="chapter-9"></a>
 
-## Chapter 9: Results summary
+## Chapter 9: What the study can and cannot conclude
 
-1. **Responsibility alignment:** All 76 explicit blame findings led to sanctions, and all 24 racing-incident findings led to no further action.
-2. **Broad-label model:** Incident family, season, and multi-car status produced ROC AUC 0.558 and Brier improvement 0.0005.
-3. **Close-case screen:** Different direct-penalty outcomes occurred in 131 of 317 nearest matches (41.3%).
-4. **Difference classification:** Different fault findings accounted for 87 of 131 outcome differences (66.4%).
-5. **2025 guideline comparison:** 21 of 33 sanctions were plainly within guideline, seven were contextual, and five required more context.
-6. **Penalty burden:** One five-second penalty cost two places and six points, while another changed zero places and zero points.
-7. **Nationality result:** The -5.8-point raw difference remained inconclusive with N=44 and simulated power of 37.8% to 53.6%.
+The analysis began with a question about whether Formula 1 stewarding treats similar incidents in a
+consistent way. The answer depends on which part of the decision process is being measured.
 
-<div class="report-answer"><strong>Final conclusion:</strong> The evidence points to a stewarding
-system with complete outcome alignment across the 100 clearest responsibility findings. The
-remaining evidence does not establish systematic unfairness or nationality bias because 131 close
-comparisons lack complete context and the nationality test failed its sample-size and power gates.</div>
+| Question | Main evidence | Conclusion |
+|---|---|---|
+| Does the formal outcome follow the written responsibility finding? | 76 of 76 clear blame findings led to sanctions; 24 of 24 racing-incident findings led to no further action | Yes, for the 100 clearest written findings |
+| Do broad case labels explain the outcome? | ROC AUC 0.558; Brier improvement 0.0005 | No, incident type and season alone explain very little |
+| Do the closest available cases receive the same direct penalty outcome? | 186 of 317 matched cases agreed; 131 differed | Often, but the 41.3% difference rate requires case review |
+| What explains the different matched outcomes? | 87 of 131 had different written fault findings | Most differences begin in the responsibility assessment |
+| Do 2025 sanctions follow public guidance? | 21 of 33 plainly matched; seven fit with context; five needed more context | Mostly, with a small set of transparency questions |
+| Are penalties proportional to incident harm? | No case had complete fault, harm, and realized-cost evidence | The public data cannot answer this at population level |
+| Do the data support British-driver bias? | 25 of 44 British cases sanctioned versus 189 of 302 others; power below 80% | Inconclusive |
 
-### Evidence needed for stronger conclusions
+<div class="report-answer"><strong>Primary result:</strong> The formal outcome aligns with the
+written finding in all 100 decisions at the clearest ends of the responsibility scale. The largest
+remaining source of variation is the responsibility assessment itself, not a penalty that
+contradicts the published finding.</div>
 
-- A more complete referral denominator showing comparable incidents that never reached a decision.
-- Independently verified context for the highest-priority close-case disagreements.
-- Source-confirmed damage, repairs, retirements, and rare beneficial stops.
-- Realized sanction-cost records, especially for penalties served during a race.
-- A larger, adequately powered nationality sample with better decision-maker information.
+<div class="report-answer"><strong>Final conclusion:</strong> The evidence does not support a claim
+that Formula 1 stewarding is systematically inconsistent or biased by driver nationality. It also
+does not prove that every fault finding was correct, because close-case context, non-referrals,
+incident harm, and individual steward votes remain incomplete.</div>
+
+The study therefore reaches a bounded conclusion. Published decisions are internally consistent in
+their clearest language and most 2025 sanctions map to public guidance, but the FIA could make the
+system easier to audit by explaining responsibility thresholds and departures from penalty starting
+points more explicitly.
+
+### Evidence needed for a stronger answer
+
+- A complete record of comparable incidents that were noted, investigated, or never referred.
+- More detailed context for the 131 matched cases with different direct-penalty outcomes.
+- Source-confirmed damage, repair stops, retirements, and rare beneficial stops.
+- Realized penalty-cost records, especially for penalties served during a race.
+- A larger nationality sample and public information about individual steward votes.
 """
         ),
         _markdown(
             """
 <a id="chapter-10"></a>
 
-## Chapter 10: Recommendations
+## Chapter 10: What better stewarding data would look like
+
+The main limitations come from disconnected records, incomplete explanations, and missing measures
+of realized race cost. The following changes would let future analysis distinguish justified
+judgment calls from genuine inconsistency with less inference.
 
 ### For the FIA
 
@@ -1031,7 +1140,9 @@ comparisons lack complete context and the nationality test failed its sample-siz
 
 ### Analytical design
 
-- **Population:** 173 completed championship events, 2018 to 2025.
+- **Archive coverage:** 173 completed championship events, 2018 to 2025.
+- **Main dataset:** 346 Race and Sprint driver-conduct decisions from 131 events.
+- **Supporting dataset:** 72 qualifying impeding decisions, kept outside the main sanction rate.
 - **Primary unit:** one accused-driver decision in a Race or Sprint.
 - **Primary scope:** causing a collision, forcing another driver off track, gaining an advantage
   off track, unsafe rejoining, moving under braking, and multiple defensive moves.
@@ -1181,9 +1292,8 @@ display(
             """
 ---
 
-**Project:** *The Cost of Discretion*<br>
+**Project:** *Does Formula 1 Stewarding Treat Similar Incidents the Same Way?*<br>
 **Coverage:** Formula 1 championship seasons 2018 to 2025<br>
-**Final evidence date:** August 13, 2026<br>
 **Review disclosure:** GPT-5.6 Sol model-led source audit; separate independently reviewed pilot;
 no claim of full-corpus human inter-rater agreement.
 """

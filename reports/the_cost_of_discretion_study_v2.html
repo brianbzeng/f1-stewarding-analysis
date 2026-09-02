@@ -3,7 +3,7 @@
 <html lang="en">
 <head><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>The Cost of Discretion: Formula 1 Stewarding, 2018 to 2025</title><meta name="description" content="A source-cited data analysis of consistency, competitive burden, and potential nationality effects in Formula 1 stewarding."/><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>Does Formula 1 Stewarding Treat Similar Incidents the Same Way?</title><meta name="description" content="A data analysis of Formula 1 stewarding consistency, penalty burden, and nationality claims from 2018 to 2025."/><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <style type="text/css">
     pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -7801,22 +7801,21 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="The-Cost-of-Discretion">The Cost of Discretion<a class="anchor-link" href="#The-Cost-of-Discretion">¶</a></h1><div class="report-author">
+<h1 id="Does-Formula-1-Stewarding-Treat-Similar-Incidents-the-Same-Way?">Does Formula 1 Stewarding Treat Similar Incidents the Same Way?<a class="anchor-link" href="#Does-Formula-1-Stewarding-Treat-Similar-Incidents-the-Same-Way?">¶</a></h1><div class="report-author">
 <strong>Brian Zeng</strong><br/>
 <a href="mailto:bzeng0000@gmail.com">bzeng0000@gmail.com</a><br/>
 <a href="https://brianbzeng.com">brianbzeng.com</a>
 </div>
-<h2 id="Quantitative-assessment-of-Formula-1-stewarding,-2018-to-2025">Quantitative assessment of Formula 1 stewarding, 2018 to 2025<a class="anchor-link" href="#Quantitative-assessment-of-Formula-1-stewarding,-2018-to-2025">¶</a></h2><p><strong>Final integrated report | 2018 to 2025 seasons | Analytical data frozen August 13, 2026 |
-Narrative sources checked August 14, 2026</strong></p>
-<p>The dataset contains 346 Race and Sprint decisions from 131 events. Stewards imposed a sanction in
-214 cases (61.8%) and took no further action in 132 cases (38.2%).</p>
-<p>All 76 decisions that found a driver wholly or predominantly to blame imposed a sanction. All 24
-racing-incident findings ended with no further action.</p>
-<p>The nearest-neighbor screen found different direct-penalty outcomes in 131 of 317 supported cases
-(41.3%). Of those 131 differences, 87 (66.4%) also had different written fault findings.</p>
-<p>British accused drivers received sanctions in 25 of 44 decisions (56.8%), compared with 189 of 302
-other-driver decisions (62.6%). The 44 British-driver cases fell below the prespecified minimum of
-98, so the nationality result remains inconclusive.</p>
+<h2 id="A-data-analysis-of-stewarding-consistency,-2018-to-2025">A data analysis of stewarding consistency, 2018 to 2025<a class="anchor-link" href="#A-data-analysis-of-stewarding-consistency,-2018-to-2025">¶</a></h2><p>Formula 1 stewards decide whether an on-track incident broke the rules and whether a driver should
+receive a penalty. Those decisions often become controversial when two incidents look similar to
+viewers but produce different written findings or penalties.</p>
+<p>This study asks a narrower question than whether every decision was correct: does the public record
+show a consistent path from the facts described by the stewards, to the finding of responsibility,
+to the final sanction? It also examines where that path becomes difficult to compare, how much a
+penalty can affect a race, and whether the available data support claims of nationality bias.</p>
+<p>The analysis follows the standard data science process. It defines the questions, builds a dataset
+from FIA documents, explores the decisions, tests consistency, investigates exceptions, and states
+what the evidence cannot establish.</p>
 </div>
 </div>
 </div>
@@ -7863,39 +7862,24 @@ details > summary { cursor: pointer; color: #225b78; font-weight: 700; }
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noInput" id="cell-id=41934c63">
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
-<div class="stat-grid"><div class="stat-item"><div class="stat-value">346</div><div class="stat-label">primary Race/Sprint decisions</div></div><div class="stat-item"><div class="stat-value">61.8%</div><div class="stat-label">ended with a sanction</div></div><div class="stat-item"><div class="stat-value">920</div><div class="stat-label">source-cited audit records</div></div><div class="stat-item"><div class="stat-value">32</div><div class="stat-label">included records corrected</div></div></div>
-</div>
-</div>
-</div>
-</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput" id="cell-id=41934c63">
 </div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cd67bb4d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<div class="report-answer"><strong>Primary result:</strong> The 100 clearest responsibility findings
-produced 100 outcomes aligned with the written finding: 76 blame findings led to sanctions and 24
-racing-incident findings led to no further action. This measures internal consistency after the
-fault finding, not whether each fault finding was correct.</div>
 <h3 id="Index">Index<a class="anchor-link" href="#Index">¶</a></h3><ol class="toc">
-<li><a href="#chapter-1">Analytical framework</a></li>
-<li><a href="#chapter-2">Data construction and quality control</a></li>
-<li><a href="#chapter-3">Descriptive results</a></li>
-<li><a href="#chapter-4">Consistency tests</a></li>
-<li><a href="#chapter-5">Inconsistency audit and case studies</a></li>
-<li><a href="#chapter-6">2025 guideline comparison</a></li>
-<li><a href="#chapter-7">Penalty burden and incident harm</a></li>
-<li><a href="#chapter-8">Nationality analysis</a></li>
-<li><a href="#chapter-9">Results summary</a></li>
-<li><a href="#chapter-10">Recommendations</a></li>
+<li><a href="#chapter-1">The question: what would consistent stewarding look like?</a></li>
+<li><a href="#chapter-2">Turning FIA documents into analyzable data</a></li>
+<li><a href="#chapter-3">What the formal decisions look like</a></li>
+<li><a href="#chapter-4">Do written findings lead to consistent outcomes?</a></li>
+<li><a href="#chapter-5">Where similar cases still diverge</a></li>
+<li><a href="#chapter-6">What the 2025 public guidelines add</a></li>
+<li><a href="#chapter-7">Why penalty length is not the same as race cost</a></li>
+<li><a href="#chapter-8">Testing the claim of British-driver bias</a></li>
+<li><a href="#chapter-9">What the study can and cannot conclude</a></li>
+<li><a href="#chapter-10">What better stewarding data would look like</a></li>
 <li><a href="#methods">Methods, limits, and reproducibility</a></li>
 <li><a href="#citations">Sources and citations</a></li>
 </ol>
@@ -7909,18 +7893,28 @@ fault finding, not whether each fault finding was correct.</div>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a id="chapter-1"></a></p>
-<h2 id="Chapter-1:-Analytical-framework">Chapter 1: Analytical framework<a class="anchor-link" href="#Chapter-1:-Analytical-framework">¶</a></h2><p>The analysis divides fairness into five testable components:</p>
+<h2 id="Chapter-1:-The-question:-what-would-consistent-stewarding-look-like?">Chapter 1: The question: what would consistent stewarding look like?<a class="anchor-link" href="#Chapter-1:-The-question:-what-would-consistent-stewarding-look-like?">¶</a></h2><p>An FIA decision has three main parts. The stewards describe what happened, decide how much
+responsibility a driver carried, and choose an outcome such as no further action, a warning, or a
+sporting penalty.</p>
+<p>A consistent system should treat comparable conduct in comparable ways. That does not mean every
+collision must receive the same penalty, because position, overlap, driver control, track
+conditions, and mitigating factors can change the decision.</p>
+<p>The study therefore separates five questions:</p>
 <ol>
-<li><strong>Conduct:</strong> Comparable driving acts should receive comparable fault findings.</li>
-<li><strong>Sanction:</strong> Comparable fault findings should receive comparable penalties.</li>
-<li><strong>Consequence:</strong> Harm must be measured separately for each affected driver.</li>
-<li><strong>Competitive burden:</strong> Penalty cost must reflect how and when the sanction was applied.</li>
-<li><strong>Distribution:</strong> Group outcome differences require adequate samples and comparable case context.</li>
+<li><strong>Conduct:</strong> Do comparable driving acts receive comparable responsibility findings?</li>
+<li><strong>Sanction:</strong> Do comparable responsibility findings receive comparable penalties?</li>
+<li><strong>Consequence:</strong> What happened to each driver affected by the incident?</li>
+<li><strong>Race cost:</strong> What did the sanction actually cost after its timing and application are considered?</li>
+<li><strong>Nationality:</strong> Do group differences remain credible after sample size and case context are checked?</li>
 </ol>
-<p>The study does not calculate a composite fairness score. Conduct, harm, and sanction burden remain
-separate because each measure uses different evidence.</p>
-<div class="report-method"><strong>Study rule:</strong> A proportionality claim requires separate
-evidence for fault, incident-caused harm, and realized sanction cost.</div>
+<p>The nationality question tests a specific claim that British drivers may receive favorable
+treatment. It is a secondary analysis, not the starting assumption of the report.</p>
+<p>The study does not combine these questions into one fairness score. A steward can describe fault
+consistently while a fixed penalty still creates very different race costs, and a harmful outcome
+does not by itself prove that the original driving act deserved a harsher finding.</p>
+<div class="report-method"><strong>Interpretation rule:</strong> This report calls a decision
+internally consistent when the written responsibility finding and the formal outcome agree. It calls
+two decisions comparable only when the available incident context is similar.</div>
 </div>
 </div>
 </div>
@@ -7931,8 +7925,12 @@ evidence for fault, incident-caused harm, and realized sanction cost.</div>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a id="chapter-2"></a></p>
-<h2 id="Chapter-2:-Data-construction-and-quality-control">Chapter 2: Data construction and quality control<a class="anchor-link" href="#Chapter-2:-Data-construction-and-quality-control">¶</a></h2><p>The source inventory contains 9,467 FIA event documents from 173 completed championship events.
-The final analytical population contains 346 Race and Sprint decisions from 131 events.</p>
+<h2 id="Chapter-2:-Turning-FIA-documents-into-analyzable-data">Chapter 2: Turning FIA documents into analyzable data<a class="anchor-link" href="#Chapter-2:-Turning-FIA-documents-into-analyzable-data">¶</a></h2><p>The FIA does not publish one analysis-ready table of stewarding decisions. Its event archives also
+contain classifications, summonses, technical reports, corrected rulings, and several versions of
+the same document, so counting search results would overstate the number of decisions.</p>
+<p>The collection process began with 9,467 documents from 173 championship events. Each record then
+passed through a sequence of filters designed to answer a simple question: is this a current,
+source-supported steward decision that belongs in the study?</p>
 </div>
 </div>
 </div>
@@ -7943,12 +7941,12 @@ The final analytical population contains 346 Race and Sprint decisions from 131 
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-OutputArea-output" data-mime-type="text/markdown" tabindex="0">
-<p><img alt="Six-stage source path from 9,467 FIA event documents to 346 primary Race and Sprint cases." src="../reports/generated/study_v2/final_population_path.png"/></p>
+<p><img alt="Four filters reduce 9,467 FIA archive documents to 346 Race and Sprint driver-conduct decisions." src="../reports/generated/study_v2/final_population_path.png"/></p>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
-<p class="figure-caption">Counts describe different stages of the evidence pipeline; they are not all independent documents or incidents.</p>
+<p class="figure-caption">The 418 verified decisions include 346 Race and Sprint cases used in the main analysis and 72 qualifying impeding cases used only as supporting material.</p>
 </div>
 </div>
 </div>
@@ -7959,30 +7957,23 @@ The final analytical population contains 346 Race and Sprint decisions from 131 
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>The Race Control linkage produced the following counts:</p>
-<ul>
-<li><strong>16,039 messages:</strong> All collected Race and Sprint Race Control messages.</li>
-<li><strong>1,815 process messages:</strong> Messages describing noted, investigated, or sanctioned states.</li>
-<li><strong>966 referral episodes:</strong> Process messages grouped into incident-level sequences.</li>
-<li><strong>177 high-confidence links:</strong> Primary decisions linked to a referral episode, 51.2% of 346.</li>
-<li><strong>153 candidate links:</strong> Primary decisions requiring further context review, 44.2% of 346.</li>
-<li><strong>16 unmatched decisions:</strong> Formal decisions without a referral match, 4.6% of 346.</li>
-</ul>
-<p>The Race Control feed therefore does not provide a complete denominator for all comparable acts.</p>
-<h3 id="Data-constraints">Data constraints<a class="anchor-link" href="#Data-constraints">¶</a></h3><ul>
-<li><strong>Version control:</strong> The source audit marked 32 records as corrected to prevent duplicate rulings.</li>
-<li><strong>Referral coverage:</strong> Formal PDFs include referred cases but exclude unobserved non-referrals.</li>
-<li><strong>Multi-car incidents:</strong> One incident can produce several accused-driver and affected-driver records.</li>
-<li><strong>Damage coding:</strong> Floors, tyres, wings, repair stops, and retirements require separate evidence fields.</li>
-<li><strong>Broad labels:</strong> An incident-family label does not record overlap, control, space, or mitigation.</li>
-</ul>
-<p>The final dataset followed a nine-decision pilot, a full source inventory, a model-led source audit,
-and participant-level timing and harm screens. The report uses only the final corrected population.</p>
-<h3 id="How-the-source-review-worked">How the source review worked<a class="anchor-link" href="#How-the-source-review-worked">¶</a></h3><p>GPT-5.6 Sol checked all 418 included decisions and 502 sampled exclusions against a cited source
-under a frozen protocol. The 920-row audit confirmed 884 records, corrected 32 included records,
-and marked four archive labels as unresolved because no public source file was recoverable.</p>
-<p>All 418 included decisions have an FIA citation and an evidence passage. The full audit is
-model-led, while the separate nine-decision pilot received independent review.</p>
+<p>The first filter identified 2,003 archive records that might contain a steward outcome. The source
+review then removed administrative files, duplicate versions, and decisions outside the selected
+incident types, leaving 418 verified decisions with direct FIA citations.</p>
+<p>The main analysis uses 346 decisions about driver conduct during a Race or Sprint. The remaining 72
+decisions concern qualifying impeding and appear only where they add supporting context, so they are
+never mixed into the main sanction rate.</p>
+<h3 id="What-one-row-represents">What one row represents<a class="anchor-link" href="#What-one-row-represents">¶</a></h3><p>One row represents one accused driver in one formal decision. A multi-car crash can therefore
+create several decision rows, while harm to each affected driver is stored separately so one
+driver's retirement does not overwrite another driver's puncture or time loss.</p>
+<h3 id="What-the-dataset-does-not-contain">What the dataset does not contain<a class="anchor-link" href="#What-the-dataset-does-not-contain">¶</a></h3><p>Formal decisions show incidents that reached the stewards, not every comparable act on track. Race
+Control messages produced high-confidence referral links for 177 of the 346 main decisions, which
+was not enough to construct a complete population of investigated and uninvestigated incidents.</p>
+<p>The analysis also cannot infer missing facts from silence. If a decision does not describe overlap,
+damage, or mitigation, that field remains unknown instead of being coded as absent.</p>
+<p>These limits shape every later result. The report can test patterns inside published decisions, but
+it cannot estimate how often similar conduct was never referred or decide fault from timing data
+alone.</p>
 </div>
 </div>
 </div>
@@ -7993,9 +7984,13 @@ model-led, while the separate nine-decision pilot received independent review.</
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a id="chapter-3"></a></p>
-<h2 id="Chapter-3:-Descriptive-results">Chapter 3: Descriptive results<a class="anchor-link" href="#Chapter-3:-Descriptive-results">¶</a></h2><p>The primary population contains 346 accused-driver decisions from 131 Race or Sprint events. A
-sanction was imposed in 214 cases (61.8%); 132 ended with no further action.</p>
-<p>These rates describe formal decisions, not every incident that occurred.</p>
+<h2 id="Chapter-3:-What-the-formal-decisions-look-like">Chapter 3: What the formal decisions look like<a class="anchor-link" href="#Chapter-3:-What-the-formal-decisions-look-like">¶</a></h2><p>The first step is descriptive. The main dataset contains 346 accused-driver decisions from 131 Race
+or Sprint events, and stewards imposed some form of sanction in 214 decisions (61.8%).</p>
+<p>That percentage is not the rate at which all on-track incidents are punished. It describes only
+the incidents that produced a formal FIA decision and passed the study filters in Chapter 2.</p>
+<p>Incident type provides the first useful comparison. If one category receives sanctions more often
+than another, the difference can identify where the rules or case facts deserve closer study, but
+the raw rate cannot establish inconsistency on its own.</p>
 </div>
 </div>
 </div>
@@ -8006,12 +8001,22 @@ sanction was imposed in 214 cases (61.8%); 132 ended with no further action.</p>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-OutputArea-output" data-mime-type="text/markdown" tabindex="0">
-<p><img alt="Two panels showing sanction rates with 95 percent intervals by incident family and season." src="../reports/generated/study_v2/final_sanction_rates.png"/></p>
+<p><img alt="Horizontal bars show raw sanction rates and 95 percent confidence intervals for six incident types." src="../reports/generated/study_v2/final_sanction_rates.png"/></p>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
-<p class="figure-caption">The dashed line is the overall 61.8% rate. Intervals are Wilson 95% intervals; they widen sharply for small incident families.</p>
+<p class="figure-caption">Sample sizes appear in the category labels. The black intervals show statistical uncertainty, and the dashed line marks the 61.8% rate across all 346 decisions.</p>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-OutputArea-output" data-mime-type="text/markdown" tabindex="0">
+<p><img alt="Annual raw sanction rates with 95 percent confidence intervals from 2018 through 2025." src="../reports/generated/study_v2/final_season_rates.png"/></p>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
+<p class="figure-caption">The annual rate ranges from 40.9% in 2019 to 75.9% in 2021. The figure does not adjust for changes in incident mix, written responsibility, or stewarding guidance.</p>
 </div>
 </div>
 </div>
@@ -8022,16 +8027,18 @@ sanction was imposed in 214 cases (61.8%); 132 ended with no further action.</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<ul>
-<li><strong>Causing a collision:</strong> 137 sanctions in 233 decisions (58.8%).</li>
-<li><strong>Gaining an advantage off track:</strong> 41 sanctions in 54 decisions (75.9%).</li>
-<li><strong>Forcing another driver off track:</strong> 23 sanctions in 43 decisions (53.5%).</li>
-<li><strong>Small groups:</strong> Eight unsafe-rejoin decisions and two moving-under-braking decisions are insufficient for stable comparisons.</li>
-</ul>
-<p>Season rates range from 40.9% in 2019 to 75.9% in 2021. That does not prove standards changed from
-one year to the next.</p>
-<p>The seasonal comparison mixes incident facts, rule eras, responsibility findings, mitigation, and
-referral choices.</p>
+<p>Causing a collision dominates the dataset, with 233 of the 346 decisions. Stewards imposed a
+sanction in 137 of those cases (58.8%), compared with 41 of 54 gaining-an-advantage cases (75.9%)
+and 23 of 43 forcing-another-driver-off cases (53.5%).</p>
+<p>The smaller categories are much less stable. Unsafe rejoining contains eight decisions, moving
+under braking contains two, and multiple defensive moves contains six, so their wide intervals are
+more informative than their point estimates.</p>
+<p>The annual rate ranges from 40.9% in 2019 to 75.9% in 2021. That difference could reflect changes in
+incident mix, evidence, rule interpretation, or referral practice, so the report does not treat it
+as proof that one season was stricter than another.</p>
+<p>This descriptive stage shows where variation exists, but not why. The next stage tests whether the
+written responsibility finding provides a clearer explanation of the outcome than broad labels such
+as season or incident type.</p>
 </div>
 </div>
 </div>
@@ -8042,13 +8049,15 @@ referral choices.</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a id="chapter-4"></a></p>
-<h2 id="Chapter-4:-Consistency-tests">Chapter 4: Consistency tests<a class="anchor-link" href="#Chapter-4:-Consistency-tests">¶</a></h2><p>The consistency analysis used three tests:</p>
-<ol>
-<li><strong>Responsibility alignment:</strong> Compare the written fault finding with the formal outcome.</li>
-<li><strong>Predictive validation:</strong> Test broad incident labels on held-out events.</li>
-<li><strong>Close-case screening:</strong> Match cases without using the observed sanction or fault finding.</li>
-</ol>
-<h3 id="Written-responsibility-and-the-decision">Written responsibility and the decision<a class="anchor-link" href="#Written-responsibility-and-the-decision">¶</a></h3>
+<h2 id="Chapter-4:-Do-written-findings-lead-to-consistent-outcomes?">Chapter 4: Do written findings lead to consistent outcomes?<a class="anchor-link" href="#Chapter-4:-Do-written-findings-lead-to-consistent-outcomes?">¶</a></h2><p>The descriptive rates in Chapter 3 group incidents by broad labels. Stewarding decisions rely on
+more specific facts, so the consistency analysis moves closer to the reasoning recorded in each
+document.</p>
+<p>Three tests address different parts of that reasoning. The first checks whether the written
+responsibility finding agrees with the formal outcome, the second measures how much broad labels
+can predict, and the third compares each case with its closest available matches.</p>
+<h3 id="Test-1:-Does-the-written-finding-match-the-outcome?">Test 1: Does the written finding match the outcome?<a class="anchor-link" href="#Test-1:-Does-the-written-finding-match-the-outcome?">¶</a></h3><p>This is the most direct internal check. A decision that calls an event a racing incident should not
+normally impose a penalty, while a finding that one driver was wholly or predominantly to blame
+should normally lead to a sanction.</p>
 </div>
 </div>
 </div>
@@ -8064,7 +8073,7 @@ referral choices.</p>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
-<p class="figure-caption">All 76 decisions finding a driver wholly or predominantly to blame imposed a sanction; all 24 racing-incident findings ended with no further action.</p>
+<p class="figure-caption">Sample sizes appear beside each category. All 76 decisions finding a driver wholly or predominantly to blame imposed a sanction, while all 24 racing-incident findings ended with no further action.</p>
 </div>
 </div>
 </div>
@@ -8075,11 +8084,18 @@ referral choices.</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>All 76 decisions that found a driver wholly or predominantly to blame imposed a sanction. All 24
-racing-incident findings ended with no further action.</p>
-<p>These 100 decisions show complete outcome alignment after the written fault finding. They do not
-test whether the fault finding itself was correct.</p>
-<h3 id="Broad-labels-and-close-comparisons">Broad labels and close comparisons<a class="anchor-link" href="#Broad-labels-and-close-comparisons">¶</a></h3>
+<p>The result is exact for the two clearest ends of the responsibility scale. All 76 decisions that
+found a driver wholly or predominantly to blame imposed a sanction, and all 24 racing-incident
+findings ended with no further action.</p>
+<p>Those 100 decisions show complete agreement between the published finding and the published
+outcome. They do not prove that the stewards reached the correct finding, because that would require
+reconstructing the incident evidence and applying the rule independently in every case.</p>
+<p>The middle categories explain why sanction rates alone can mislead. Decisions with no explicit
+blame threshold or with off-track advantage findings cover several factual situations, so the next
+tests ask how much can be learned before the final responsibility finding is known.</p>
+<h3 id="Test-2:-Can-broad-case-labels-predict-the-outcome?">Test 2: Can broad case labels predict the outcome?<a class="anchor-link" href="#Test-2:-Can-broad-case-labels-predict-the-outcome?">¶</a></h3><p>A simple model used only the incident type, season, and whether more than two cars were involved.
+The goal was not to automate stewarding, but to measure whether those broad labels carry enough
+information to reproduce the pattern of decisions at events the model had not seen.</p>
 </div>
 </div>
 </div>
@@ -8090,12 +8106,12 @@ test whether the fault finding itself was correct.</p>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-OutputArea-output" data-mime-type="text/markdown" tabindex="0">
-<p><img alt="A broad-label model scores 0.558 ROC AUC and nearest matched cases have the same direct sporting-penalty result in 186 of 317 supported cases." src="../reports/generated/study_v2/final_similarity_screen.png"/></p>
+<p><img alt="The closest matched decision had the same direct sporting-penalty outcome in 186 of 317 cases and a different outcome in 131 cases." src="../reports/generated/study_v2/final_similarity_screen.png"/></p>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
-<p class="figure-caption">The broad model improved Brier score over its baseline by only 0.0005. Matching excluded fault, penalty, damage, retirement, and finishing result; warnings and reprimands were separated from penalties with direct race or grid burden.</p>
+<p class="figure-caption">The matching step did not use the eventual fault finding, penalty, damage, retirement, or finishing result. Warnings and reprimands were kept separate from penalties that directly changed race time, position, or the grid.</p>
 </div>
 </div>
 </div>
@@ -8106,13 +8122,21 @@ test whether the fault finding itself was correct.</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>A model using incident family, season, and multi-car status produced ROC AUC 0.558 against a 0.500
-chance-ranking reference. Its Brier score improved by 0.0005 over the sanction-rate baseline.</p>
-<p>The outcome-blind screen matched incident family, session, guideline era, first-lap status, wet
-track, restart, overlap, and attacker-line context. Warnings and reprimands were excluded from the
-direct-penalty outcome because they did not change race time, position, or the grid.</p>
-<p>Among 317 cases with at least five available neighbors, 186 nearest matches had the same
-direct-penalty outcome (58.7%). The remaining 131 had different outcomes (41.3%).</p>
+<p>A model using those three labels produced a ROC AUC of 0.558, where 0.500 represents chance ranking
+and 1.000 represents perfect ranking. Its Brier score improved by only 0.0005 over a baseline that
+used the overall sanction rate.</p>
+<p>In plain terms, broad labels add very little predictive information. This negative result supports
+the decision to compare detailed case context instead of treating every collision or every season
+as equivalent.</p>
+<h3 id="Test-3:-What-happens-when-similar-cases-are-compared?">Test 3: What happens when similar cases are compared?<a class="anchor-link" href="#Test-3:-What-happens-when-similar-cases-are-compared?">¶</a></h3><p>The matching screen compared decisions on incident type, session, guideline era, first-lap status,
+wet conditions, restarts, overlap, and attacker line. It deliberately excluded the later fault
+finding, penalty, damage, retirement, and finishing result so the outcome could not define the match.</p>
+<p>Warnings and reprimands were kept separate from direct sporting penalties because they do not
+immediately change race time, position, or the starting grid. Of the 346 main decisions, 317 had at
+least five possible comparison cases and could enter the screen.</p>
+<p>The closest match produced the same direct-penalty outcome in 186 cases (58.7%) and a different
+outcome in 131 cases (41.3%). That split identifies where the investigation should continue, but it
+does not show that stewards made 131 mistakes.</p>
 <div class="report-note"><strong>41.3% is not an inconsistency rate:</strong> The matching fields
 remain incomplete, and the screen excludes the later fault finding. The 131 differences are review
 candidates, not confirmed errors.</div>
@@ -8126,11 +8150,13 @@ candidates, not confirmed errors.</div>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a id="chapter-5"></a></p>
-<h2 id="Chapter-5:-Inconsistency-audit-and-case-studies">Chapter 5: Inconsistency audit and case studies<a class="anchor-link" href="#Chapter-5:-Inconsistency-audit-and-case-studies">¶</a></h2><p>The nearest-neighbor screen identified 131 different direct-penalty outcomes among 317 supported
-comparisons (41.3%). The audit then classified all 131 differences by written fault language and
-off-track context.</p>
-<p>The five case studies below explain specific public controversies. They do not estimate the
-frequency of disputed decisions in the 346-case population.</p>
+<h2 id="Chapter-5:-Where-similar-cases-still-diverge">Chapter 5: Where similar cases still diverge<a class="anchor-link" href="#Chapter-5:-Where-similar-cases-still-diverge">¶</a></h2><p>Chapter 4 left 131 matched cases with different direct-penalty outcomes. The next step restores the
+written responsibility finding that was intentionally hidden during matching and asks whether it
+explains why the outcomes diverged.</p>
+<p>This distinction matters because two incidents can look similar before adjudication but receive
+different penalties after the stewards assign different levels of responsibility. That pattern may
+raise a question about the fault finding, but it is not an internal mismatch between finding and
+sanction.</p>
 </div>
 </div>
 </div>
@@ -8157,14 +8183,24 @@ frequency of disputed decisions in the 346-case population.</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="What-the-131-disagreements-actually-contain">What the 131 disagreements actually contain<a class="anchor-link" href="#What-the-131-disagreements-actually-contain">¶</a></h3><ul>
+<h3 id="What-explains-the-131-different-outcomes?">What explains the 131 different outcomes?<a class="anchor-link" href="#What-explains-the-131-different-outcomes?">¶</a></h3><ul>
 <li><strong>Different written fault finding, 87 of 131 (66.4%):</strong> The paired decisions used different responsibility thresholds.</li>
 <li><strong>No explicit fault threshold, 30 of 131 (22.9%):</strong> Both rulings required the reader to infer responsibility from the reasons.</li>
 <li><strong>Off-track advantage context, 14 of 131 (10.7%):</strong> The outcome depended on whether an advantage was retained, returned, or caused by being forced off.</li>
 </ul>
-<p>The 41.3% result is a screening rate, not an error rate. The 87 different fault findings account for
-66.4% of the screened outcome differences.</p>
-<h3 id="Five-selected-controversies">Five selected controversies<a class="anchor-link" href="#Five-selected-controversies">¶</a></h3><table>
+<p>The largest group contains 87 pairs in which the stewards published different responsibility
+findings. The sanction then followed that finding, so the unresolved question is whether the
+different fault assessments were justified by facts that the matching data could not fully capture.</p>
+<p>Another 30 pairs provide no explicit responsibility threshold in either document, which makes the
+reasoning difficult to compare from the public text. The remaining 14 depend on whether an off-track
+advantage was gained, returned, or caused by another driver.</p>
+<p>This audit reduces a broad 41.3% difference rate to more specific questions about how responsibility
+and advantage are described. It still cannot turn an incomplete public record into a definitive
+error count.</p>
+<h3 id="How-well-known-controversies-fit-the-framework">How well-known controversies fit the framework<a class="anchor-link" href="#How-well-known-controversies-fit-the-framework">¶</a></h3><p>The following cases were selected because they show why fans question stewarding consistency and
+why broad comparisons can fail. They are explanatory examples, not a random sample and not an
+estimate of how often controversial decisions occur.</p>
+<table>
 <thead>
 <tr>
 <th>Case and source</th>
@@ -8237,8 +8273,14 @@ remaining 44 contain no explicit shared threshold or depend on off-track advanta
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a id="chapter-6"></a></p>
-<h2 id="Chapter-6:-2025-guideline-comparison">Chapter 6: 2025 guideline comparison<a class="anchor-link" href="#Chapter-6:-2025-guideline-comparison">¶</a></h2><p>The analysis compared 33 sanctions from 2025 with the public driving and penalty guidelines in
-force that season. The guidelines were not applied to decisions from 2018 through 2024.</p>
+<h2 id="Chapter-6:-What-the-2025-public-guidelines-add">Chapter 6: What the 2025 public guidelines add<a class="anchor-link" href="#Chapter-6:-What-the-2025-public-guidelines-add">¶</a></h2><p>Historical comparisons are difficult because the public decision gives the final sanction but not
+always the starting point the stewards used. The FIA's publication of Formula 1 driving standards
+and penalty guidance in 2025 created a clearer reference for decisions from that season.</p>
+<p>The analysis identified 33 sanctions from 2025 that could be mapped to a published starting point.
+It asked whether each sanction was plainly within the guidance, within range after context or
+mitigation, or dependent on an unexplained substitution or escalation.</p>
+<p>This is a contemporaneous comparison only. The 2025 guidance is never applied to decisions from
+2018 through 2024 because doing so would judge earlier decisions against a later public standard.</p>
 </div>
 </div>
 </div>
@@ -8254,7 +8296,7 @@ force that season. The guidelines were not applied to decisions from 2018 throug
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
-<p class="figure-caption">This comparison describes conformity with the public starting points. It does not independently decide whether the underlying fault finding was correct.</p>
+<p class="figure-caption">This comparison measures whether the sanction fits the public starting point after the stewards made a fault finding. It does not independently decide whether that fault finding was correct.</p>
 </div>
 </div>
 </div>
@@ -8265,11 +8307,15 @@ force that season. The guidelines were not applied to decisions from 2018 throug
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Of 33 comparable sanctions, 21 (63.6%) were plainly within the public starting point. Seven (21.2%)
-were within range with mitigation or context, and five (15.2%) required additional context for a
-substitution or escalation.</p>
-<p>The independently reviewed Austrian 2025 pilot matched the baseline in four of five decisions
-(80.0%). The fifth decision documented mitigation.</p>
+<p>Of the 33 comparable sanctions, 21 (63.6%) matched the published starting point without further
+interpretation. Another seven (21.2%) remained within the published range after the reason given by
+the stewards was considered.</p>
+<p>Five sanctions (15.2%) used a substitution or escalation that required more context than the public
+decision supplied. The analysis treats those five as transparency questions, not guideline
+violations, because the stewards may have considered evidence or mitigation that was not published.</p>
+<p>This result shows what public guidance can improve. A stated starting point makes similar sanctions
+easier to compare, while an explicit explanation for every departure would make the remaining
+judgment calls easier to audit.</p>
 <ul>
 <li><a href="https://www.fia.com/sites/default/files/f1_driving_standards_guidelines_version_4.1_feb_20_2025.pdf">FIA Formula 1 Driving Standards Guidelines, version 4.1</a></li>
 <li><a href="https://www.fia.com/sites/default/files/2025_f1_guidelines_penalty_points_overview_-_14_may_clean_0.pdf">FIA 2025 Penalty Guidelines</a></li>
@@ -8284,8 +8330,14 @@ substitution or escalation.</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a id="chapter-7"></a></p>
-<h2 id="Chapter-7:-Penalty-burden-and-incident-harm">Chapter 7: Penalty burden and incident harm<a class="anchor-link" href="#Chapter-7:-Penalty-burden-and-incident-harm">¶</a></h2><p>The independently reviewed pilot contains nine decisions. Two nominal five-second penalties
-produced different observed position and points effects.</p>
+<h2 id="Chapter-7:-Why-penalty-length-is-not-the-same-as-race-cost">Chapter 7: Why penalty length is not the same as race cost<a class="anchor-link" href="#Chapter-7:-Why-penalty-length-is-not-the-same-as-race-cost">¶</a></h2><p>A five-second penalty sounds fixed, but its competitive cost depends on when it is applied and on
+the gaps between cars. It can change several positions after the finish, change no position at all,
+or alter strategy and traffic when it is served during the race.</p>
+<p>The same problem applies to incident harm. A collision can cause no measurable loss, a temporary
+delay, a repair stop, lasting car damage, or a retirement, and a multi-car incident can affect each
+participant differently.</p>
+<p>The study first tested these distinctions on nine source-supported decisions. The examples below
+show why nominal seconds, realized penalty cost, and incident harm must remain separate fields.</p>
 </div>
 </div>
 </div>
@@ -8360,12 +8412,12 @@ stores a separate harm record for each participant.</p>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-OutputArea-output" data-mime-type="text/markdown" tabindex="0">
-<p><img alt="Collision-harm workflow from 233 decision rows to 28 estimable timing screens, expanding to 412 driver-level harm records before narrowing." src="../reports/generated/study_v2/final_harm_path.png"/></p>
+<p><img alt="The harm workflow groups 233 collision decision rows into 193 incidents, expands them to 412 driver-specific records, and retains 28 records for timing screens." src="../reports/generated/study_v2/final_harm_path.png"/></p>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
-<p class="figure-caption">The 28 timing screens are research leads, not confirmed damage effects. Tyres, traffic, strategy, weather, and hidden car conditions remain alternative explanations.</p>
+<p class="figure-caption">The 28 timing screens are research leads, not confirmed damage effects. Tyres, traffic, strategy, weather, and hidden car conditions remain alternative explanations for a pace change.</p>
 </div>
 </div>
 </div>
@@ -8376,12 +8428,15 @@ stores a separate harm record for each participant.</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Only 28 of 412 participant records (6.8%) had enough clean, same-lap teammate data for a timing
-screen. These 28 records remain screening results because public timing cannot isolate damage from
-tyres, traffic, strategy, weather, or hidden car conditions.</p>
-<p>Zero cases passed the prespecified proportionality release gate. A case requires separate evidence
-for fault, incident-caused harm, and realized sanction cost before a proportionality conclusion is
-released.</p>
+<p>Only 28 of the 412 driver-specific records (6.8%) had enough same-lap teammate data for a timing
+screen. A slower post-incident pace can identify a case worth researching, but timing alone cannot
+separate damage from tyres, traffic, strategy, weather, or an unreported car problem.</p>
+<p>No full-corpus case contained all three forms of evidence required for a proportionality conclusion:
+a clear fault finding, source-confirmed incident harm, and a measurable realized penalty cost. The
+report therefore presents the case examples but does not claim that FIA penalties are generally
+proportional or disproportional to race harm.</p>
+<p>That withheld result is part of the analysis. It prevents a severe outcome, such as a puncture or
+retirement, from being treated as automatic proof that another driver deserved a larger penalty.</p>
 </div>
 </div>
 </div>
@@ -8392,10 +8447,15 @@ released.</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a id="chapter-8"></a></p>
-<h2 id="Chapter-8:-Nationality-analysis">Chapter 8: Nationality analysis<a class="anchor-link" href="#Chapter-8:-Nationality-analysis">¶</a></h2><p>British accused drivers were sanctioned in 25 of 44 decisions (56.8%). Other accused drivers were
-sanctioned in 189 of 302 decisions (62.6%), a raw difference of -5.8 percentage points.</p>
-<p>The 95% Wilson interval was 42.2% to 70.3% for British drivers and 57.0% to 67.9% for other drivers.
-The intervals overlap by 10.9 percentage points.</p>
+<h2 id="Chapter-8:-Testing-the-claim-of-British-driver-bias">Chapter 8: Testing the claim of British-driver bias<a class="anchor-link" href="#Chapter-8:-Testing-the-claim-of-British-driver-bias">¶</a></h2><p>Claims of British favoritism appear in public debates about Formula 1 stewarding, especially when a
+high-profile decision benefits or harms a British driver. Selected controversies cannot test that
+claim because memorable cases are not a representative sample.</p>
+<p>The study instead compares every British accused driver in the 346-decision main dataset with all
+other accused drivers. This is a test of group-level sanction patterns, not a judgment about any
+individual driver or steward.</p>
+<p>The raw comparison is only a starting point. A credible nationality result also needs enough
+British cases, overlap in incident context, and statistical power to detect a difference of the
+size defined before the analysis.</p>
 </div>
 </div>
 </div>
@@ -8406,12 +8466,12 @@ The intervals overlap by 10.9 percentage points.</p>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-OutputArea-output" data-mime-type="text/markdown" tabindex="0">
-<p><img alt="British accused drivers have a 56.8 percent raw sanction rate versus 62.6 percent for other drivers, with overlapping 95 percent intervals; only 44 British cases are available against a minimum target of 98." src="../reports/generated/study_v2/final_nationality_result.png"/></p>
+<p><img alt="British accused drivers have a 56.8 percent raw sanction rate and other accused drivers have a 62.6 percent rate, with overlapping 95 percent confidence intervals." src="../reports/generated/study_v2/final_nationality_result.png"/></p>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
-<p class="figure-caption">The raw difference is not an adjusted effect and the design lacks power for the prespecified 15-point difference.</p>
+<p class="figure-caption">The British group contains 44 decisions, below the prespecified minimum of 98. The raw 5.8-point difference is not an adjusted effect and the study lacks power for the planned 15-point test.</p>
 </div>
 </div>
 </div>
@@ -8422,15 +8482,20 @@ The intervals overlap by 10.9 percentage points.</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>The British group contains 44 cases against a prespecified minimum of 98. Simulated power for a
-15-point difference ranged from 37.8% to 53.6%, below the 80% design target.</p>
-<p>The five controversy cases in Chapter 5 were selected for explanation, not nationality estimation.
-They include decisions that helped and harmed British drivers, so they cannot replace the 346-case
-population.</p>
-<p>FIA decisions list panel members but not individual votes. The same-nationality panel analysis was
-withheld because its country-evidence and overlap gates failed.</p>
-<p><strong>Result:</strong> The -5.8-point raw difference is inconclusive because N=44 fell below the required 98
-and simulated power remained below 80%.</p>
+<p>British accused drivers received sanctions in 25 of 44 decisions (56.8%), compared with 189 of 302
+decisions for other drivers (62.6%). The British interval extends from 42.2% to 70.3% and the other
+group's interval extends from 57.0% to 67.9%, so the raw estimates overlap substantially.</p>
+<p>The British group also falls below the prespecified minimum of 98 cases. Simulated power to detect a
+15-point difference ranges from 37.8% to 53.6%, well below the study's 80% target, which means a real
+difference of that size could easily remain undetected.</p>
+<p>The controversy examples in Chapter 5 cannot repair this weakness because they were selected for
+explanation and include decisions that both helped and harmed British drivers. FIA documents also
+list the stewarding panel but do not publish individual votes, so the study cannot assign an outcome
+to one steward's nationality.</p>
+<div class="report-answer"><strong>Nationality result:</strong> The observed data do not show a
+higher sanction rate for British accused drivers, but the sample is too small to rule out a
+meaningful difference. The correct conclusion is inconclusive, not proof of bias and not proof that
+bias is absent.</div>
 </div>
 </div>
 </div>
@@ -8441,25 +8506,72 @@ and simulated power remained below 80%.</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a id="chapter-9"></a></p>
-<h2 id="Chapter-9:-Results-summary">Chapter 9: Results summary<a class="anchor-link" href="#Chapter-9:-Results-summary">¶</a></h2><ol>
-<li><strong>Responsibility alignment:</strong> All 76 explicit blame findings led to sanctions, and all 24 racing-incident findings led to no further action.</li>
-<li><strong>Broad-label model:</strong> Incident family, season, and multi-car status produced ROC AUC 0.558 and Brier improvement 0.0005.</li>
-<li><strong>Close-case screen:</strong> Different direct-penalty outcomes occurred in 131 of 317 nearest matches (41.3%).</li>
-<li><strong>Difference classification:</strong> Different fault findings accounted for 87 of 131 outcome differences (66.4%).</li>
-<li><strong>2025 guideline comparison:</strong> 21 of 33 sanctions were plainly within guideline, seven were contextual, and five required more context.</li>
-<li><strong>Penalty burden:</strong> One five-second penalty cost two places and six points, while another changed zero places and zero points.</li>
-<li><strong>Nationality result:</strong> The -5.8-point raw difference remained inconclusive with N=44 and simulated power of 37.8% to 53.6%.</li>
-</ol>
-<div class="report-answer"><strong>Final conclusion:</strong> The evidence points to a stewarding
-system with complete outcome alignment across the 100 clearest responsibility findings. The
-remaining evidence does not establish systematic unfairness or nationality bias because 131 close
-comparisons lack complete context and the nationality test failed its sample-size and power gates.</div>
-<h3 id="Evidence-needed-for-stronger-conclusions">Evidence needed for stronger conclusions<a class="anchor-link" href="#Evidence-needed-for-stronger-conclusions">¶</a></h3><ul>
-<li>A more complete referral denominator showing comparable incidents that never reached a decision.</li>
-<li>Independently verified context for the highest-priority close-case disagreements.</li>
-<li>Source-confirmed damage, repairs, retirements, and rare beneficial stops.</li>
-<li>Realized sanction-cost records, especially for penalties served during a race.</li>
-<li>A larger, adequately powered nationality sample with better decision-maker information.</li>
+<h2 id="Chapter-9:-What-the-study-can-and-cannot-conclude">Chapter 9: What the study can and cannot conclude<a class="anchor-link" href="#Chapter-9:-What-the-study-can-and-cannot-conclude">¶</a></h2><p>The analysis began with a question about whether Formula 1 stewarding treats similar incidents in a
+consistent way. The answer depends on which part of the decision process is being measured.</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Main evidence</th>
+<th>Conclusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Does the formal outcome follow the written responsibility finding?</td>
+<td>76 of 76 clear blame findings led to sanctions; 24 of 24 racing-incident findings led to no further action</td>
+<td>Yes, for the 100 clearest written findings</td>
+</tr>
+<tr>
+<td>Do broad case labels explain the outcome?</td>
+<td>ROC AUC 0.558; Brier improvement 0.0005</td>
+<td>No, incident type and season alone explain very little</td>
+</tr>
+<tr>
+<td>Do the closest available cases receive the same direct penalty outcome?</td>
+<td>186 of 317 matched cases agreed; 131 differed</td>
+<td>Often, but the 41.3% difference rate requires case review</td>
+</tr>
+<tr>
+<td>What explains the different matched outcomes?</td>
+<td>87 of 131 had different written fault findings</td>
+<td>Most differences begin in the responsibility assessment</td>
+</tr>
+<tr>
+<td>Do 2025 sanctions follow public guidance?</td>
+<td>21 of 33 plainly matched; seven fit with context; five needed more context</td>
+<td>Mostly, with a small set of transparency questions</td>
+</tr>
+<tr>
+<td>Are penalties proportional to incident harm?</td>
+<td>No case had complete fault, harm, and realized-cost evidence</td>
+<td>The public data cannot answer this at population level</td>
+</tr>
+<tr>
+<td>Do the data support British-driver bias?</td>
+<td>25 of 44 British cases sanctioned versus 189 of 302 others; power below 80%</td>
+<td>Inconclusive</td>
+</tr>
+</tbody>
+</table>
+<div class="report-answer"><strong>Primary result:</strong> The formal outcome aligns with the
+written finding in all 100 decisions at the clearest ends of the responsibility scale. The largest
+remaining source of variation is the responsibility assessment itself, not a penalty that
+contradicts the published finding.</div>
+<div class="report-answer"><strong>Final conclusion:</strong> The evidence does not support a claim
+that Formula 1 stewarding is systematically inconsistent or biased by driver nationality. It also
+does not prove that every fault finding was correct, because close-case context, non-referrals,
+incident harm, and individual steward votes remain incomplete.</div>
+<p>The study therefore reaches a bounded conclusion. Published decisions are internally consistent in
+their clearest language and most 2025 sanctions map to public guidance, but the FIA could make the
+system easier to audit by explaining responsibility thresholds and departures from penalty starting
+points more explicitly.</p>
+<h3 id="Evidence-needed-for-a-stronger-answer">Evidence needed for a stronger answer<a class="anchor-link" href="#Evidence-needed-for-a-stronger-answer">¶</a></h3><ul>
+<li>A complete record of comparable incidents that were noted, investigated, or never referred.</li>
+<li>More detailed context for the 131 matched cases with different direct-penalty outcomes.</li>
+<li>Source-confirmed damage, repair stops, retirements, and rare beneficial stops.</li>
+<li>Realized penalty-cost records, especially for penalties served during a race.</li>
+<li>A larger nationality sample and public information about individual steward votes.</li>
 </ul>
 </div>
 </div>
@@ -8471,7 +8583,10 @@ comparisons lack complete context and the nationality test failed its sample-siz
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a id="chapter-10"></a></p>
-<h2 id="Chapter-10:-Recommendations">Chapter 10: Recommendations<a class="anchor-link" href="#Chapter-10:-Recommendations">¶</a></h2><h3 id="For-the-FIA">For the FIA<a class="anchor-link" href="#For-the-FIA">¶</a></h3><ol>
+<h2 id="Chapter-10:-What-better-stewarding-data-would-look-like">Chapter 10: What better stewarding data would look like<a class="anchor-link" href="#Chapter-10:-What-better-stewarding-data-would-look-like">¶</a></h2><p>The main limitations come from disconnected records, incomplete explanations, and missing measures
+of realized race cost. The following changes would let future analysis distinguish justified
+judgment calls from genuine inconsistency with less inference.</p>
+<h3 id="For-the-FIA">For the FIA<a class="anchor-link" href="#For-the-FIA">¶</a></h3><ol>
 <li><strong>Publish structured decisions:</strong> Provide stable incident and decision IDs, accused and affected
 driver roles, session, lap, turn, finding, sanction, service timing, and version status.</li>
 <li><strong>Connect the referral trail:</strong> Link “noted,” “investigated,” “no further action,” and formal
@@ -8512,7 +8627,9 @@ driver or engineer accounts for damage research, with interested-party claims ke
 FIA findings and checked against official timing where possible.</li>
 </ul>
 <h3 id="Analytical-design">Analytical design<a class="anchor-link" href="#Analytical-design">¶</a></h3><ul>
-<li><strong>Population:</strong> 173 completed championship events, 2018 to 2025.</li>
+<li><strong>Archive coverage:</strong> 173 completed championship events, 2018 to 2025.</li>
+<li><strong>Main dataset:</strong> 346 Race and Sprint driver-conduct decisions from 131 events.</li>
+<li><strong>Supporting dataset:</strong> 72 qualifying impeding decisions, kept outside the main sanction rate.</li>
 <li><strong>Primary unit:</strong> one accused-driver decision in a Race or Sprint.</li>
 <li><strong>Primary scope:</strong> causing a collision, forcing another driver off track, gaining an advantage
 off track, unsafe rejoining, moving under braking, and multiple defensive moves.</li>
@@ -12109,9 +12226,8 @@ sources, confidence fields, and review status.</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <hr/>
-<p><strong>Project:</strong> <em>The Cost of Discretion</em><br/>
+<p><strong>Project:</strong> <em>Does Formula 1 Stewarding Treat Similar Incidents the Same Way?</em><br/>
 <strong>Coverage:</strong> Formula 1 championship seasons 2018 to 2025<br/>
-<strong>Final evidence date:</strong> August 13, 2026<br/>
 <strong>Review disclosure:</strong> GPT-5.6 Sol model-led source audit; separate independently reviewed pilot;
 no claim of full-corpus human inter-rater agreement.</p>
 </div>

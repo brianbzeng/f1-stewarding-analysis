@@ -1,8 +1,10 @@
-# The Cost of Discretion
+# Does Formula 1 Stewarding Treat Similar Incidents the Same Way?
 
 An auditable analysis of consistency, potential nationality effects, and competitive impact in Formula One stewarding decisions from 2018 through 2025.
 
-This project treats stewarding decisions as regulatory evidence, not fan opinion. Its purpose is to determine whether formally adjudicated driving incidents receive comparable treatment after accounting for observable context, and to prioritize unusual decisions for human review. It does **not** claim that a statistical model can determine fault or prove misconduct.
+This project tests whether formally adjudicated driving incidents receive comparable treatment after
+observable context is considered. It uses statistical models to identify patterns and review
+priorities, not to determine fault or prove misconduct.
 
 ## Final report
 

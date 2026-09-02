@@ -17,7 +17,7 @@ def test_integrated_report_has_complete_narrative_and_source_gate() -> None:
     assert "model-led source audit" in markdown
     assert "no claim of full-corpus human inter-rater agreement" in markdown
     assert "never applied retrospectively" in markdown
-    assert "Inconsistency audit and case studies" in markdown
+    assert "Where similar cases still diverge" in markdown
     assert "Japan 2024" in markdown
     assert "São Paulo 2021" in markdown
     assert "Brian Zeng" in markdown
@@ -40,7 +40,7 @@ def test_integrated_report_uses_colorblind_safe_palette_and_alt_text() -> None:
         assert color in code
     assert "text-transform: uppercase" in code
     assert "alt_text" in code
-    assert "Wilson 95% intervals" in code
+    assert "95 percent confidence intervals" in code
 
 
 def test_inconsistency_chapter_cites_every_discussed_decision() -> None:

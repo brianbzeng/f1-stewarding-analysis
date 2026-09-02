@@ -1,6 +1,6 @@
-# The Cost of Discretion
+# Does Formula 1 Stewarding Treat Similar Incidents the Same Way?
 
-## What eight seasons of public evidence can—and cannot—tell us about Formula 1 stewarding
+## A data analysis of stewarding consistency, 2018 to 2025
 
 Start with the consolidated [code-free final report](the_cost_of_discretion_study_v2.html). The
 same report is available as an [executable Jupyter notebook](../notebooks/12_study_v2_report.ipynb),

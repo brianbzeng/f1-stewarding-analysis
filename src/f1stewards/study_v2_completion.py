@@ -313,14 +313,14 @@ def audit_study_v2_completion(root: Path = PROJECT_ROOT) -> pd.DataFrame:
     )
     html = artifact_paths["report_html"].read_text(encoding="utf-8")
     final_report_markers = (
-        "Quantitative assessment of Formula 1 stewarding",
-        "177 high-confidence links",
+        "Does Formula 1 Stewarding Treat Similar Incidents the Same Way?",
+        "high-confidence referral links for 177 of the 346 main decisions",
         "All 76 decisions",
-        "Inconsistency audit and case studies",
+        "Where similar cases still diverge",
         "41.3% is not an inconsistency rate",
-        "Of 33 comparable sanctions, 21",
-        "Only 28 of 412 participant records",
-        "15-point difference ranged from 37.8% to 53.6%",
+        "Of the 33 comparable sanctions, 21",
+        "Only 28 of the 412 driver-specific records",
+        "Simulated power to detect a",
         "Final conclusion:",
     )
     decision_source_links = html.count(">Official decision</a>")
