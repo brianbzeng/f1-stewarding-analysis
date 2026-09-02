@@ -3,7 +3,7 @@
 An evidence-linked data analysis of fault, penalties, race consequences, and nationality claims in
 Formula 1 stewarding decisions from 2018 through 2025.
 
-[Read the code-free report](reports/the_cost_of_discretion_study_v2.html) |
+[Read the code-free report](https://brianbzeng.github.io/f1-stewarding-analysis/reports/the_cost_of_discretion_study_v2.html) |
 [Open the executable notebook](notebooks/12_study_v2_report.ipynb) |
 [Review the report guide](reports/README.md) |
 [Inspect the completion audit](reports/generated/study_v2/completion_audit.csv)
