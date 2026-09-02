@@ -6,6 +6,9 @@ Start with the consolidated [code-free final report](the_cost_of_discretion_stud
 same report is available as an [executable Jupyter notebook](../notebooks/12_study_v2_report.ipynb),
 where every figure and result is reproduced from the frozen analytical artifacts.
 
+The report's [conclusion TL;DR](the_cost_of_discretion_study_v2.html#conclusion-tldr) gives the
+shortest version of the result before the full evidence table and limitations.
+
 The earlier [v1 oversight report](the_cost_of_discretion.html) and notebooks 00-06 are retained as
 project history. The consolidated report combines their pilot, full-corpus, modeling, impact, and
 nationality results with the later source audit, referral funnel, incident timing, close-case

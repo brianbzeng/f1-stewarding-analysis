@@ -1,363 +1,197 @@
 # How Consistent Is Formula 1 Stewarding?
 
-An auditable analysis of consistency, potential nationality effects, and competitive impact in Formula One stewarding decisions from 2018 through 2025.
+An evidence-linked data analysis of fault, penalties, race consequences, and nationality claims in
+Formula 1 stewarding decisions from 2018 through 2025.
 
-This project tests whether formally adjudicated driving incidents receive comparable treatment after
-observable context is considered. It uses statistical models to identify patterns and review
-priorities, not to determine fault or prove misconduct.
+[Read the code-free report](reports/the_cost_of_discretion_study_v2.html) |
+[Open the executable notebook](notebooks/12_study_v2_report.ipynb) |
+[Review the report guide](reports/README.md) |
+[Inspect the completion audit](reports/generated/study_v2/completion_audit.csv)
 
-## Final report
+## The question
 
-Read the [report landing page](reports/README.md), the consolidated
-[code-free final report](reports/the_cost_of_discretion_study_v2.html), or its
-[executable Jupyter notebook](notebooks/12_study_v2_report.ipynb). The report combines the original
-pilot and full-corpus analysis with the strict source audit, referral funnel, incident timing,
-outcome-blind close-case matching, participant-level harm records, 2025 guideline comparison, and
-gated nationality diagnostic in one general-audience narrative. A dedicated inconsistency chapter
-decomposes the close-case disagreements and reads the strongest fan controversies against the
-official FIA record.
+Formula 1 fans often compare two incidents and ask why one driver received a penalty while another
+did not. A replay can make the incidents look similar, but the written decisions may use different
+facts, fault thresholds, or mitigating circumstances.
 
-The public record does not establish systematic unfairness or national bias, but it produces
-several bounded findings. All 76 formal decisions finding a driver wholly or predominantly to blame
-imposed a sanction; all 24 racing-incident findings ended with no further action. Broad incident
-labels still predict poorly, the realized burden of identical written penalties varies sharply,
-and the nationality design remains inconclusive. The deeper inconsistency audit finds documented
-rule gaps, live-evidence limits, and residual judgment calls, but no one-direction nationality
-pattern. The report identifies which conclusions are descriptive, independently reviewed,
-screening-only, or withheld.
+This project tests whether the public FIA record shows a consistent path from the conduct described
+by the stewards, to the finding of responsibility, to the final sanction. Incident harm, realized
+penalty cost, and nationality claims are analyzed separately so that one type of difference is not
+mistaken for another.
 
-## Questions
+## TL;DR
 
-1. How predictable are penalty and no-further-action decisions from observable incident facts?
-2. During 2025, how closely did sanctions follow the public FIA penalty and driving-standard guidelines?
-3. After referral to the stewards, are adjusted outcomes associated with driver nationality, counterparty nationality, home-race status, or steward-panel composition?
-4. Which penalties mechanically changed classifications, points, podiums, or wins, and which effects require a modeled counterfactual?
-5. Which decisions are sufficiently unusual, well-supported, and competitively important to prioritize for manual review?
+Formula 1 stewarding is consistent after a clear responsibility finding, but meaningfully
+inconsistent near the point where responsibility is assigned. All 100 decisions at the clearest
+ends of the fault scale aligned with their formal outcomes. Among 317 decisions with enough close
+comparison cases, 131 (41.3%) had a different direct-penalty outcome than the nearest match, and 87
+of those 131 differences began with a different written fault finding.
 
-## Scope
+The 41.3% result is a review rate, not a stewarding error rate. Some differences may be justified by
+incident details that are missing from the structured public data. The evidence supports a focused
+claim about uneven judgment at the responsibility boundary, not a claim that the full stewarding
+system is arbitrary.
 
-- Completed seasons: 2018-2025
-- Primary sessions: Race and Sprint
-- Primary unit: one accused-driver adjudication within an underlying incident
-- Primary incident families: causing a collision, forcing another driver off track, leaving the track and gaining an advantage, unsafe rejoining, moving under braking, and multiple defensive moves
-- Secondary analysis: qualifying impeding, only if the feasibility and power review supports it
-- Excluded from the primary models: technical infringements, power-unit penalties, pit-lane speeding, equipment violations, automatic grid drops, and other strict-liability offences
+## Main findings
 
-The analysis is conditional on formal referral or adjudication. It cannot identify comparable incidents that Race Control never referred to the stewards.
+| Question | Evidence | Result |
+|---|---|---|
+| Do written fault findings align with formal outcomes? | 76 of 76 clear blame findings led to sanctions; 24 of 24 racing-incident findings led to no further action | Strong internal alignment |
+| Can incident type and season explain the outcome? | Event-grouped ROC AUC 0.558; Brier improvement 0.0005 | Broad labels add little predictive value |
+| Do the closest available cases receive the same direct-penalty outcome? | 186 of 317 matched cases agreed; 131 differed | Meaningful variation that requires case review |
+| Where do the matched differences begin? | 87 of 131 had different written fault findings | Responsibility assessment is the main source of variation |
+| Do 2025 sanctions follow public guidance? | 21 of 33 plainly matched; seven fit with context; five needed more explanation | Most sanctions fit the public starting point |
+| Are penalties proportional to incident harm? | No case had complete fault, harm, and realized-cost evidence | Population-level conclusion withheld |
+| Do the data support British-driver favoritism? | 25 of 44 British cases sanctioned versus 189 of 302 other cases; power below 80% | Inconclusive |
 
-## Architecture
+![Written fault findings and sanction outcomes](reports/generated/study_v2/final_fault_language.png)
 
-```text
-FIA HTML/PDF + regulations + FastF1
-                  |
-                  v
-         raw source manifest
-                  |
-                  v
-     parsed and validated evidence
-                  |
-                  v
-       DuckDB + partitioned Parquet
-                  |
-          +-------+--------+
-          |                |
-          v                v
-  Jupyter analysis   evidence explorer
-          |
-          v
- executive brief + final report + technical appendix
-```
+## Building the dataset
 
-The canonical local workflow uses Python, Jupyter, DuckDB, Parquet, and Git. A focused,
-credential-free Snowflake/Snowsight deployment package demonstrates portability after the curated
-pilot model, while DuckDB remains the reproducible source of truth.
+The FIA event archive contains classifications, summonses, technical reports, corrected decisions,
+and multiple versions of the same document. Each archive entry therefore could not be treated as one
+stewarding decision.
 
-## Repository layout
+The source review narrowed the archive in four stages:
 
-```text
-config/       machine-readable source, full-population, and pilot configuration
-data/         raw, interim, processed, and external data (large files ignored)
-docs/         protocol, source register, codebook, lineage, and recruiter mapping
-explorer/     generated, evidence-linked static review application
-notebooks/    numbered analysis notebooks
-reports/      executive and technical deliverables
-snowflake/    optional Snowsight DDL, loading, views, quality, and parity worksheets
-sql/          portable schema and analytical queries
-src/          reusable Python package
-tests/        parser, schema, and transformation tests
-```
+1. **9,467 FIA event files** collected across 173 completed championship events.
+2. **2,003 possible outcome records** retained after title and document screening.
+3. **418 source-verified decisions** retained in the selected primary and supporting categories.
+4. **346 Race and Sprint driver-conduct decisions** used in the main analysis across 131 events.
 
-## Quick start
+The other 72 verified decisions concern qualifying impeding and remain separate from the primary
+sanction rate. One primary row represents one accused driver in one formal decision. Multi-car harm
+is stored in a separate participant-level table so that one driver's retirement does not overwrite
+another driver's puncture, repair stop, or time loss.
 
-The supported Python range is 3.11-3.13. Python 3.12 is recommended.
+![How the main decision dataset was built](reports/generated/study_v2/final_population_path.png)
+
+## Analysis design
+
+The analysis follows the decision process instead of compressing fairness into one score.
+
+1. **Describe the published decisions.** Sanction rates are compared by incident family and season,
+   with Wilson confidence intervals used to show uncertainty.
+2. **Test internal alignment.** Written responsibility language is compared with the formal outcome.
+3. **Measure the value of broad labels.** Event-grouped validation tests whether incident family,
+   season, and multi-car status reproduce outcomes outside the training events.
+4. **Compare similar cases.** Outcome-blind nearest-neighbor matching uses session, guideline era,
+   first-lap status, weather, restarts, overlap, and attacker line without using the later fault
+   finding or penalty.
+5. **Investigate different outcomes.** The written fault finding is restored after matching, and
+   selected controversies are checked against their official FIA documents.
+6. **Separate sanction from consequence.** Nominal penalties, realized race cost, and participant
+   harm remain distinct analytical layers.
+7. **Apply release gates.** Findings are withheld when source coverage, sample size, statistical
+   power, or independent review is not sufficient.
+
+## What the project adds
+
+### Close-case consistency audit
+
+The closest matched decision had the same direct-penalty outcome in 186 of 317 supported cases
+(58.7%) and a different outcome in 131 cases (41.3%). The different outcomes were then separated
+into 87 pairs with different written fault findings, 30 pairs with no explicit fault threshold in
+either ruling, and 14 pairs involving off-track advantage context.
+
+### Public guideline comparison
+
+Thirty-three sanctions from 2025 could be compared with a published FIA starting point. Twenty-one
+(63.6%) plainly matched, seven (21.2%) fit after context or mitigation was considered, and five
+(15.2%) required more explanation for a substitution or escalation. The 2025 guidance is never
+applied retrospectively to earlier seasons.
+
+### Penalty cost and incident harm
+
+The consequence layer groups 233 collision decision rows into 193 distinct incidents and 412
+driver-specific harm records. Only 28 records (6.8%) contained enough same-lap teammate data for a
+timing screen. These screens identify cases for source review but do not prove damage because tyres,
+traffic, strategy, weather, and hidden car conditions remain alternative explanations.
+
+### Nationality diagnostic
+
+British accused drivers received sanctions in 25 of 44 decisions (56.8%), compared with 189 of 302
+decisions for other drivers (62.6%). The British sample falls below the prespecified minimum of 98,
+and simulated power for the planned 15-point difference remains below 80%. The correct conclusion is
+inconclusive, not evidence of favoritism and not proof that nationality has no effect.
+
+## Evidence boundaries
+
+- The dataset contains published decisions, not every comparable act that occurred on track.
+- A different matched outcome is a review candidate, not a confirmed stewarding error.
+- Timing changes are not treated as proof of damage, causation, or fault.
+- In-race penalties cannot be reconstructed by subtracting nominal seconds from the final result.
+- The full source audit is model-led and is not presented as independent human double-coding.
+- The nine-decision consequence pilot received separate independent review.
+- Individual steward votes are not public, which limits the nationality analysis.
+- Missing information remains unknown instead of being converted into zero or no effect.
+
+## Technical stack
+
+- **Analysis:** Python, pandas, NumPy, scikit-learn, SciPy, Matplotlib, Jupyter
+- **Data:** DuckDB SQL, partitioned Parquet, FastF1 timing and Race Control feeds
+- **Validation:** pytest, Ruff, content-addressed artifacts, release-gate audits
+- **Portability:** locally validated Snowflake and Snowsight loading and parity package
+- **Reporting:** executable notebook, code-free HTML, colorblind-safe figures, direct FIA citations
+
+The Snowflake package demonstrates deployment portability. DuckDB remains the local reproducible
+source of truth, and no live Snowflake deployment is claimed.
+
+## Reproduce the report
+
+Python 3.12 is recommended. The supported range is Python 3.11 through 3.13.
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e ".[analysis,dev]"
-pytest
-```
 
-The three-event feasibility pilot and its expanded manual-review gate are complete. The frozen
-full-study catalog now contains all 173 completed championship events from 2018 through 2025.
-
-## Full-corpus review commands
-
-```powershell
-f1stewards build-full-corpus-review-explorer `
-  data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4
-f1stewards build-full-corpus-first-pass `
-  data/manual/full_corpus_workspaces/full-coding-e0192ecbd9e4
-f1stewards build-full-corpus-exception-packet `
-  data/manual/full_corpus_first_pass/full-coding-e0192ecbd9e4
-f1stewards apply-full-corpus-review-ledger `
-  data/manual/full_corpus_first_pass/full-coding-e0192ecbd9e4 `
-  <exported-review-ledger.json>
-f1stewards validate-edited-full-coding-workspace `
-  data/manual/full_corpus_review_edits/full-coding-e0192ecbd9e4
-python scripts/build_model_review_release.py
-f1stewards build-analysis-features `
-  data/manual/full_corpus_model_review/model-review-3dacc1268f13/full-coding-e0192ecbd9e4 `
-  --strict-release
-```
-
-The generated [full-corpus review console](explorer/full_corpus_review.html) exposes every document,
-adjudication, and stratified exclusion-QA target while preserving the original human-review gate.
-Browser drafts export only editable final fields in a ledger locked to the current workspace hash;
-the apply command writes a separate workspace and reruns protected-lineage validation.
-
-The disclosed [GPT-5.6 Sol review protocol](docs/model_review_protocol.md) maps the 4,441 queue
-obligations to 2,003 unique FIA records, records source-backed corrections, and writes a separate
-content-addressed workspace. It is a model-led second pass, not independent human review.
-
-## Study v2 commands
-
-```powershell
-python scripts/build_study_v2_review_packet.py
-python scripts/build_study_v2_referral_funnel.py
-python scripts/build_study_v2_incident_clock.py
-python scripts/build_study_v2_incident_context.py
-python scripts/build_study_v2_close_cases.py
-python scripts/build_study_v2_damage_screening.py
-python scripts/build_study_v2_layers.py
-python scripts/build_study_v2_nationality.py
 python scripts/build_study_v2_notebooks.py
+python scripts/audit_report_style.py
 python scripts/audit_study_v2_completion.py
-```
-
-The [Study v2 protocol](docs/study_v2_protocol.md) is the controlling design. The human review and
-damage-evidence worklists are intentionally unfinished so an independent reviewer can complete them
-without seeing model answers. The final command writes a requirement-level
-[completion audit](reports/generated/study_v2/completion_audit.csv) and fails if any frozen artifact,
-gate, notebook, or report phase is missing. The notebook command builds and executes notebooks
-07-12 and exports the integrated HTML report in one reproducible step.
-
-The conservative [machine-assisted first pass](docs/full_corpus_first_pass.md) prepopulates 1,903
-document dispositions and 1,856 adjudication rows as `single_coded_pending_human`. This includes
-207 clearly out-of-scope parser-warning sources in each worklist, but never a parser-warning
-inclusion. It leaves 100 document exceptions, 96 adjudication exceptions, and all 486 exclusion-QA
-judgments unstarted. The generated
-[first-pass review console](explorer/full_corpus_first_pass_review.html) exposes those assignments
-without counting any as independent review.
-
-The current content-addressed [exception investigation packet](docs/full_corpus_exception_packet.md)
-is `exception-packet-2e9bc5621dfa`. It collapses the 682 unresolved independent-review queue rows to
-582 unique FIA documents, eliminating 100 duplicate
-source reviews. It gives every investigation a root cause, priority, linked queue IDs, official URL,
-available Fact/Decision/Reason evidence, and review question. The QA console now carries the same
-linked decision evidence for all 486 sampled exclusions.
-
-The subsequent [parser-format source review](docs/parser_format_source_review.md) records final
-fields for the 17 remaining nonstandard-format investigations: 16 controlled exclusions and one
-included Hungarian no-action adjudication. Its versioned ledger changes no protected field and
-keeps every row `single_coded_pending_human`; the review console now shows 1,920 document and 1,873
-adjudication rows pending human confirmation, with 83 and 79 respectively still unstarted.
-
-The next [analytical-scope conflict review](docs/analytical_scope_conflict_review.md) records all 18
-cross-family/session decisions: eight secondary Qualifying-impeding inclusions and ten exclusions.
-It also preserves a previously unlinked corrected Italian decision by coding its matching earlier
-version as superseded. The chained console now shows 1,938 document and 1,891 adjudication rows
-pending human confirmation, leaving 65 and 61 respectively unstarted.
-
-The follow-on 61-case manual-scope ledger records 52 source-coded primary inclusions and nine
-controlled exclusions, including mirrored and multi-car incident structure. A final archive-level
-ledger preserves the four unavailable recalled 2024 Belgian pit-lane-speeding versions without
-imputing their missing outcomes. The complete four-step review chain is content-addressed at
-workspace SHA-256 `e1d4c4a969aee29b3db2a4f65e253e444c2e0c7d735cc3ec5451e3ec7b883f8f`.
-Every source-coded record remains `single_coded_pending_human`; none is mislabeled as independent
-review.
-
-## Pilot commands
-
-```powershell
-f1stewards init-db
-f1stewards pilot-discover
-f1stewards pilot-discover --event-id 2019-aut --download
-f1stewards parse-decisions
-f1stewards parser-audit
-f1stewards pilot-fastf1
-f1stewards build-coding-queue
-f1stewards regulatory-audit
-f1stewards sporting-regulation-audit
-f1stewards international-sporting-code-audit
-f1stewards claim-audit
-f1stewards validate-coding
-f1stewards validate-impact
-f1stewards validate-harm
-f1stewards validate-extensions
-f1stewards review-status
-f1stewards reconcile-pilot
-f1stewards scale-readiness
-f1stewards build-explorer
-f1stewards export-snowflake-pilot
-f1stewards validate-snowflake-export <export-directory>
-f1stewards quality-check
 pytest
 ```
 
-Downloads are low-rate and resumable. Linked source files are checksummed; reruns reuse a verified
-local file. The archive parser also records recalled documents that FIA advertises without a usable
-download link, preventing silent loss of decision versions.
+The notebook build executes notebooks 07 through 12 and exports the code-free HTML report. The
+completion audit checks 28 release controls, including source citations, immutable artifacts,
+executed notebooks, evidence gates, hidden code, and the final claim ledger. The current test suite
+contains 231 passing tests.
 
-## Full-study inventory commands
+## Repository layout
 
-```powershell
-f1stewards build-study-catalog
-f1stewards study-catalog
-f1stewards init-study-db
-f1stewards study-discover
-f1stewards study-discover --download --download-profile decisions
-f1stewards study-inventory
-f1stewards build-full-coding-queues
-f1stewards audit-full-coding-queues
-f1stewards study-fastf1 --max-sessions 5
-f1stewards study-fastf1-inventory --strict
-f1stewards load-steward-panels --strict-extraction
-f1stewards load-steward-country-evidence
+```text
+config/       Source registries, review protocols, and release settings
+data/         Raw, interim, processed, and content-addressed manual artifacts
+docs/         Methods, codebooks, source registers, and review protocols
+explorer/     Evidence-linked static review applications
+notebooks/    Numbered executable analyses and final report notebook
+reports/      Code-free report, figures, claim ledger, and completion audit
+snowflake/    Optional Snowsight DDL, loading, quality, and parity worksheets
+sql/          Portable schema and analytical queries
+src/          Reusable Python package
+tests/        Parser, schema, transformation, modeling, and release tests
 ```
 
-`build-study-catalog` freezes FastF1 schedules into stable event IDs and FIA archive targets;
-`study-discover` inventories official documents without downloading PDFs unless `--download` is
-supplied. The strict `study-inventory` control exits nonzero if the event catalog, Parquet manifest,
-DuckDB lineage, or active failure queue disagree. Historical FIA URL exceptions are declared in
-configuration and covered by tests. See [the full-corpus inventory](docs/full_corpus_inventory.md).
-Retrieval profiles are declared in `config/evidence_profiles.yml`; the default `decisions` profile
-avoids downloading summonses, classifications, notes, and circuit maps before they are needed.
+## Primary outputs
 
-## Evidence and interpretation policy
+- [Final code-free report](reports/the_cost_of_discretion_study_v2.html)
+- [Executable final notebook](notebooks/12_study_v2_report.ipynb)
+- [Study v2 protocol](docs/study_v2_protocol.md)
+- [Model review protocol](docs/model_review_protocol.md)
+- [Model validation method](docs/model_validation_method.md)
+- [Completion audit](reports/generated/study_v2/completion_audit.csv)
+- [Claim ledger](reports/claim_ledger.csv)
 
-- Every analytical record must link to an official source document.
-- The regulation version active on the event date must be preserved.
-- Initial, corrected, recalled, reviewed, and final decisions must not be conflated.
-- No-action decisions are data, not missing values.
-- An anomaly score is a review aid, not a declaration that the stewards were wrong.
-- Nationality results must be adjusted, uncertainty-aware, and presented for accused and affected drivers separately.
-- Exact classification arithmetic must be separated from strategy-dependent counterfactual estimates.
+Every one of the 418 included primary and supporting decisions has a direct FIA citation in the
+final report. The full 920-row source audit preserves evidence passages, correction history, rule
+sources, confidence fields, exclusion checks, and review status.
 
-## Project status
+## Author
 
-The full 2018-2025 event inventory is complete. All 173 cataloged events have official FIA evidence:
-9,467 source-document records, including 2,003 outcome labels and 45 recalled notices across all
-document classes. Nineteen recalls are outcome records: 15 link to verified corrected successors
-and four unavailable Belgian versions remain explicit exclusions. All 1,984 live outcome PDFs are
-retrieved and parsed with parser v4, yielding 1,952 content-confirmed steward decisions and zero
-active discovery or retrieval failures. The frozen Parquet manifest and DuckDB lineage agree
-exactly. The disclosed model-review tier now releases 346 primary cases; independent human review
-remains a separate future assurance layer.
+Brian Zeng |
+[brianbzeng.com](https://brianbzeng.com) |
+[github.com/brianbzeng](https://github.com/brianbzeng) |
+[linkedin.com/in/brianbzeng](https://www.linkedin.com/in/brianbzeng/)
 
-The first full-corpus coding bridge is now reproducible and checksum-protected. Its document queue
-retains all 2,003 outcome labels, and its adjudication seed retains all 1,952 live,
-content-confirmed decisions. The initial deterministic rules supplied triage, not findings. The
-second pass reviewed all session and offence-family conflicts and a deterministic 486-row exclusion
-sample spanning all 272 observed season/session/family strata. See the
-[full-corpus coding workflow](docs/full_corpus_coding_workflow.md) and the original
-[exclusion-QA diagnostic](docs/exclusion_qa_audit.md), which records the first-pass false-exclusion
-mechanism before the model-reviewed release.
-The [full FastF1 collection method](docs/full_fastf1_collection.md) now covers all 197 expected
-Race/Sprint sessions: 3,938 classifications, 198,620 driver laps, and 16,039 Race Control messages.
-Strict completeness and 38 warehouse controls pass. All laps remain available for incident timing,
-while 162,383 satisfy the conservative pace-model gate. Timestamp, normalization, and known
-historical source gaps remain explicit rather than imputed.
-
-The [steward-panel extraction](docs/steward_panel_extraction.md) now assigns all 1,952 live
-decisions at document grain: 1,936 signatures parse directly, 16 use a bounded single-panel event
-consensus, and none remain unresolved. The resulting 181 panels preserve seven events with
-within-weekend substitutions and identify 83 stewards. Every extraction control passes; panel-
-nationality analysis remains explicitly blocked until all steward nationalities have source-backed
-lineage.
-
-The follow-on [steward-country evidence ledger](docs/steward_country_evidence.md) currently holds
-92 dated official-source records for 82 of the 83 stewards. It keeps raw and normalized codes
-separate and exposes an official-source `BEL`/`LUX` conflict rather than forcing a static value.
-Panel identity is usable as adjustment context; steward-country comparisons remain blocked.
-
-The content-addressed [full-corpus coding workspace](docs/full_corpus_coding_workspace.md) joins all
-1,952 adjudication starters to protected source lineage and timing-quality context. The original
-first pass remained explicitly pending human review and produced no reportable outcome estimate.
-The separate [full-corpus review console](docs/full_corpus_review_console.md) preserves that human
-workflow for future independent assurance.
-
-The disclosed [GPT-5.6 Sol review](docs/model_review_protocol.md) provides a separate assurance
-tier. It covers all 4,441 queue obligations across 2,003 unique FIA records, records 16 version-
-history corrections plus sanction-field corrections, and leaves zero unresolved rows. Four recalled
-sources remain metadata-only exclusions. The resulting build, `features-57542b24ea9f`, releases 346
-primary cases under `reportable_model_reviewed`; it does not relabel model work as human review.
-
-The [gated analysis feature release](docs/analysis_feature_release.md) materializes one
-adjudication-grain table and a separate accused/affected driver-role bridge in DuckDB. All release
-controls now pass for the model-reviewed tier: 2,003 source dispositions, 1,952 adjudication codings,
-486 exclusion checks, complete identities, and complete binary outcomes. Steward-country exposure
-remains separately blocked by its evidence gate.
-
-The [grouped validation and nationality method](docs/model_validation_method.md) is frozen in
-configuration and tested. Event-grouped outcome validation on 346 cases finds little predictive
-value in incident type, season, and multi-car status (ROC AUC 0.558). The released population has
-44 British and 302 other accused-driver cases. The raw sanction-rate difference is descriptive, and
-power remains too low for subtle effects, so the final report labels nationality inconclusive.
-
-Competitive-impact arithmetic now validates ordered same-lap classifications, preserves official
-order on exact ties, calculates standard Race/Sprint position points and podium/win changes, and
-separately classifies exact, saturated, or confounded grid displacement. The enhanced validator
-reproduces both reviewed mechanical pilot cases—including Pérez's P4-to-P2, 12-to-18-point change—
-without treating an in-race served penalty or a grid drop as a mechanical finish counterfactual.
-
-Milestone 1 foundation is complete. The three-event archive pilot discovered 156 source records,
-including two unavailable recalled records, and retrieved 67 selected evidence PDFs with no active
-retrieval failures. Of 26 linked steward-decision PDFs, 25 yielded a complete Decision section and
-the full standard Fact/Infringement/Decision/Reason structure. FastF1 enrichment adds 60 classifications,
-3,684 driver laps, and 285 race-control messages. Eleven pilot event-date FIA regulatory sources are
-registered and validated. A separate 65-issue Sporting Regulation catalog covers every season from
-2018 through 2025 and deterministically selects the candidate issue published by each event date;
-the exact PDFs for all three pilot selections are resolved. A nine-issue International Sporting Code
-catalog separately models effective windows, including the April 2020 revision and unresolved
-publication metadata for older binaries. The nine candidate adjudications, four impact assessments,
-and two mirrored harm assessments retain their protected AI-assisted first pass. The separate
-original 15-row independent review is complete with 15 agreements, no corrections, and no
-unresolved discussions.
-Reconciliation `pilot-0681d52afdea` promotes immutable copies to `double_coded` while preserving the
-first pass, review notes, protected lineage fields, a field-level audit, and SHA-256 input/output
-manifests.
-
-The approved second-stage extension is implemented without altering that release. The staging layer
-now contains nine affected-driver harm rows (one per adjudication), one source-preserving turn range,
-two directed edges for a three-car interaction, and one cross-event sanction record. All 26 review
-targets agree with no corrections or unresolved discussions. Reconciliation `pilot-41f4502411c2`
-packages the expanded v3 schema as a separate immutable `double_coded` release.
-
-A dependency-free pilot evidence explorer is also generated from the same DuckDB and curated manual
-inputs. The current reviewed build exposes nine candidate adjudications, four sanction-impact
-assessments, nine victim-harm rows, source-preserving incident context, and the exact P7-to-P10
-application of Antonelli's carried grid penalty. Official evidence links, data-quality state, build
-lineage, and a downloadable filtered extract remain visible. Comparable-case and model views remain
-unavailable until the full corpus is collected and model validation passes its gates.
-
-The optional Snowflake/Snowsight package exports 16 content-addressed Parquet tables, excludes
-machine-specific cache paths, verifies every file hash/schema/count locally, and supplies worksheet
-SQL for setup, fail-fast loads, evidence-linked views, 24 integrity controls, review gating, and
-DuckDB/Snowflake parity checks. It is accurately labeled a validated deployment package until a real
-account run records query IDs and load results.
-
-The project is published at
-[brianbzeng/f1-stewarding-analysis](https://github.com/brianbzeng/f1-stewarding-analysis).
 No license has been selected.
