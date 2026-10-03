@@ -66,9 +66,9 @@ def audit_report_style(report_path: Path) -> list[str]:
         if not text:
             continue
         sentence_count = _sentence_count(text)
-        if sentence_count > 5:
+        if sentence_count > 8:
             violations.append(f"paragraph has {sentence_count} sentences: {text[:160]}")
-        if len(text.split()) > 130:
+        if len(text.split()) > 180:
             violations.append(f"paragraph has {len(text.split())} words: {text[:160]}")
 
     for node in soup.find_all("li"):
